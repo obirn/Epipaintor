@@ -9,7 +9,7 @@ The developpement team, Fast-Thinking is made of 4 dedicated EPITA students:
 - Zaky Hamdoun
 - Adam Mahraoui
 
-## Requiremennts:
+## Requirements:
 - Git
 - Make
 - A Unix environment
