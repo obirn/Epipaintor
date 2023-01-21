@@ -4,16 +4,16 @@
 Introducing Epinator, the ChatBot we developed for our 4th semester at EPITA.
 
 The developpement team, Fast-Thinking is made of 4 dedicated EPITA students:
-    - Robin Varliette
-    - Christian Aziaka
-    - Zaky Hamdoun
-    - Adam Mahraoui
+- Robin Varliette
+- Christian Aziaka
+- Zaky Hamdoun
+- Adam Mahraoui
 
 ## Requiremennts:
-    - Git
-    - Make
-    - A Unix environment
-    - Gcc
+- Git
+- Make
+- A Unix environment
+- Gcc
 
 ## Install:
 
