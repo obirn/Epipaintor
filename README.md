@@ -1,7 +1,7 @@
 # Epinator by Fast-Thinking
 ![alt text](https://github.com/obirn/Epinator/blob/main/Assets/gitlab_logo.png?raw=true)
 
-Introducing Epinator, the ChatBot we developed for our 4th semester at EPITA.
+Introducing Epinator, the graphical editor we developed for our 4th semester at EPITA.
 
 The developpement team, Fast-Thinking is made of 4 dedicated EPITA students:
 - Robin Varliette
@@ -34,7 +34,7 @@ Compile the code:
 
 Execute the program:
 ```shell
-    ./epinator
+    ./epipaintor
 ```
     
 
