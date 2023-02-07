@@ -8,7 +8,7 @@ int main(int argc,char**argv)
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	//gtk_button_set_default_size(openfilebutton,200,100);
 	gtk_container_add(GTK_CONTAINER(window),openfilebutton);
-	gtk_window_set_title(GTK_WINDOW(window),"EPINATOR");
+	gtk_window_set_title(GTK_WINDOW(window),"EPIPAINTOR");
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
 	gtk_window_set_resizable(GTK_WINDOW(window),TRUE);
 
