@@ -1,27 +1,12 @@
-# Basic Makefile Template
+CC = gcc
+CFLAGS = `pkg-config --cflags gtk+-3.0`
+PROG = mainpage
+LIBS = `pkg-config --libs gtk+-3.0`  
 
-CC= gcc
-CPPFLAGS= -MMD
-CFLAGS= -Wall -Wextra -std=c99 -O2
-LDFLAGS=
-LDLIBS=
 
-SRC= # Insert your c files here
-OBJ=${SRC:.c=.o}
-DEP=${SRC:.c=.d}
+${PROG}: ${PROG}.c
+	${CC} ${CFLAGS} -o ${PROG} ${PROG}.c ${LIBS}
 
-all : main
+clean: 
+	rm ${PROG}
 
-main: ${OBJ}
-	${CC} ${CFLAGS} ${CPPFLAGS} ${OBJ} ${LDLIBS} -o main
-
-.PHONY: clean
-
-clean:
-	${RM} ${OBJ} ${DEP} *~
-	${RM} main
-	${RM} *.d
-
--include ${DEP}
-
-# End
