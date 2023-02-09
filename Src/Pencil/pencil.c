@@ -2,18 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "pixel_operations.h"
-
-// Widgets
-GtkWindow* window;
-GtkWidget* draw_area;
-
-// Variable that hold unused values
-GtkWidget* widget;
-gpointer data;
-GdkEvent* event;
-
-// Buffer to use on the GtkDrawingArea 'draw_area'
-SDL_Surface* image_buff;
+#include "pencil.h"
+#include "draw_tools.h"
 
 // Mouse coordinates
 int pos_x = 0;
@@ -29,6 +19,7 @@ int end_y = 0;
 // Booleans
 int is_pressed;
 
+/*
 gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data)
 {
     //Unused parameters :
@@ -50,7 +41,7 @@ gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data)
         g_object_unref(pixbuf);
 
     return FALSE;
-}
+} */
 
 // Main function.
 int main()
@@ -81,7 +72,10 @@ int main()
 
     // Connects signal handlers.
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-    g_signal_connect (G_OBJECT (draw_area), "draw", G_CALLBACK (draw_callback), NULL);
+    // g_signal_connect (G_OBJECT (draw_area), "draw", G_CALLBACK (draw_callback), NULL);
+    g_signal_connect (draw_area, "motion-notify-event", G_CALLBACK(mouse_on_move), NULL);
+    g_signal_connect (draw_area, "button-press-event", G_CALLBACK(mouse_on_press), NULL);
+    g_signal_connect (draw_area, "button-release-event", G_CALLBACK(mouse_on_release), NULL);
 
     gtk_widget_set_app_paintable(draw_area, TRUE);
 
@@ -91,8 +85,8 @@ int main()
     return 0;
 }
 
-/*
-gboolean mouse_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
+
+gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 {
     widget = self;
     event = event;
@@ -108,7 +102,25 @@ gboolean mouse_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
     return FALSE;
 }
 
-gboolean mouse_moved(GtkWidget *widget,GdkEvent *event, gpointer user_data) 
+gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
+{
+    widget = self;
+    event = event;
+
+    if(user_data == NULL)
+    {
+        is_pressed = TRUE;
+        start_x = pos_x;
+        start_y = pos_y;
+        //printf("Start coordinates: (%u,%u)\n", start_x, start_y);
+    }
+
+    return FALSE;
+}
+
+
+
+gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data) 
 {
     //Unused parameters :
     widget = widget;
@@ -127,42 +139,9 @@ gboolean mouse_moved(GtkWidget *widget,GdkEvent *event, gpointer user_data)
 
         if (is_pressed)
         {
-            drawline(img, sdl_color, old_x, old_y, pos_x, pos_y, (int)scale_nb / 3);
+            drawline(image_buff, sdl_color, old_x, old_y, pos_x, pos_y, 5);
             gtk_widget_queue_draw_area(draw_area,0,0,image_buff->w,image_buff->h);
-        }
-        if (tool_value == 3 && is_pressed)
-        {
-            if (save_draw)
-            {
-                save_draw = FALSE;
-                shared_stack_push(before, img);
-                shared_stack_empty(after);  
-            }
-
-            //point(img, sdl_color, pos_x, pos_y, (int)scale_nb);
-            drawline(img, white, old_x, old_y, pos_x, pos_y, (int)scale_nb / 3);
-            gtk_widget_queue_draw_area(image_buff,0,0,img->w,img->h);
-        }
-        
-        if (tool_value == 4 && is_pressed)
-        {
-            if (save_draw)
-            {
-                save_draw = FALSE;
-                shared_stack_push(before, img);
-                shared_stack_empty(after);  
-            }
-
-            //point(img, sdl_color, pos_x, pos_y, (int)scale_nb);
-            drawline_image(img, img2, old_x, old_y, pos_x, pos_y, (int)scale_nb / 3);
-            gtk_widget_queue_draw_area(image_buff,0,0,img->w,img->h);
-        }
-        if (!is_pressed)
-        {
-            save_draw = TRUE;
         }
     }
     return TRUE;
 }
-
-*/
