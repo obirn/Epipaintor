@@ -19,7 +19,7 @@ int end_y = 0;
 // Booleans
 int is_pressed;
 
-/*
+
 gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data)
 {
     //Unused parameters :
@@ -41,7 +41,7 @@ gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data)
         g_object_unref(pixbuf);
 
     return FALSE;
-} */
+}
 
 // Main function.
 int main()
@@ -72,7 +72,7 @@ int main()
 
     // Connects signal handlers.
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-    // g_signal_connect (G_OBJECT (draw_area), "draw", G_CALLBACK (draw_callback), NULL);
+    g_signal_connect (G_OBJECT (draw_area), "draw", G_CALLBACK (draw_callback), NULL);
     g_signal_connect (draw_area, "motion-notify-event", G_CALLBACK(mouse_on_move), NULL);
     g_signal_connect (draw_area, "button-press-event", G_CALLBACK(mouse_on_press), NULL);
     g_signal_connect (draw_area, "button-release-event", G_CALLBACK(mouse_on_release), NULL);
@@ -88,6 +88,7 @@ int main()
 
 gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 {
+    printf("Mouse on press\n");
     widget = self;
     event = event;
 
@@ -107,6 +108,7 @@ gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
     widget = self;
     event = event;
 
+    printf("Mouse on release\n");
     if(user_data == NULL)
     {
         is_pressed = TRUE;
@@ -123,6 +125,8 @@ gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data) 
 {
     //Unused parameters :
+
+    printf("Mouse on move\n");
     widget = widget;
 
     //Actual function :
