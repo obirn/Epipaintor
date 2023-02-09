@@ -91,7 +91,7 @@ int main()
     return 0;
 }
 
-
+/*
 gboolean mouse_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 {
     widget = self;
@@ -164,3 +164,5 @@ gboolean mouse_moved(GtkWidget *widget,GdkEvent *event, gpointer user_data)
     }
     return TRUE;
 }
+
+*/
