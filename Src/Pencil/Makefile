@@ -1,20 +1,20 @@
-CC = gcc
-CFLAGS = `pkg-config --cflags gtk+-3.0`
+CC=gcc
+CPPFLAGS=
+CFLAGS= -Wall -Wextra -Werror -std=c99 $$(pkg-config --cflags gtk+-3.0)
+LDFLAGS=
+LDLIBS=-lm $$(pkg-config --libs gtk+-3.0) `sdl-config --cflags --libs`
+EXEC= main
 
-SRC = main.c
-OBJ = ${SRC:.c=.o}
+SRC= main.c
+OBJ= ${SRC:.c=.o}
+DEP= ${SRC:.c=.d}
 
-BIN = main
-LIBS = `pkg-config --libs gtk+-3.0` 
+all: ${EXEC}
 
-all: ${BIN}
+${EXEC}: ${OBJ}
+	${CC} ${LDLIBS} ${LDFLAGS} -o $@ $^ 
 
-${BIN}: ${OBJ}
-	${CC} ${CFLAGS} ${LIBS} $^
 
-%.o: %.c
-	${CC} ${CFLAGS} ${LIBS} -c $^
 
-clean: 
-	rm ${BIN}
-	rm ${OBJ}
+clean:
+	rm -f ${OBJ} ${DEP} ${EXEC}
