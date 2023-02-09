@@ -1,20 +1,21 @@
-CC=gcc
-CPPFLAGS=
-CFLAGS= -Wall -Wextra -Werror -std=c99 $$(pkg-config --cflags gtk+-3.0)
-LDFLAGS=
-LDLIBS=-lm $$(pkg-config --libs gtk+-3.0) `sdl-config --cflags --libs`
-EXEC= main
+CC = gcc
 
-SRC= main.c
-OBJ= ${SRC:.c=.o}
-DEP= ${SRC:.c=.d}
+CPPFLAGS = `pkg-config gtk+-3.0 --cflags sdl` # -MMD
+CFLAGS = -Werror -Wextra -std=c99 -g -Wall
+LDLIBS = `pkg-config gtk+-3.0 --libs sdl` -lSDL_image -lSDL_gfx -lm
 
-all: ${EXEC}
+BIN = pencil
 
-${EXEC}: ${OBJ}
-	${CC} ${LDLIBS} ${LDFLAGS} -o $@ $^ 
+SRC = pencil.c
+OBJ= $(SRC:.c=.o)
+DEP= $(SRC:.c=.d)
 
+all: ${BIN}
 
+${BIN}: $(OBJ)
 
 clean:
-	rm -f ${OBJ} ${DEP} ${EXEC}
+	${RM} ${OBJ}
+	${RM} ${DEP}
+	${RM} ${BIN}
+	${RM} ./*.o
