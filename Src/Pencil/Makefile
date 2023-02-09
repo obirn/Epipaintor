@@ -6,7 +6,7 @@ LDLIBS = `pkg-config gtk+-3.0 --libs sdl` -lSDL_image -lSDL_gfx -lm
 
 BIN = pencil
 
-SRC = pencil.c
+SRC = pencil.c pixel_operations.c
 OBJ= $(SRC:.c=.o)
 DEP= $(SRC:.c=.d)
 
