@@ -81,7 +81,7 @@ void update_surface(SDL_Surface* screen, SDL_Surface* image)
 }
 
 SDL_Surface* load_image(char* path) {
-    SDL_SUrface* image;
+    SDL_Surface* image;
 
     image = IMG_Load(path);
     if (!image)
