@@ -79,6 +79,8 @@ int main()
 
     gtk_widget_set_app_paintable(draw_area, TRUE);
 
+    gtk_builder_connect_signals(builder,NULL);
+
     // Show the window and start the gtk instance.
     gtk_widget_show_all((GtkWidget *) window);
     gtk_main();
@@ -111,7 +113,7 @@ gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
     printf("Mouse on release\n");
     if(user_data == NULL)
     {
-        is_pressed = TRUE;
+        is_pressed = FALSE;
         start_x = pos_x;
         start_y = pos_y;
         //printf("Start coordinates: (%u,%u)\n", start_x, start_y);
