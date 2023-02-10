@@ -3,7 +3,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <limits.h>
-#include "../utils/auxiliary.h"
+#include "../auxiliary/auxiliary.h"
 #include "filters.h"
 
 Uint32 binarize_pixel(Uint32 pixel_color, SDL_PixelFormat* format,
@@ -28,7 +28,7 @@ Uint32 binarize_pixel(Uint32 pixel_color, SDL_PixelFormat* format,
     return color;
 }
 
-SDL_Surface* binarize(SDL_Surface *s_surface, Uint8 threshold
+SDL_Surface* binarize(SDL_Surface *s_surface, Uint8 threshold,
                       int s_width, int s_height)
 {
     int len = s_width * s_height;
