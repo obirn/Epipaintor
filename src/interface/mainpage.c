@@ -9,6 +9,7 @@ GtkWidget *label;
 GtkWidget *button;
 GtkWidget *fixed2;
 GSList * image_path;
+int pixelsize;
 int main(int argc,char**argv)
 {
 	gtk_init(&argc,&argv);
@@ -38,6 +39,10 @@ void on_open_file_file_activated(GtkFileChooserButton * b)
 		gtk_container_remove(GTK_CONTAINER(fixed1),image);
 	image = gtk_image_new_from_file(path);
 	gtk_container_add(GTK_CONTAINER(fixed1),image);
+
+	pixelsize = gtk_image_get_pixel_size(image);
+	gtk_image_set_pixel_size(image,pixelsize/50);
+
 	gtk_widget_show(image);
 	gtk_fixed_move(GTK_FIXED(fixed1),image,700,380);
 }

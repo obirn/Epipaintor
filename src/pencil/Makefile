@@ -14,8 +14,9 @@ all: ${BIN}
 
 ${BIN}: $(OBJ)
 
-clean:
-	${RM} ${OBJ}
-	${RM} ${DEP}
-	${RM} ${BIN}
-	${RM} ./*.o
+%.o: %.c
+	${CC} ${CFLAGS} ${LIBS} -c $^
+
+clean: 
+	rm ${BIN}
+	rm ${OBJ}

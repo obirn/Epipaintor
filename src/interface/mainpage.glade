@@ -99,21 +99,9 @@
           </packing>
         </child>
         <child>
-          <object class="GtkImage" id="image">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-          </object>
-          <packing>
-            <property name="x">452</property>
-            <property name="y">201</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkFileChooserButton" id="open_file">
             <property name="name">open_file</property>
-            <property name="width-request">250</property>
+            <property name="width-request">126</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="preview-widget-active">False</property>
@@ -124,8 +112,8 @@
         </child>
         <child>
           <object class="GtkButton" id="bucket_button">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
+            <property name="width-request">40</property>
+            <property name="height-request">40</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
@@ -137,10 +125,10 @@
             <property name="use-underline">True</property>
             <property name="always-show-image">True</property>
             <child>
-              <object class="GtkImage" id="bucket_icon">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">assets/bucket.png</property>
+                <property name="pixbuf">assets/bucket40x40.png</property>
               </object>
             </child>
           </object>
@@ -152,8 +140,8 @@
         <child>
           <object class="GtkButton" id="brush_button">
             <property name="use-action-appearance">True</property>
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
+            <property name="width-request">40</property>
+            <property name="height-request">40</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
@@ -173,15 +161,15 @@
             </child>
           </object>
           <packing>
-            <property name="x">150</property>
+            <property name="x">72</property>
             <property name="y">125</property>
           </packing>
         </child>
         <child>
           <object class="GtkButton" id="text_button">
             <property name="use-action-appearance">True</property>
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
+            <property name="width-request">40</property>
+            <property name="height-request">40</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
@@ -196,55 +184,21 @@
               <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="stock">gtk-italic</property>
+                <property name="pixbuf">assets/a.png</property>
                 <property name="icon_size">6</property>
               </object>
             </child>
           </object>
           <packing>
             <property name="x">5</property>
-            <property name="y">265</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkFrame" id="tool_frame">
-            <property name="width-request">255</property>
-            <property name="height-request">300</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="label-xalign">0.5</property>
-            <property name="shadow-type">etched-out</property>
-            <child>
-              <object class="GtkAlignment">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="left-padding">12</property>
-                <child>
-                  <placeholder/>
-                </child>
-              </object>
-            </child>
-            <child type="label">
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Tools</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                  <attribute name="foreground" value="#91914141acac"/>
-                </attributes>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="y">100</property>
+            <property name="y">185</property>
           </packing>
         </child>
         <child>
           <object class="GtkButton" id="resize_button">
             <property name="use-action-appearance">True</property>
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
+            <property name="width-request">40</property>
+            <property name="height-request">40</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
@@ -259,20 +213,20 @@
               <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="stock">gtk-zoom-100</property>
+                <property name="pixbuf">assets/resize.png</property>
                 <property name="icon_size">6</property>
               </object>
             </child>
           </object>
           <packing>
-            <property name="x">150</property>
-            <property name="y">265</property>
+            <property name="x">72</property>
+            <property name="y">185</property>
           </packing>
         </child>
         <child>
-          <object class="GtkButton">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
+          <object class="GtkButton" id="undo_button">
+            <property name="width-request">40</property>
+            <property name="height-request">40</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
@@ -286,9 +240,133 @@
             </child>
           </object>
           <packing>
-            <property name="x">1193</property>
-            <property name="y">57</property>
+            <property name="y">30</property>
           </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="redo_button">
+            <property name="width-request">40</property>
+            <property name="height-request">40</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="relief">none</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="stock">gtk-go-forward</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="x">72</property>
+            <property name="y">30</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="logo_200x200">
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../../assets/logo_200x200.png</property>
+          </object>
+          <packing>
+            <property name="x">820</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="magic_wand_button">
+            <property name="use-action-appearance">True</property>
+            <property name="width-request">40</property>
+            <property name="height-request">40</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="halign">start</property>
+            <property name="valign">start</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <property name="resize-mode">queue</property>
+            <property name="use-underline">True</property>
+            <property name="always-show-image">True</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="pixbuf">assets/magic_wand.png</property>
+                <property name="icon_size">6</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="x">5</property>
+            <property name="y">245</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="eyedropper_button">
+            <property name="use-action-appearance">True</property>
+            <property name="width-request">40</property>
+            <property name="height-request">40</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="halign">start</property>
+            <property name="valign">start</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <property name="resize-mode">queue</property>
+            <property name="use-underline">True</property>
+            <property name="always-show-image">True</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="pixbuf">assets/eyedropper.png</property>
+                <property name="icon_size">6</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="x">72</property>
+            <property name="y">245</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScrollbar">
+            <property name="width-request">1800</property>
+            <property name="height-request">34</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+          </object>
+          <packing>
+            <property name="y">987</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkFrame">
+            <property name="width-request">126</property>
+            <property name="height-request">987</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label-xalign">0</property>
+            <property name="shadow-type">out</property>
+            <child>
+              <object class="GtkAlignment">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="left-padding">12</property>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+            </child>
+            <child type="label_item">
+              <placeholder/>
+            </child>
+          </object>
         </child>
       </object>
     </child>
