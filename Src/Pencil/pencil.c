@@ -90,7 +90,7 @@ int main()
 
 gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 {
-    printf("Mouse on press\n");
+    // printf("Mouse on press\n");
     widget = self;
     event = event;
 
@@ -110,7 +110,7 @@ gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
     widget = self;
     event = event;
 
-    printf("Mouse on release\n");
+    // printf("Mouse on release\n");
     if(user_data == NULL)
     {
         is_pressed = FALSE;
@@ -128,7 +128,7 @@ gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data)
 {
     //Unused parameters :
 
-    printf("Mouse on move\n");
+    // printf("Mouse on move\n");
     widget = widget;
 
     //Actual function :
