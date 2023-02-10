@@ -1,5 +1,5 @@
 # Epipaintor by Fast-Thinking
-![alt text](https://github.com/obirn/Epinator/blob/main/Assets/gitlab_logo.png?raw=true)
+![alt text](https://github.com/obirn/Epipaintor/blob/main/assets/logo.png?raw=true)
 
 Introducing Epipaintor, the graphical editor we developed for our 4th semester at EPITA.
 
