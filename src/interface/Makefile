@@ -5,7 +5,7 @@ LIBS = `pkg-config --libs gtk+-3.0`
 
 
 ${PROG}: ${PROG}.c
-	${CC} ${CFLAGS} -o ${PROG} ${PROG}.c ${LIBS}
+	${CC} ${CFLAGS} -o ${PROG} ${PROG}.c ${LIBS} -export-dynamic
 
 clean: 
 	rm ${PROG}

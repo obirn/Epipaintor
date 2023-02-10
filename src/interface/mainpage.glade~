@@ -269,27 +269,6 @@
             <property name="y">265</property>
           </packing>
         </child>
-        <child>
-          <object class="GtkButton">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="relief">none</property>
-            <child>
-              <object class="GtkImage">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="stock">gtk-go-back</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="x">1193</property>
-            <property name="y">57</property>
-          </packing>
-        </child>
       </object>
     </child>
   </object>
