@@ -2,7 +2,7 @@
 #include <err.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "../utils/auxiliary.h"
+#include "../auxiliary/auxiliary.h"
 #include "filters.h"
 
 Uint32 mean(SDL_Surface *s_surface, int i, int j, int radius,
@@ -46,7 +46,7 @@ SDL_Surface* gaussian(SDL_Surface *s_surface, int radius)
     {
         for(int x = 0; x < s_width; ++x)
         {
-            pixels[y * s_width + x] = mean(s_surface, y, x, radius
+            pixels[y * s_width + x] = mean(s_surface, y, x, radius,
                                            s_width, s_height);
         }
     }

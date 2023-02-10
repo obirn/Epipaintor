@@ -2,11 +2,11 @@
 #include <err.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "../utils/auxiliary.h"
+#include "../auxiliary/auxiliary.h"
 #include "filters.h"
 
 Uint32 colorize_pixel(Uint32 pixel_color, SDL_PixelFormat* format,
-                      Uint8 threshold
+                      Uint8 threshold,
                       Uint8 r1, Uint8 g1, Uint8 b1,
                       Uint8 r2, Uint8 g2, Uint8 b2)
 {
@@ -29,7 +29,7 @@ Uint32 colorize_pixel(Uint32 pixel_color, SDL_PixelFormat* format,
     return color;
 }
 
-SDL_Surface* colorize(SDL_Surface *s_surface, Uint8 threshold
+SDL_Surface* colorize(SDL_Surface *s_surface, Uint8 threshold,
                       int s_width, int s_height,
                       Uint8 r1, Uint8 g1, Uint8 b1,
                       Uint8 r2, Uint8 g2, Uint8 b2)
@@ -51,13 +51,13 @@ SDL_Surface* colorize(SDL_Surface *s_surface, Uint8 threshold
     return s_surface;
 }
 
-SDL_Surface* color_threshold(SDL_Surface *s_surface, Uint8 threshold
+SDL_Surface* color_threshold(SDL_Surface *s_surface, Uint8 threshold,
                             Uint8 r1, Uint8 g1, Uint8 b1,
                             Uint8 r2, Uint8 g2, Uint8 b2)
 {
     int s_height = s_surface->h;
     int s_width = s_surface->w;
-    SDL_Surface *colorized = colorize(s_surface, threshold, s_width, s_height
+    SDL_Surface *colorized = colorize(s_surface, threshold, s_width, s_height,
                                       r1, g1, b1, r2, g2, b2);
 
     return colorized;
