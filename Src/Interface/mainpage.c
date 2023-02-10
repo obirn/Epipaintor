@@ -17,7 +17,6 @@ int main(int argc,char**argv)
 	g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL);	
 	gtk_builder_connect_signals(builder,NULL);
 	fixed1 = GTK_WIDGET(gtk_builder_get_object(builder,"fixed1"));
-	fixed2 = GTK_WIDGET(gtk_builder_get_object(builder,"fixed2"));
 	openfilebutton = GTK_WIDGET(gtk_builder_get_object(builder,"open_file"));
 	button = GTK_WIDGET(gtk_builder_get_object(builder,"button"));
 	image = GTK_WIDGET(gtk_builder_get_object(builder,"image_window"));
@@ -31,11 +30,16 @@ int main(int argc,char**argv)
 	return EXIT_SUCCESS;
 }
 
-char* on_open_file_file_activated(GtkFileChooserButton * b)
+void on_open_file_file_activated(GtkFileChooserButton * b)
 {
 	image_path = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(b));
 	char* path = (char*)image_path->data;
-	return path;
+	if (image)
+		gtk_container_remove(GTK_CONTAINER(fixed1),image);
+	image = gtk_image_new_from_file(path);
+	gtk_container_add(GTK_CONTAINER(fixed1),image);
+	gtk_widget_show(image);
+	gtk_fixed_move(GTK_FIXED(fixed1),image,700,380);
 }
 
 
