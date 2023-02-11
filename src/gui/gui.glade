@@ -401,12 +401,14 @@
             <property name="width-request">1470</property>
             <property name="height-request">905</property>
             <property name="visible">True</property>
+            <property name="app-paintable">True</property>
             <property name="can-focus">False</property>
             <child>
               <object class="GtkDrawingArea" id="draw_area">
                 <property name="width-request">1470</property>
                 <property name="height-request">905</property>
                 <property name="visible">True</property>
+                <property name="app-paintable">True</property>
                 <property name="can-focus">False</property>
               </object>
             </child>

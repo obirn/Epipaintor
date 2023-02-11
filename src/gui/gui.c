@@ -22,7 +22,6 @@ int pixelsize;
 SDL_Surface* img_buff;
 
 
-
 int init_interface(int argc, char**argv)
 {
 	gtk_init(&argc,&argv);
@@ -42,6 +41,7 @@ int init_interface(int argc, char**argv)
 	gtk_builder_connect_signals(builder,NULL);
 	g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL);
 	g_signal_connect(openfilebutton,"file-set",G_CALLBACK(on_open_file_file_activated),NULL);
+    g_signal_connect (G_OBJECT (draw_area), "draw", G_CALLBACK (draw_callback), NULL);
 
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
@@ -51,6 +51,30 @@ int init_interface(int argc, char**argv)
 	gtk_widget_show(window); // shows the window
 	gtk_main();
 	return EXIT_SUCCESS;
+}
+
+gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data)
+{
+    //Unused parameters :
+    widget = widget;
+    data = data;
+
+	if (!img_buff) return FALSE;
+
+    //Actual function :
+    SDL_SaveBMP(img_buff, "../cache/img_buff.bmp");
+    GdkPixbuf *pixbuf;
+
+    pixbuf = gdk_pixbuf_new_from_file("../cache/img_buff.bmp", NULL);
+
+    gdk_cairo_set_source_pixbuf(cr, pixbuf, 0, 0);
+
+    cairo_paint(cr);
+
+    if (pixbuf)
+        g_object_unref(pixbuf);
+
+    return FALSE;
 }
 
 gboolean on_open_file_file_activated(GtkFileChooserButton * b)
