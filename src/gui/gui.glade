@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.40.0 -->
+<!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
   <object class="GtkAdjustment" id="Curseur">
@@ -146,7 +146,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <child>
-                      <object class="GtkFileChooserButton" id="open_file1">
+                      <object class="GtkFileChooserButton" id="open_file">
                         <property name="name">open_file</property>
                         <property name="width-request">126</property>
                         <property name="visible">True</property>
@@ -403,7 +403,7 @@
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
-              <object class="GtkDrawingArea" id="drawing_area">
+              <object class="GtkDrawingArea" id="draw_area">
                 <property name="width-request">1470</property>
                 <property name="height-request">905</property>
                 <property name="visible">True</property>
