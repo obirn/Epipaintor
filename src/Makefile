@@ -17,3 +17,4 @@ ${BIN}: $(OBJ)
 clean: 
 	rm ${BIN}
 	rm ${OBJ}
+	rm ${DEP}

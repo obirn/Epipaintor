@@ -17,15 +17,22 @@ int pixelsize;
 int init_interface(int argc, char**argv)
 {
 	gtk_init(&argc,&argv);
+
 	builder = gtk_builder_new_from_file("gui/gui.glade");
+
+	// Load wigdets
 	window = GTK_WIDGET(gtk_builder_get_object(builder,"mainpage"));
-	g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL);	
-	gtk_builder_connect_signals(builder,NULL);
 	fixed1 = GTK_WIDGET(gtk_builder_get_object(builder,"fixed1"));
 	openfilebutton = GTK_WIDGET(gtk_builder_get_object(builder,"open_file"));
 	button = GTK_WIDGET(gtk_builder_get_object(builder,"button"));
 	image = GTK_WIDGET(gtk_builder_get_object(builder,"image_window"));
 	label = GTK_WIDGET(gtk_builder_get_object(builder,"label"));
+
+	// Connecting signals
+	gtk_builder_connect_signals(builder,NULL);
+	g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL);
+
+	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
 	gtk_window_set_resizable(GTK_WINDOW(window),TRUE);
 
