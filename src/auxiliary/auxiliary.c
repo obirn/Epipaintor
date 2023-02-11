@@ -10,6 +10,8 @@
 ** DEFINE directives.
 */
 
+#define M_PI 3.141592
+
 // Get Byte directive.
 #define get_byte(value, n) (value >> (n*8) & 0xFF)
 

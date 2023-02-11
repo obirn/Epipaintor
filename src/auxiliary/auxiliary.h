@@ -64,9 +64,6 @@ Uint32 SDL_ReadPixel(SDL_Surface* surface, int x, int y);
 // Write pixel in surface to x and y coordinates.
 void SDL_WritePixel(SDL_Surface* surface, int x, int y, Uint32 pixel);
 
-// Update SDL_Surface*.
-void update_surface(SDL_Surface* screen, SDL_Surface* image);
-
 // Rescale using SDL gfx.
 SDL_Surface* rescale(SDL_Surface* src_surface);
 
