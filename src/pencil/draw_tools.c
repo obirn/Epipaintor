@@ -1,5 +1,7 @@
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include "../auxiliary/auxiliary.h"
 #include "draw_tools.h"
-#include "pixel_operations.h"
 
 //This function create a cross of pixel with the size indicated
 // -> 'surface' the pointer on SDL_Surface
@@ -19,7 +21,7 @@ void point(SDL_Surface* surface, SDL_Color color, int x, int y, int size)
     while(i < x){
 	    while(j < y+nb){
             if (i >= 0 && j >= 0 && i < surface->w && j < surface->h)
-		        put_pixel(surface, i, j, SDL_MapRGB(surface->format, color.r, color.g, color.b));
+		        SDL_WritePixel(surface, i, j, SDL_MapRGB(surface->format, color.r, color.g, color.b));
 		    j++;
 	    }
 	    i++;
@@ -29,7 +31,7 @@ void point(SDL_Surface* surface, SDL_Color color, int x, int y, int size)
     while(i <= x+size){
             while(j < y+nb){
                 if (i >= 0 && j >= 0 && i < surface->w && j < surface->h)
-                    put_pixel(surface, i, j, SDL_MapRGB(surface->format, color.r, color.g, color.b));
+                    SDL_WritePixel(surface, i, j, SDL_MapRGB(surface->format, color.r, color.g, color.b));
                 j++;
             }
             i++;
