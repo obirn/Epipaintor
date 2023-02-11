@@ -375,13 +375,14 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkColorButton">
+                      <object class="GtkColorButton" id="color_button">
                         <property name="width-request">55</property>
                         <property name="height-request">47</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
                         <property name="tooltip-text" translatable="yes">Color Palette</property>
+                        <property name="use-alpha">True</property>
                       </object>
                       <packing>
                         <property name="x">-12</property>

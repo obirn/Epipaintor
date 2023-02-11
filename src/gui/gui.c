@@ -2,7 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include <gtk/gtk.h>
 #include <string.h>
-#include "gui.h"
+#include "./gui.h"
 #include "../auxiliary/auxiliary.h"
 #include "../image_utils/draw_tools.h"
 
@@ -20,6 +20,8 @@ GtkWidget *draw_area;
 GtkWidget *brush;
 
 GtkWidget *save_file_button;
+GtkColorChooser* color_button;
+
 char* image_path;
 
 int selected_tool = NONE;
@@ -48,7 +50,10 @@ gpointer data;
 GdkEvent* event;
 
 // Colors
-SDL_Color sdl_color = {.r = 0, .g = 0, .b = 0};
+GdkRGBA gdk_color = {.red = 0, .green = 0, .blue = 0, .alpha = 1};
+
+SDL_Color selected_color = {.r = 0, .g = 0, .b = 0};
+SDL_Color color_buff = {.r = 0, .g = 0, .b = 0};
 SDL_Color white = {.r = 255, .g = 255, .b = 255};
 
 
@@ -67,6 +72,7 @@ int init_interface(int argc, char**argv)
 	draw_area = GTK_WIDGET(gtk_builder_get_object(builder,"draw_area"));
 	brush = GTK_WIDGET(gtk_builder_get_object(builder,"brush_button"));
 	save_file_button = GTK_WIDGET(gtk_builder_get_object(builder,"save_window"));
+	color_button = GTK_COLOR_CHOOSER(gtk_builder_get_object(builder, "color_button"));
 
 	// Create events
 	gtk_widget_add_events(draw_area, GDK_POINTER_MOTION_MASK);
@@ -81,6 +87,7 @@ int init_interface(int argc, char**argv)
     g_signal_connect (draw_area, "button-press-event", G_CALLBACK(mouse_on_press), NULL);
     g_signal_connect (draw_area, "button-release-event", G_CALLBACK(mouse_on_release), NULL);
 	g_signal_connect(brush, "clicked", G_CALLBACK(on_brush), NULL);
+	g_signal_connect(color_button, "color-set", G_CALLBACK(on_Color_set), NULL);
 
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
@@ -186,6 +193,17 @@ gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 }
 
 
+gboolean on_Color_set(GtkColorChooser *self, gpointer user_data)
+{
+	data = user_data;
+
+    gtk_color_chooser_get_rgba(self, &gdk_color);
+    selected_color.r = (Uint8) (gdk_color.red * 255);
+    selected_color.g = (Uint8) (gdk_color.green * 255);
+    selected_color.b = (Uint8) (gdk_color.blue * 255);
+    return FALSE;
+}
+
 
 gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data) 
 {
@@ -209,7 +227,7 @@ gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data)
 			case BRUSH:
 				if (is_pressed)
 				{
-					drawline(img_buff, sdl_color, old_x, old_y, pos_x, pos_y, 5);
+					drawline(img_buff, selected_color, old_x, old_y, pos_x, pos_y, 5);
 					gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 				}
 				break;

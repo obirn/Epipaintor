@@ -19,5 +19,6 @@ gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data);
 gboolean on_Color_set(GtkColorChooser *self, gpointer user_data);
 gboolean on_brush(GtkButton *self, gpointer user_data);
 gboolean on_bucket(GtkButton *self, gpointer user_data);
+gboolean on_Color_set(GtkColorChooser *self, gpointer user_data);
 
 #endif
