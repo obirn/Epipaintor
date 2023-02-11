@@ -4,6 +4,7 @@
 // Tools:
 #define NONE 0
 #define BRUSH 1
+#define BUCKET 2
 
 #include <gtk/gtk.h>
 
@@ -17,14 +18,6 @@ gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data);
 gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data);
 gboolean on_Color_set(GtkColorChooser *self, gpointer user_data);
 gboolean on_brush(GtkButton *self, gpointer user_data);
-gboolean on_bucket(GtkRadioButton *self, gpointer user_data);
-gboolean on_eraser(GtkRadioButton *self, gpointer user_data);
-gboolean on_bigeraser(GtkRadioButton *self, gpointer user_data);
-gboolean on_segment(GtkRadioButton *self, gpointer user_data);
-gboolean on_square(GtkRadioButton *self, gpointer user_data);
-gboolean on_triangle(GtkRadioButton *self, gpointer user_data);
-gboolean on_circle(GtkRadioButton *self, gpointer user_data);
-gboolean on_previous(GtkButton *self, gpointer user_data);
-gboolean on_next(GtkButton *self, gpointer user_data);
+gboolean on_bucket(GtkButton *self, gpointer user_data);
 
 #endif
