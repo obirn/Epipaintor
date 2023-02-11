@@ -58,4 +58,36 @@ SDL_Surface* threshold(SDL_Surface *s_surface, Uint8 threshold);
 // Apply sepia filter.
 SDL_Surface* sepia(SDL_Surface* s_surface);
 
+// -- GAMMA HEADER -- //
+
+// Apply gamma filter to pixel.
+Uint8 pixel_to_gamma(Uint8 pixel_color, double ga);
+
+// Apply gamma filter to SDL_Surface*.
+SDL_Surface* gam(SDL_Surface *s_surface, double ga);
+
+// -- GRAYSCALE HEADER -- //
+
+// Apply grayscale filter to pixel.
+Uint32 pixel_to_grayscale(Uint32 pixel_color, SDL_PixelFormat* format);
+
+// Apply grayscale filter to SDL_Surface*.
+SDL_Surface* grayscale(SDL_Surface *s_surface);
+
+// -- NEGATIVE HEADER -- //
+
+// Apply negative filter to SDL_Surface*.
+SDL_Surface* negative(SDL_Surface *s_surface);
+
+// -- RED LIGHT HEADER -- //
+
+// Apply red light filter to SDL_Surface*.
+SDL_Surface* red_light(SDL_Surface* s_surface);
+
+// -- CUSTOM FILTER -- //
+
+// Apply custom filter to SDL_Surface*.
+SDL_Surface* custom(SDL_Surface* s_surface,
+                    Uint8 new_red, Uint8 new_green, Uint8 new_blue);
+
 #endif
