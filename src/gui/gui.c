@@ -1,8 +1,10 @@
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <gtk/gtk.h>
 #include <string.h>
 #include "gui.h"
+#include "../auxiliary/auxiliary.h"
 #include "../image_utils/draw_tools.h"
-#include "../image_utils/pixel_operations.h"
 
 
 

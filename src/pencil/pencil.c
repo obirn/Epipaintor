@@ -1,9 +1,9 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "pixel_operations.h"
 #include "pencil.h"
 #include "draw_tools.h"
+#include "../auxiliary/auxiliary.h"
 
 // Mouse coordinates
 int pos_x = 0;
