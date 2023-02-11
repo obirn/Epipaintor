@@ -4,6 +4,8 @@
 #include "../image_utils/draw_tools.h"
 #include "../image_utils/pixel_operations.h"
 
+
+
 // Glade relatd
 GtkBuilder *builder;
 GtkWidget *window;
@@ -14,9 +16,11 @@ GtkWidget *label;
 GtkWidget *button;
 GtkWidget *fixed2;
 GtkWidget *draw_area;
+GtkWidget *brush;
+
 char* image_path;
 
-int pixelsize;
+int selected_tool = NONE;
 
 // SDL Rlatd
 SDL_Surface* img_buff;
@@ -45,6 +49,7 @@ GdkEvent* event;
 SDL_Color sdl_color = {.r = 0, .g = 0, .b = 0};
 SDL_Color white = {.r = 255, .g = 255, .b = 255};
 
+
 int init_interface(int argc, char**argv)
 {
 	gtk_init(&argc,&argv);
@@ -59,6 +64,7 @@ int init_interface(int argc, char**argv)
 	image = GTK_WIDGET(gtk_builder_get_object(builder,"image_window"));
 	label = GTK_WIDGET(gtk_builder_get_object(builder,"label"));
 	draw_area = GTK_WIDGET(gtk_builder_get_object(builder,"draw_area"));
+	brush = GTK_WIDGET(gtk_builder_get_object(builder,"brush_button"));
 
 	// Create events
     gtk_widget_add_events(draw_area, GDK_POINTER_MOTION_MASK);
@@ -73,6 +79,7 @@ int init_interface(int argc, char**argv)
 	g_signal_connect (draw_area, "motion-notify-event", G_CALLBACK(mouse_on_move), NULL);
     g_signal_connect (draw_area, "button-press-event", G_CALLBACK(mouse_on_press), NULL);
     g_signal_connect (draw_area, "button-release-event", G_CALLBACK(mouse_on_release), NULL);
+	g_signal_connect(brush, "clicked", G_CALLBACK(on_brush), NULL);
 
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
@@ -117,7 +124,6 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 
     gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
     
-	/*
     int w = 1310;
     int h = 903;
     if(img_buff->w > 1080)
@@ -138,23 +144,9 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 
     gtk_window_resize(GTK_WINDOW(window), w, h);     
 
-    g_free(image_path); */
+    g_free(image_path);
 
     return FALSE;
-	// char* path = (char*)image_path->data;
-	// if (image)
-		// gtk_container_remove(GTK_CONTAINER(fixed1),image);
-
-	/*
-	image = gtk_image_new_from_file(path);
-	gtk_container_add(GTK_CONTAINER(fixed1),image);
-
-	pixelsize = gtk_image_get_pixel_size(image);
-	gtk_image_set_pixel_size(image,pixelsize/50);
-
-	gtk_widget_show(image);
-	gtk_fixed_move(GTK_FIXED(fixed1),image,700,380);
-	*/
 }
 
 gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
@@ -195,9 +187,11 @@ gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 
 gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data) 
 {
+	if (!img_buff) return FALSE;
+	
     //Unused parameters :
     widget = widget;
-
+	
 
     if (event->type==GDK_MOTION_NOTIFY && user_data == NULL) 
     {
@@ -209,14 +203,26 @@ gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data)
 
         //printf("Old coordinates: (%u,%u)\n", old_x, old_y);
         //printf("coordinates: (%u,%u)\n", pos_x, pos_y);
-
-        if (is_pressed && img_buff)
-        {
-            drawline(img_buff, sdl_color, old_x, old_y, pos_x, pos_y, 5);
-            gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
-        }
+		switch (selected_tool) {
+			case BRUSH:
+				if (is_pressed)
+				{
+					drawline(img_buff, sdl_color, old_x, old_y, pos_x, pos_y, 5);
+					gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+				}
+				break;
+		}
+        
     }
     return TRUE;
 }
 
+gboolean on_brush(GtkButton *self, gpointer user_data) {
+	// Unused variables
+	widget = (GtkWidget *) self;
+	data = user_data;
 
+	selected_tool = BRUSH; 
+
+	return FALSE;
+}
