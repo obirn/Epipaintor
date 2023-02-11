@@ -1,4 +1,6 @@
 #include <gtk/gtk.h>
+#include <string.h>
+#include "gui.h"
 
 GtkBuilder *builder;
 GtkWidget *window;
@@ -10,10 +12,12 @@ GtkWidget *button;
 GtkWidget *fixed2;
 GSList * image_path;
 int pixelsize;
-int main(int argc,char**argv)
+
+
+int init_interface(int argc, char**argv)
 {
 	gtk_init(&argc,&argv);
-	builder = gtk_builder_new_from_file("mainpage.glade");
+	builder = gtk_builder_new_from_file("gui/gui.glade");
 	window = GTK_WIDGET(gtk_builder_get_object(builder,"mainpage"));
 	g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL);	
 	gtk_builder_connect_signals(builder,NULL);
@@ -33,7 +37,9 @@ int main(int argc,char**argv)
 
 void on_open_file_file_activated(GtkFileChooserButton * b)
 {
+	
 	image_path = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(b));
+	/*
 	char* path = (char*)image_path->data;
 	if (image)
 		gtk_container_remove(GTK_CONTAINER(fixed1),image);
@@ -45,6 +51,7 @@ void on_open_file_file_activated(GtkFileChooserButton * b)
 
 	gtk_widget_show(image);
 	gtk_fixed_move(GTK_FIXED(fixed1),image,700,380);
+	*/
 }
 
 
