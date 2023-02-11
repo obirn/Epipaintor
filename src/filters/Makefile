@@ -6,7 +6,7 @@ gaussian:
 	gcc -Wall -Wextra -Werror -O3 -C -Iinclude "../auxiliary/auxiliary.c" filter_gaussian.c `pkg-config --cflags sdl2 SDL2_image` `pkg-config --libs sdl2 SDL2_image` -o gaussian -lm -ldl -D__NO_INLINE__
 
 main:
-	gcc -Wall -Wextra -Werror -O3 -C -Iinclude main.c "../auxiliary/auxiliary.c" sepia.c `pkg-config --cflags sdl2 SDL2_image` `pkg-config --libs sdl2 SDL2_image` -o main -lm -ldl -D__NO_INLINE__
+	gcc -Wall -Wextra -Werror -O3 -C -Iinclude main.c "../auxiliary/auxiliary.c" filter_red_light.c `pkg-config --cflags sdl2 SDL2_image` `pkg-config --libs sdl2 SDL2_image` -o main -lm -ldl -D__NO_INLINE__
 
 clean_images:
 	rm -f gray_image.jpeg

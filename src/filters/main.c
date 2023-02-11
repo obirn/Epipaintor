@@ -12,9 +12,9 @@ int main(int argc, char** argv)
     if (argc < 3)
         errx(EXIT_FAILURE, "Usage: image_file process args\n");
 
-    if (strcmp(argv[2], "sepia") == 0)
+    if (strcmp(argv[2], "gray") == 0)
     {
-        SDL_Surface *s = sepia(load_image(argv[1]));
+        SDL_Surface *s = red_light(load_image(argv[1]));
         save_image(s, "test.jpeg");
         return EXIT_SUCCESS;
     }
