@@ -1,0 +1,37 @@
+# Makefile
+
+all: main
+
+gaussian:
+	gcc -Wall -Wextra -Werror -O3 -C -Iinclude "../auxiliary/auxiliary.c" filter_gaussian.c `pkg-config --cflags sdl2 SDL2_image` `pkg-config --libs sdl2 SDL2_image` -o gaussian -lm -ldl -D__NO_INLINE__
+
+main:
+	gcc -Wall -Wextra -Werror -O3 -C -Iinclude temp_main.c "../auxiliary/auxiliary.c" filter_red_light.c `pkg-config --cflags sdl2 SDL2_image` `pkg-config --libs sdl2 SDL2_image` -o main -lm -ldl -D__NO_INLINE__
+
+clean_images:
+	rm -f gray_image.jpeg
+	rm -f rot_image.jpeg
+	rm -f gau_image.jpeg
+	rm -f gam_image.jpeg
+	rm -f bin_image.jpeg
+	rm -f rot_image.jpeg	
+
+clean:
+	rm -f *.d
+	rm -f *.o
+	rm -f rotation
+	rm -f contrasting
+	rm -f auto_rotation
+	rm -f delete_color
+	rm -f gaussian
+	rm -f gamma
+	rm -f threshold
+	rm -f main
+	rm -f gray_image.jpeg
+	rm -f rot_image.jpeg
+	rm -f gau_image.jpeg
+	rm -f gam_image.jpeg
+	rm -f bin_image.jpeg
+	rm -f rot_image.jpeg
+
+# END Makefile
