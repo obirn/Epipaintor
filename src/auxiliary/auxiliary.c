@@ -10,7 +10,7 @@
 ** DEFINE directives.
 */
 
-#define M_PI 3.141592
+#define MATHS_PI 3.141592
 
 // Get Byte directive.
 #define get_byte(value, n) (value >> (n*8) & 0xFF)
@@ -122,7 +122,7 @@ char* itoa(int val, int base)
 // Convert angle in degrees to its radian value.
 double degrees_to_rad(double degrees)
 {
-    return degrees * (M_PI / 180);
+    return degrees * (MATHS_PI / 180);
 }
 
 // Find max of two ints.
