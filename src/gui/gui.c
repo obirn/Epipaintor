@@ -218,5 +218,3 @@ gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data)
     }
     return TRUE;
 }
-
-
