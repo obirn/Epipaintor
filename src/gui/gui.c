@@ -12,7 +12,6 @@
 GtkBuilder *builder;
 GtkWidget *window;
 GtkWidget *fixed1;
-GtkWidget *openfilebutton;
 GtkWidget *image;
 GtkWidget *label;
 GtkWidget *button;
@@ -62,7 +61,6 @@ int init_interface(int argc, char**argv)
 	// Load wigdets
 	window = GTK_WIDGET(gtk_builder_get_object(builder,"mainpage"));
 	fixed1 = GTK_WIDGET(gtk_builder_get_object(builder,"fixed1"));
-	openfilebutton = GTK_WIDGET(gtk_builder_get_object(builder,"open_file"));
 	button = GTK_WIDGET(gtk_builder_get_object(builder,"button"));
 	image = GTK_WIDGET(gtk_builder_get_object(builder,"image_window"));
 	label = GTK_WIDGET(gtk_builder_get_object(builder,"label"));
@@ -78,7 +76,6 @@ int init_interface(int argc, char**argv)
 	// Connecting signals
 	gtk_builder_connect_signals(builder,NULL);
 	g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL);
-	g_signal_connect(openfilebutton,"file-set",G_CALLBACK(on_open_file_file_activated),NULL);
 	g_signal_connect (G_OBJECT (draw_area), "draw", G_CALLBACK (draw_callback), NULL);
 	g_signal_connect (draw_area, "motion-notify-event", G_CALLBACK(mouse_on_move), NULL);
     g_signal_connect (draw_area, "button-press-event", G_CALLBACK(mouse_on_press), NULL);
@@ -231,6 +228,57 @@ gboolean on_brush(GtkButton *self, gpointer user_data) {
 
 	return FALSE;
 }
+
+
+void on_file_chooser_menu_item_activate(GtkMenuItem *menu_item, gpointer user_data)
+{
+	widget = (GtkWidget *) menu_item;
+	data = user_data;
+
+	GtkWidget *file_chooser_dialog = gtk_file_chooser_dialog_new("Open File",
+                                                                NULL,
+                                                                GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                                "gtk-cancel", GTK_RESPONSE_CANCEL,
+                                                                "gtk-open", GTK_RESPONSE_OK,
+                                                                NULL);
+	gint response = gtk_dialog_run(GTK_DIALOG(file_chooser_dialog));
+
+	if (response != GTK_RESPONSE_OK) {
+		gtk_widget_destroy(file_chooser_dialog);
+		return;
+	}
+
+	char *image_path = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser_dialog));
+	img_buff = load_image(image_path);
+
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+
+
+	int w = 1310;
+	int h = 903;
+	if(img_buff->w > 1080)
+	{
+		w = img_buff->w+230;
+		gtk_widget_set_margin_start(GTK_WIDGET(draw_area), 0);
+	}
+	else
+		gtk_widget_set_margin_start(GTK_WIDGET(draw_area), (w-230-img_buff->w)/2);
+
+	if(img_buff->h > 850)
+	{
+		h = img_buff->h+53;
+		gtk_widget_set_margin_top(GTK_WIDGET(draw_area), 0);
+	}
+	else
+		gtk_widget_set_margin_top(GTK_WIDGET(draw_area), (h-53-img_buff->h)/2);
+
+	gtk_window_resize(GTK_WINDOW(window), w, h);     
+
+	g_free(image_path);
+
+	gtk_widget_destroy(file_chooser_dialog);
+}
+
 void on_save_button_clicked(GtkButton *b)
 {
     // Unused variables
