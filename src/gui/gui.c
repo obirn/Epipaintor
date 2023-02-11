@@ -233,6 +233,9 @@ gboolean on_brush(GtkButton *self, gpointer user_data) {
 }
 void on_save_button_clicked(GtkButton *b)
 {
+    // Unused variables
+    widget = (GtkWidget *) b;
+
 	SDL_Surface * img_buff = SDL_LoadBMP("../cache/img_buff.bmp");
 	SDL_SaveBMP(img_buff,"../save/saved_img.bmp");
 

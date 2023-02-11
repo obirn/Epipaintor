@@ -2,7 +2,7 @@ CC = gcc #-fsanitize=address
 
 CPPFLAGS = `pkg-config gtk+-3.0 --cflags sdl2 SDL2_image` -MMD
 CFLAGS = -Werror -Wextra -std=c99 -g -Wall
-LDLIBS = `pkg-config gtk+-3.0 --libs sdl2 SDL2_image` -lm -D__NO_INLINE__
+LDLIBS = `pkg-config gtk+-3.0 --libs sdl2 SDL2_image` -lm -D__NO_INLINE__ -rdynamic
 
 BIN = epipaintor
 
