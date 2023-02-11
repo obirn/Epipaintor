@@ -130,19 +130,19 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 	int h = 903;
 	if(img_buff->w > 1080)
 	{
-	w = img_buff->w+230;
-	gtk_widget_set_margin_start(GTK_WIDGET(draw_area), 0);
+		w = img_buff->w+230;
+		gtk_widget_set_margin_start(GTK_WIDGET(draw_area), 0);
 	}
 	else
-	gtk_widget_set_margin_start(GTK_WIDGET(draw_area), (w-230-img_buff->w)/2);
+		gtk_widget_set_margin_start(GTK_WIDGET(draw_area), (w-230-img_buff->w)/2);
 
 	if(img_buff->h > 850)
 	{
-	h = img_buff->h+53;
-	gtk_widget_set_margin_top(GTK_WIDGET(draw_area), 0);
+		h = img_buff->h+53;
+		gtk_widget_set_margin_top(GTK_WIDGET(draw_area), 0);
 	}
 	else
-	gtk_widget_set_margin_top(GTK_WIDGET(draw_area), (h-53-img_buff->h)/2);
+		gtk_widget_set_margin_top(GTK_WIDGET(draw_area), (h-53-img_buff->h)/2);
 
 	gtk_window_resize(GTK_WINDOW(window), w, h);     
 
