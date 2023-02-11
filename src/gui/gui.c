@@ -117,6 +117,7 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 
     gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
     
+	/*
     int w = 1310;
     int h = 903;
     if(img_buff->w > 1080)
@@ -137,7 +138,7 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 
     gtk_window_resize(GTK_WINDOW(window), w, h);     
 
-    g_free(image_path);
+    g_free(image_path); */
 
     return FALSE;
 	// char* path = (char*)image_path->data;
@@ -195,11 +196,9 @@ gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data) 
 {
     //Unused parameters :
-
-    // printf("Mouse on move\n");
     widget = widget;
 
-    //Actual function :
+
     if (event->type==GDK_MOTION_NOTIFY && user_data == NULL) 
     {
         GdkEventMotion* e =(GdkEventMotion*)event;
@@ -211,7 +210,7 @@ gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data)
         //printf("Old coordinates: (%u,%u)\n", old_x, old_y);
         //printf("coordinates: (%u,%u)\n", pos_x, pos_y);
 
-        if (is_pressed)
+        if (is_pressed && img_buff)
         {
             drawline(img_buff, sdl_color, old_x, old_y, pos_x, pos_y, 5);
             gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
