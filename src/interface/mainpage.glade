@@ -225,8 +225,8 @@
         </child>
         <child>
           <object class="GtkButton" id="undo_button">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
+            <property name="width-request">40</property>
+            <property name="height-request">40</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
@@ -244,28 +244,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="redo_button">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="relief">none</property>
-            <child>
-              <object class="GtkImage">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="stock">gtk-go-forward</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="x">155</property>
-            <property name="y">30</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton" id="redo_button">
+          <object class="GtkButton" id="redo_button1">
             <property name="width-request">40</property>
             <property name="height-request">40</property>
             <property name="visible">True</property>
