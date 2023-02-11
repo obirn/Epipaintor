@@ -2,6 +2,6 @@
 #include <stdio.h>
 
 int main(int argc, char** argv) {
-    printf("Loaching gui...");
+    printf("Loaching gui... \n");
     init_interface(argc, argv);
 }
