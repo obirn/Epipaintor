@@ -22,6 +22,29 @@ int pixelsize;
 SDL_Surface* img_buff;
 
 
+// Booleans
+int is_pressed;
+
+// Mouse coordinates
+int pos_x = 0;
+int pos_y = 0;
+int old_x = 0;
+int old_y = 0;
+
+int start_x = 0;
+int start_y = 0;
+int end_x = 0;
+int end_y = 0;
+
+// Unusd variabls to avoid warning
+GtkWidget* widget;
+gpointer data;
+GdkEvent* event;
+
+// Colors
+SDL_Color sdl_color = {.r = 0, .g = 0, .b = 0};
+SDL_Color white = {.r = 255, .g = 255, .b = 255};
+
 int init_interface(int argc, char**argv)
 {
 	gtk_init(&argc,&argv);
@@ -37,11 +60,19 @@ int init_interface(int argc, char**argv)
 	label = GTK_WIDGET(gtk_builder_get_object(builder,"label"));
 	draw_area = GTK_WIDGET(gtk_builder_get_object(builder,"draw_area"));
 
+	// Create events
+    gtk_widget_add_events(draw_area, GDK_POINTER_MOTION_MASK);
+    gtk_widget_add_events(draw_area, GDK_BUTTON_PRESS_MASK);
+    gtk_widget_add_events(draw_area, GDK_BUTTON_RELEASE_MASK);
+
 	// Connecting signals
 	gtk_builder_connect_signals(builder,NULL);
 	g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL);
 	g_signal_connect(openfilebutton,"file-set",G_CALLBACK(on_open_file_file_activated),NULL);
     g_signal_connect (G_OBJECT (draw_area), "draw", G_CALLBACK (draw_callback), NULL);
+	g_signal_connect (draw_area, "motion-notify-event", G_CALLBACK(mouse_on_move), NULL);
+    g_signal_connect (draw_area, "button-press-event", G_CALLBACK(mouse_on_press), NULL);
+    g_signal_connect (draw_area, "button-release-event", G_CALLBACK(mouse_on_release), NULL);
 
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
@@ -86,6 +117,7 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 
     gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
     
+	/*
     int w = 1310;
     int h = 903;
     if(img_buff->w > 1080)
@@ -106,7 +138,7 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 
     gtk_window_resize(GTK_WINDOW(window), w, h);     
 
-    g_free(image_path);
+    g_free(image_path); */
 
     return FALSE;
 	// char* path = (char*)image_path->data;
@@ -125,4 +157,64 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 	*/
 }
 
+gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
+{
+    // printf("Mouse on press\n");
+    widget = self;
+    event = event;
 
+    if(user_data == NULL)
+    {
+        is_pressed = TRUE;
+        start_x = pos_x;
+        start_y = pos_y;
+        //printf("Start coordinates: (%u,%u)\n", start_x, start_y);
+    }
+
+    return FALSE;
+}
+
+gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
+{
+    widget = self;
+    event = event;
+
+    // printf("Mouse on release\n");
+    if(user_data == NULL)
+    {
+        is_pressed = FALSE;
+        start_x = pos_x;
+        start_y = pos_y;
+        //printf("Start coordinates: (%u,%u)\n", start_x, start_y);
+    }
+
+    return FALSE;
+}
+
+
+
+gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data) 
+{
+    //Unused parameters :
+    widget = widget;
+
+
+    if (event->type==GDK_MOTION_NOTIFY && user_data == NULL) 
+    {
+        GdkEventMotion* e =(GdkEventMotion*)event;
+        old_x = pos_x;
+        old_y = pos_y;
+        pos_x = (guint) e->x;
+        pos_y = (guint) e->y;
+
+        //printf("Old coordinates: (%u,%u)\n", old_x, old_y);
+        //printf("coordinates: (%u,%u)\n", pos_x, pos_y);
+
+        if (is_pressed && img_buff)
+        {
+            drawline(img_buff, sdl_color, old_x, old_y, pos_x, pos_y, 5);
+            gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+        }
+    }
+    return TRUE;
+}
