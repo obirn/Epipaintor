@@ -4,6 +4,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "../auxiliary/auxiliary.h"
+#include "../_structs/queue.h"
+#include "../_structs/p_queue.h"
 #include "../image_utils/tools.h"
 #include "shapes.h"
 
@@ -60,7 +62,8 @@ SDL_Surface* filled_circle(SDL_Surface* s_surface,
 {
     s_surface = circle(s_surface, x1, y1, x2, y2, r, g, b, thickness);
 
-    s_surface = bucket_fill(s_surface, (x1 + x2) / 2, (y1 + y2) / 2, r, g, b);
+    s_surface = bucket_fill(s_surface, (x1 + x2) / 2, (y1 + y2) / 2,
+                            r, g, b, 0);
 
     return s_surface;
 }
