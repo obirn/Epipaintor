@@ -21,6 +21,9 @@ void aux_bucket_fill(SDL_Surface* s_surface, int s_width, int s_height,
         SDL_WritePixel(s_surface, x, y, new_color);
         SDL_UnlockSurface(s_surface);
 
+        
+	    printf("(x, y) = (%i, %i)\n", x, y);
+
         if (x - 1 >= 0)
         {
             aux_bucket_fill(s_surface, s_width, s_height, x - 1, y,
@@ -49,6 +52,8 @@ SDL_Surface* bucket_fill(SDL_Surface* s_surface, int x, int y,
 {
     int s_width = s_surface->w;
     int s_height = s_surface->h;
+
+	printf("(s_width, s_height) = (%i, %i)\n", s_width, s_height);
     
     Uint32 color_to_fill = SDL_ReadPixel(s_surface, x, y);
     Uint8 r, g, b;

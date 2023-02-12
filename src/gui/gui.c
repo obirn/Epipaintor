@@ -172,6 +172,8 @@ gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 	start_x = pos_x;
 	start_y = pos_y;
 
+	printf("(x, y) = (%i, %i)\n", start_x, start_y);
+
 	switch (selected_tool) {
 		case NONE:
 			break;
