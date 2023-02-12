@@ -4,7 +4,7 @@
 #include <string.h>
 #include "./gui.h"
 #include "../auxiliary/auxiliary.h"
-#include "../image_utils/draw_tools.h"
+#include "../image_utils/tools.h"
 
 
 
@@ -21,6 +21,7 @@ GtkWidget *brush;
 
 GtkWidget *save_file_button;
 GtkColorChooser* color_button;
+GtkButton* bucket;
 
 char* image_path;
 
@@ -73,6 +74,7 @@ int init_interface(int argc, char**argv)
 	brush = GTK_WIDGET(gtk_builder_get_object(builder,"brush_button"));
 	save_file_button = GTK_WIDGET(gtk_builder_get_object(builder,"save_window"));
 	color_button = GTK_COLOR_CHOOSER(gtk_builder_get_object(builder, "color_button"));
+	bucket = GTK_BUTTON(gtk_builder_get_object(builder, "bucket_button")); 
 
 	// Create events
 	gtk_widget_add_events(draw_area, GDK_POINTER_MOTION_MASK);
@@ -87,6 +89,7 @@ int init_interface(int argc, char**argv)
     g_signal_connect (draw_area, "button-press-event", G_CALLBACK(mouse_on_press), NULL);
     g_signal_connect (draw_area, "button-release-event", G_CALLBACK(mouse_on_release), NULL);
 	g_signal_connect(brush, "clicked", G_CALLBACK(on_brush), NULL);
+	g_signal_connect(bucket, "clicked", G_CALLBACK(on_bucket), NULL);
 	g_signal_connect(color_button, "color-set", G_CALLBACK(on_Color_set), NULL);
 
 	// Window settings
@@ -160,16 +163,25 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 
 gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 {
-	// printf("Mouse on press\n");
+	// Save unused variables to avoid warning
 	widget = self;
 	event = event;
+	data = user_data;
 
-	if(user_data == NULL)
-	{
-		is_pressed = TRUE;
-		start_x = pos_x;
-		start_y = pos_y;
-		//printf("Start coordinates: (%u,%u)\n", start_x, start_y);
+	is_pressed = TRUE;
+	start_x = pos_x;
+	start_y = pos_y;
+
+	switch (selected_tool) {
+		case NONE:
+			break;
+		case BRUSH:
+			break;
+		case BUCKET:
+			img_buff = bucket_fill(img_buff, start_x, start_y, (Uint8) selected_color.r, \
+									(Uint8) selected_color.g, (Uint8) selected_color.b);
+			gtk_widget_queue_draw_area(draw_area, 0, 0, img_buff->w, img_buff->h);
+			break;
 	}
 
 	return FALSE;
@@ -243,6 +255,16 @@ gboolean on_brush(GtkButton *self, gpointer user_data) {
 	data = user_data;
 
 	selected_tool = BRUSH; 
+
+	return FALSE;
+}
+
+gboolean on_bucket(GtkButton *self, gpointer user_data) {
+	// Unused variables
+	widget = (GtkWidget *) self;
+	data = user_data;
+
+	selected_tool = BUCKET; 
 
 	return FALSE;
 }

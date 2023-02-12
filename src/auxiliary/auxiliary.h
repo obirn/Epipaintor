@@ -110,4 +110,10 @@ void invert_black_white_id(int id);
 // Invert black and white colors of image with 1 <= id < 89.
 int invert_black_white_all();
 
+// This function create a cross of pixel with the size indicated
+void point(SDL_Surface* surface, SDL_Color color, int x, int y, int size);
+
+// Draw a line of point() between the two coordinates
+void drawline(SDL_Surface* img, SDL_Color color, int x1, int y1, int x2, int y2, int size);
+
 #endif

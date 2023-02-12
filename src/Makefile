@@ -1,4 +1,4 @@
-CC = gcc #-fsanitize=address
+CC = gcc -fsanitize=address
 
 CPPFLAGS = `pkg-config gtk+-3.0 --cflags sdl2 SDL2_image` -MMD
 CFLAGS = -Werror -Wextra -std=c99 -g -Wall
@@ -6,7 +6,7 @@ LDLIBS = `pkg-config gtk+-3.0 --libs sdl2 SDL2_image` -lm -D__NO_INLINE__ -rdyna
 
 BIN = epipaintor
 
-SRC = epipaintor.c gui/gui.c image_utils/draw_tools.c auxiliary/auxiliary.c
+SRC = epipaintor.c gui/gui.c auxiliary/auxiliary.c image_utils/tool_bucket.c
 
 OBJ= $(SRC:.c=.o)
 DEP= $(SRC:.c=.d)
