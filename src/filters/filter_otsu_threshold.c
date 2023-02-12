@@ -6,7 +6,7 @@
 #include "../auxiliary/auxiliary.h"
 #include "filters.h"
 
-Uint32 binarize_pixel(Uint32 pixel_color, SDL_PixelFormat* format,
+Uint32 binarize_pixel_otsu(Uint32 pixel_color, SDL_PixelFormat* format,
                       Uint8 threshold)
 {
     Uint8 r, g, b;
@@ -28,7 +28,7 @@ Uint32 binarize_pixel(Uint32 pixel_color, SDL_PixelFormat* format,
     return color;
 }
 
-SDL_Surface* binarize(SDL_Surface *s_surface, Uint8 threshold,
+SDL_Surface* binarize_otsu(SDL_Surface *s_surface, Uint8 threshold,
                       int s_width, int s_height)
 {
     int len = s_width * s_height;
@@ -39,7 +39,7 @@ SDL_Surface* binarize(SDL_Surface *s_surface, Uint8 threshold,
 
     for (int i = 0; i < len; i++)
     {
-        pixels[i] = binarize_pixel(pixels[i], format, threshold);
+        pixels[i] = binarize_pixel_otsu(pixels[i], format, threshold);
     }
 
     SDL_UnlockSurface(s_surface);
@@ -107,7 +107,7 @@ SDL_Surface* otsu_threshold(SDL_Surface *s_surface)
     int s_width = s_surface->w;
     int *hist = image_grayscale_histogram(s_surface, 0, s_width, 0, s_height);
     Uint8 threshold = get_histogram_threshold(hist, 0, 256);
-    SDL_Surface *otsu = binarize(s_surface, threshold, s_width, s_height);
+    SDL_Surface *otsu = binarize_otsu(s_surface, threshold, s_width, s_height);
 
     free(hist);
 

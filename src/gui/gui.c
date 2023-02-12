@@ -4,9 +4,10 @@
 #include <string.h>
 #include "./gui.h"
 #include "../auxiliary/auxiliary.h"
+#include "../_structs/queue.h"
+#include "../_structs/p_queue.h"
 #include "../image_utils/tools.h"
-
-
+#include "../filters/filters.h"
 
 // Glade relatd
 GtkBuilder *builder;
@@ -18,7 +19,8 @@ GtkWidget *button;
 GtkWidget *fixed2;
 GtkWidget *draw_area;
 GtkWidget *brush;
-
+GtkWidget *gray_scale;
+GtkWidget *redlight;
 GtkWidget *save_file_button;
 GtkColorChooser* color_button;
 GtkButton* bucket;
@@ -29,7 +31,7 @@ int selected_tool = NONE;
 
 // SDL Rlatd
 SDL_Surface* img_buff;
-
+SDL_Surface* tmp;
 
 // Booleans
 int is_pressed;
@@ -74,7 +76,9 @@ int init_interface(int argc, char**argv)
 	brush = GTK_WIDGET(gtk_builder_get_object(builder,"brush_button"));
 	save_file_button = GTK_WIDGET(gtk_builder_get_object(builder,"save_window"));
 	color_button = GTK_COLOR_CHOOSER(gtk_builder_get_object(builder, "color_button"));
-	bucket = GTK_BUTTON(gtk_builder_get_object(builder, "bucket_button")); 
+	bucket = GTK_BUTTON(gtk_builder_get_object(builder, "bucket_button"));
+	gray_scale = GTK_WIDGET(gtk_builder_get_object(builder, "grayscale")); 
+	redlight = GTK_WIDGET(gtk_builder_get_object(builder, "red_light")); 
 
 	// Create events
 	gtk_widget_add_events(draw_area, GDK_POINTER_MOTION_MASK);
@@ -86,15 +90,15 @@ int init_interface(int argc, char**argv)
 	g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL);
 	g_signal_connect (G_OBJECT (draw_area), "draw", G_CALLBACK (draw_callback), NULL);
 	g_signal_connect (draw_area, "motion-notify-event", G_CALLBACK(mouse_on_move), NULL);
-    g_signal_connect (draw_area, "button-press-event", G_CALLBACK(mouse_on_press), NULL);
-    g_signal_connect (draw_area, "button-release-event", G_CALLBACK(mouse_on_release), NULL);
+	g_signal_connect (draw_area, "button-press-event", G_CALLBACK(mouse_on_press), NULL);
+	g_signal_connect (draw_area, "button-release-event", G_CALLBACK(mouse_on_release), NULL);
 	g_signal_connect(brush, "clicked", G_CALLBACK(on_brush), NULL);
 	g_signal_connect(bucket, "clicked", G_CALLBACK(on_bucket), NULL);
 	g_signal_connect(color_button, "color-set", G_CALLBACK(on_Color_set), NULL);
 
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
-	gtk_window_set_resizable(GTK_WINDOW(window),TRUE);
+	gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
 
 	/*      Modification before this line */
 	gtk_widget_show(window); // shows the window
@@ -135,7 +139,7 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 
-	
+
 	int w = 1310;
 	int h = 903;
 	if(img_buff->w > 1080)
@@ -156,9 +160,9 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 
 	gtk_window_resize(GTK_WINDOW(window), w, h);     
 
-    g_free(image_path);
+	g_free(image_path);
 
-    return FALSE;
+	return FALSE;
 }
 
 gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
@@ -172,7 +176,7 @@ gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 	start_x = pos_x;
 	start_y = pos_y;
 
-	printf("(x, y) = (%i, %i)\n", start_x, start_y);
+	//printf("(x, y) = (%i, %i)\n", start_x, start_y);
 
 	switch (selected_tool) {
 		case NONE:
@@ -181,7 +185,7 @@ gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 			break;
 		case BUCKET:
 			img_buff = bucket_fill(img_buff, start_x, start_y, (Uint8) selected_color.r, \
-									(Uint8) selected_color.g, (Uint8) selected_color.b);
+					(Uint8) selected_color.g, (Uint8) selected_color.b,70);
 			gtk_widget_queue_draw_area(draw_area, 0, 0, img_buff->w, img_buff->h);
 			break;
 	}
@@ -211,21 +215,21 @@ gboolean on_Color_set(GtkColorChooser *self, gpointer user_data)
 {
 	data = user_data;
 
-    gtk_color_chooser_get_rgba(self, &gdk_color);
-    selected_color.r = (Uint8) (gdk_color.red * 255);
-    selected_color.g = (Uint8) (gdk_color.green * 255);
-    selected_color.b = (Uint8) (gdk_color.blue * 255);
-    return FALSE;
+	gtk_color_chooser_get_rgba(self, &gdk_color);
+	selected_color.r = (Uint8) (gdk_color.red * 255);
+	selected_color.g = (Uint8) (gdk_color.green * 255);
+	selected_color.b = (Uint8) (gdk_color.blue * 255);
+	return FALSE;
 }
 
 
 gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data) 
 {
 	if (!img_buff) return FALSE;
-	
-    //Unused parameters :
-    widget = widget;
-	
+
+	//Unused parameters :
+	widget = widget;
+
 
 	if (event->type==GDK_MOTION_NOTIFY && user_data == NULL) 
 	{
@@ -235,8 +239,8 @@ gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data)
 		pos_x = (guint) e->x;
 		pos_y = (guint) e->y;
 
-        //printf("Old coordinates: (%u,%u)\n", old_x, old_y);
-        //printf("coordinates: (%u,%u)\n", pos_x, pos_y);
+		//printf("Old coordinates: (%u,%u)\n", old_x, old_y);
+		//printf("coordinates: (%u,%u)\n", pos_x, pos_y);
 		switch (selected_tool) {
 			case BRUSH:
 				if (is_pressed)
@@ -246,9 +250,9 @@ gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data)
 				}
 				break;
 		}
-        
-    }
-    return TRUE;
+
+	}
+	return TRUE;
 }
 
 gboolean on_brush(GtkButton *self, gpointer user_data) {
@@ -278,11 +282,11 @@ void on_file_chooser_menu_item_activate(GtkMenuItem *menu_item, gpointer user_da
 	data = user_data;
 
 	GtkWidget *file_chooser_dialog = gtk_file_chooser_dialog_new("Open File",
-                                                                NULL,
-                                                                GTK_FILE_CHOOSER_ACTION_OPEN,
-                                                                "gtk-cancel", GTK_RESPONSE_CANCEL,
-                                                                "gtk-open", GTK_RESPONSE_OK,
-                                                                NULL);
+			NULL,
+			GTK_FILE_CHOOSER_ACTION_OPEN,
+			"gtk-cancel", GTK_RESPONSE_CANCEL,
+			"gtk-open", GTK_RESPONSE_OK,
+			NULL);
 	gint response = gtk_dialog_run(GTK_DIALOG(file_chooser_dialog));
 
 	if (response != GTK_RESPONSE_OK) {
@@ -323,11 +327,87 @@ void on_file_chooser_menu_item_activate(GtkMenuItem *menu_item, gpointer user_da
 
 void on_save_button_clicked(GtkButton *b)
 {
-    // Unused variables
-    widget = (GtkWidget *) b;
+	// Unused variables
+	widget = (GtkWidget *) b;
 
 	SDL_Surface * img_buff = SDL_LoadBMP("../cache/img_buff.bmp");
 	SDL_SaveBMP(img_buff,"../save/saved_img.bmp");
 
+}
+void on_grayscale_activate(GtkMenuItem *self)
+{
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	img_buff = grayscale(img_buff);
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+}
+
+
+void on_red_light_activate(GtkMenuItem *self)
+{
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	img_buff = red_light(img_buff);
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+}
+
+
+void on_sepia_activate(GtkMenuItem *self)
+{
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	img_buff = sepia(img_buff);
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+}
+
+
+
+
+void on_gaussian_blur_activate(GtkMenuItem *self)
+{
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	img_buff = gaussian(img_buff,10);
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+}
+void on_binarize_activate(GtkMenuItem *self)
+{
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	img_buff = binarize(img_buff,10,img_buff->h,img_buff->w);
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+}
+
+void on_negative_activate(GtkMenuItem *self)
+{
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	img_buff = negative(img_buff);
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+}
+
+
+void on_gamma_activate(GtkMenuItem *self)
+{
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	img_buff = gam(img_buff,10);
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+}
+
+void on_blankpage_activate(GtkMenuItem *self)
+{
+
+	widget = (GtkWidget *) self;
+	char *image_path = "../assets/drawingarea.bmp";
+	img_buff = load_image(image_path);
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 }
 

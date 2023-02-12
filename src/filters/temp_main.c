@@ -12,7 +12,7 @@ int main(int argc, char** argv)
     if (argc < 3)
         errx(EXIT_FAILURE, "Usage: image_file process args\n");
 
-    if (strcmp(argv[2], "gray") == 0)
+    if (strcmp(argv[2], "red") == 0)
     {
         SDL_Surface *s = red_light(load_image(argv[1]));
         save_image(s, "test.jpeg");

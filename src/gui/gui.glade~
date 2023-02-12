@@ -1,11 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
   <object class="GtkAdjustment" id="Curseur">
     <property name="upper">100</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adjustment1">
+    <property name="upper">100</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adjustment2">
+    <property name="upper">100</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+  </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+  </object>
+  <object class="GtkImage" id="image3">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+  </object>
+  <object class="GtkImage" id="image4">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+  </object>
+  <object class="GtkImage" id="image5">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+  </object>
+  <object class="GtkImage" id="image6">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+  </object>
+  <object class="GtkImage" id="image7">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
   </object>
   <object class="GtkAdjustment" id="scollbar_horizontal">
     <property name="upper">1000</property>
@@ -31,6 +69,7 @@
             <property name="width-request">125</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
+            <property name="adjustment">adjustment1</property>
           </object>
           <packing>
             <property name="x">1700</property>
@@ -59,6 +98,7 @@
             <property name="width-request">125</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
+            <property name="adjustment">adjustment2</property>
           </object>
           <packing>
             <property name="x">1700</property>
@@ -123,7 +163,7 @@
           </object>
           <packing>
             <property name="x">1666</property>
-            <property name="y">247</property>
+            <property name="y">263</property>
           </packing>
         </child>
         <child>
@@ -141,7 +181,7 @@
         </child>
         <child>
           <object class="GtkFrame" id="menuframe">
-            <property name="width-request">134</property>
+            <property name="width-request">132</property>
             <property name="height-request">982</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
@@ -250,7 +290,7 @@
                         </child>
                       </object>
                       <packing>
-                        <property name="x">59</property>
+                        <property name="x">64</property>
                         <property name="y">125</property>
                       </packing>
                     </child>
@@ -310,7 +350,7 @@
                         </child>
                       </object>
                       <packing>
-                        <property name="x">59</property>
+                        <property name="x">64</property>
                         <property name="y">175</property>
                       </packing>
                     </child>
@@ -370,7 +410,7 @@
                         </child>
                       </object>
                       <packing>
-                        <property name="x">59</property>
+                        <property name="x">64</property>
                         <property name="y">225</property>
                       </packing>
                     </child>
@@ -398,7 +438,7 @@
             </child>
           </object>
           <packing>
-            <property name="x">-1</property>
+            <property name="x">-2</property>
             <property name="y">17</property>
           </packing>
         </child>
@@ -484,16 +524,17 @@
                 <property name="label" translatable="yes">_File</property>
                 <property name="use-underline">True</property>
                 <child type="submenu">
-                  <object class="GtkMenu">
+                  <object class="GtkMenu" id="file">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem">
+                      <object class="GtkImageMenuItem" id="blankpage">
                         <property name="label">gtk-new</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="use-underline">True</property>
                         <property name="use-stock">True</property>
+                        <signal name="activate" handler="on_blankpage_activate" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -517,15 +558,6 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-save-as</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="use-underline">True</property>
-                        <property name="use-stock">True</property>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkSeparatorMenuItem">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
@@ -545,7 +577,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem">
+              <object class="GtkMenuItem" id="edit">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="label" translatable="yes">_Edit</property>
@@ -598,27 +630,80 @@
               <object class="GtkMenuItem">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">_View</property>
-                <property name="use-underline">True</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkMenuItem">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes">_Help</property>
+                <property name="label" translatable="yes">Filters</property>
                 <property name="use-underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-about</property>
+                      <object class="GtkImageMenuItem" id="grayscale">
+                        <property name="label">Grayscale</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="use-underline">True</property>
-                        <property name="use-stock">True</property>
+                        <property name="image">image1</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_grayscale_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="sepia">
+                        <property name="label">Sepia</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image2</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_sepia_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="gaussian_blur">
+                        <property name="label">Gaussian Blur</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image3</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_gaussian_blur_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="red_light">
+                        <property name="label" translatable="yes">Red Light</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image4</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_red_light_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="binarize">
+                        <property name="label" translatable="yes">Binarize</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image5</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_binarize_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="negative">
+                        <property name="label" translatable="yes">Negative</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image6</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_negative_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="gamma">
+                        <property name="label" translatable="yes">Gamma</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image7</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_gamma_activate" swapped="no"/>
                       </object>
                     </child>
                   </object>
