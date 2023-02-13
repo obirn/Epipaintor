@@ -99,6 +99,7 @@ int init_interface(int argc, char**argv)
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
 	gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
+	gtk_window_set_icon_from_file(GTK_WINDOW(window),"../assets/logo_200x200.png",NULL);
 
 	/*      Modification before this line */
 	gtk_widget_show(window); // shows the window
