@@ -4,11 +4,11 @@
 #include <string.h>
 #include "./gui.h"
 #include "../auxiliary/auxiliary.h"
-#include "../_structs/queue.h"
-#include "../_structs/p_queue.h"
+#include "../data_structs/queue.h"
+#include "../data_structs/p_queue.h"
+#include "../data_structs/stack.h"
 #include "../image_utils/tools.h"
 #include "../filters/filters.h"
-
 // Glade relatd
 GtkBuilder *builder;
 GtkWidget *window;
