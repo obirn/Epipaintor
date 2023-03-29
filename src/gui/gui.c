@@ -407,7 +407,7 @@ void on_blankpage_activate(GtkMenuItem *self)
 {
 
 	widget = (GtkWidget *) self;
-	char *image_path = "../assets/drawingarea.bmp";
+	char *image_path = "../assets/Blank_image.jpg";
 	img_buff = load_image(image_path);
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 }
