@@ -3,8 +3,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "../auxiliary/auxiliary.h"
-#include "../_structs/queue.h"
-#include "../_structs/p_queue.h"
+#include "../data_structs/queue.h"
+#include "../data_structs/p_queue.h"
 
 void aux_bucket_fill(SDL_Surface* s_surface, int s_width, int s_height,
                     int x, int y,

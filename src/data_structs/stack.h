@@ -3,9 +3,9 @@
 
 #include <err.h>
 #include <stdlib.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include "../pixel_operations.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include "../auxiliary/auxiliary.h"
 
 typedef struct stack
 {

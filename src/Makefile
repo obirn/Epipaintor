@@ -6,7 +6,7 @@ LDLIBS = `pkg-config gtk+-3.0 --libs sdl2 SDL2_image` -lm -D__NO_INLINE__ -rdyna
 
 BIN = epipaintor
 
-SRC = epipaintor.c gui/gui.c auxiliary/auxiliary.c _structs/queue.c _structs/p_queue.c image_utils/tool_bucket.c $(wildcard filters/filter_*.c)
+SRC = epipaintor.c gui/gui.c auxiliary/auxiliary.c data_structs/queue.c data_structs/stack.c data_structs/p_queue.c image_utils/tool_bucket.c $(wildcard filters/filter_*.c) 
 
 OBJ= $(SRC:.c=.o)
 DEP= $(SRC:.c=.d)
