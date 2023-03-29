@@ -8,6 +8,9 @@ epipaintor
 *.obj
 *.elf
 
+# Dependancy files
+*.d
+
 # Linker output
 *.ilk
 *.map
