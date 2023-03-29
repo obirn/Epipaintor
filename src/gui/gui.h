@@ -20,5 +20,7 @@ gboolean on_Color_set(GtkColorChooser *self, gpointer user_data);
 gboolean on_brush(GtkButton *self, gpointer user_data);
 gboolean on_bucket(GtkButton *self, gpointer user_data);
 gboolean on_Color_set(GtkColorChooser *self, gpointer user_data);
+gboolean on_previous(GtkButton *self, gpointer user_data);
+gboolean on_next(GtkButton *self, gpointer user_data);
 
 #endif

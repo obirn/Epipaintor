@@ -4,9 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "stack.h"
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include "../pixel_operations.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 typedef struct shared_stack
 {

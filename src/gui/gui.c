@@ -6,7 +6,7 @@
 #include "../auxiliary/auxiliary.h"
 #include "../data_structs/queue.h"
 #include "../data_structs/p_queue.h"
-#include "../data_structs/stack.h"
+#include "../data_structs/shared_stack.h"
 #include "../image_utils/tools.h"
 #include "../filters/filters.h"
 // Glade relatd
@@ -24,6 +24,14 @@ GtkWidget *redlight;
 GtkWidget *save_file_button;
 GtkColorChooser* color_button;
 GtkButton* bucket;
+GtkWidget* previous;
+GtkWidget* next;
+
+// Shared stack used to stock modifications
+shared_stack* before;
+shared_stack* after;
+shared_stack* b2;
+shared_stack* a2;
 
 char* image_path;
 
@@ -31,7 +39,7 @@ int selected_tool = NONE;
 
 // SDL Rlatd
 SDL_Surface* img_buff;
-SDL_Surface* tmp;
+SDL_Surface* img_buff_2;
 
 // Booleans
 int is_pressed;
@@ -79,6 +87,8 @@ int init_interface(int argc, char**argv)
 	bucket = GTK_BUTTON(gtk_builder_get_object(builder, "bucket_button"));
 	gray_scale = GTK_WIDGET(gtk_builder_get_object(builder, "grayscale")); 
 	redlight = GTK_WIDGET(gtk_builder_get_object(builder, "red_light")); 
+	next = GTK_WIDGET(gtk_builder_get_object(builder, "redo")); 
+	previous = GTK_WIDGET(gtk_builder_get_object(builder, "undo")); 
 
 	// Create events
 	gtk_widget_add_events(draw_area, GDK_POINTER_MOTION_MASK);
@@ -95,6 +105,8 @@ int init_interface(int argc, char**argv)
 	g_signal_connect(brush, "clicked", G_CALLBACK(on_brush), NULL);
 	g_signal_connect(bucket, "clicked", G_CALLBACK(on_bucket), NULL);
 	g_signal_connect(color_button, "color-set", G_CALLBACK(on_Color_set), NULL);
+    g_signal_connect(previous, "clicked", G_CALLBACK(on_previous), NULL);
+    g_signal_connect(next, "clicked", G_CALLBACK(on_next), NULL);
 
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
@@ -412,3 +424,63 @@ void on_blankpage_activate(GtkMenuItem *self)
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 }
 
+
+gboolean on_previous(GtkButton* self, gpointer user_data)
+{
+    //use this fonction to revert last modification
+    if (self && user_data)
+        return FALSE;
+
+    if (before->size > 0)
+    {
+        //printf("%li\n", before->size);
+        int oldh = img_buff->h;
+        int oldw = img_buff->w;
+
+        shared_stack_push(after, img_buff);
+        SDL_FreeSurface(img_buff);
+        img_buff = shared_stack_pop(before);
+        shared_stack_push(a2, img_buff_2);
+        SDL_FreeSurface(img_buff_2);
+        img_buff_2 = shared_stack_pop(b2);
+
+        if (img_buff->h > oldh)
+            oldh = img_buff->h;
+        if (img_buff->w > oldw)
+            oldw = img_buff->w;
+
+        gtk_widget_queue_draw_area(image,0,0,oldw,oldh);
+        // image_resize();
+    }
+
+    return FALSE;
+}
+
+gboolean on_next(GtkButton* self, gpointer user_data)
+{
+    //use this fonction to re-do last modification that was reverted
+    if (self && user_data)  
+        return FALSE;
+
+    if (after->size > 0)
+    {
+        //printf("%li\n", after->size);
+        int oldh = img_buff->h;
+        int oldw = img_buff->w;
+        shared_stack_push(before, img_buff);
+        SDL_FreeSurface(img_buff);
+        img_buff = shared_stack_pop(after);
+        shared_stack_push(b2, img_buff_2);
+        SDL_FreeSurface(img_buff_2);
+        img_buff_2 = shared_stack_pop(a2);
+
+        if (img_buff->h > oldh)
+            oldh = img_buff->h;
+        if (img_buff->w > oldw)
+            oldw = img_buff->w;
+
+        gtk_widget_queue_draw_area(image,0,0,oldw,oldh);
+        // image_resize();
+    }
+    return FALSE;
+}
