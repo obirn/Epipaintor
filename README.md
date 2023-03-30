@@ -30,7 +30,7 @@ Then, go in the folder by doing:
 You will need some packages.
 To install them with apt:
 ```shell
-    sudo apt-get install libsdl-gfx1.2-dev libsdl-image1.2-dev libsdl1.2.dev libgtk-3-dev
+    sudo apt-get install libsdl2-dev libsdl2-image-dev libgtk-3-dev
 ```
 
 Compile the code:
