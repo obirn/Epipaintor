@@ -31,8 +31,6 @@ GtkWidget* next;
 // Shared stack used to stock modifications
 shared_stack* before;
 shared_stack* after;
-shared_stack* b2;
-shared_stack* a2;
 
 char* image_path;
 
@@ -40,7 +38,6 @@ int selected_tool = NONE;
 
 // SDL Related
 SDL_Surface* img_buff;
-SDL_Surface* img_buff_2;
 
 // Booleans
 int is_pressed;
@@ -118,8 +115,6 @@ int init_interface(int argc, char**argv)
 	// Stacks Initialization
     before = shared_stack_new();
     after = shared_stack_new();
-    b2 = shared_stack_new();
-    a2 = shared_stack_new();
 
 	/*      Modification before this line */
 	gtk_widget_show(window); // shows the window
@@ -157,7 +152,6 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 	image_path = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(b));
 
 	img_buff = load_image(image_path);
-	img_buff_2 = load_image(image_path);
 
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 
@@ -205,8 +199,6 @@ gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 
 	shared_stack_push(before, img_buff);
 	shared_stack_empty(after);
-	shared_stack_push(b2, img_buff_2);                                    
-	shared_stack_empty(a2);
 
 	printf("before->size = %li\n", before->size);
 
@@ -435,7 +427,6 @@ void on_blankpage_activate(GtkMenuItem *self)
 	widget = (GtkWidget *) self;
 	char *image_path = "../assets/Blank_image.jpg";
 	img_buff = load_image(image_path);
-	img_buff_2 = load_image(image_path);
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 }
 
@@ -457,9 +448,6 @@ gboolean on_previous(GtkButton* self, gpointer user_data)
         shared_stack_push(after, img_buff);
         SDL_FreeSurface(img_buff);
         img_buff = shared_stack_pop(before);
-        shared_stack_push(a2, img_buff_2);
-        SDL_FreeSurface(img_buff_2);
-        img_buff_2 = shared_stack_pop(b2);
 
         if (img_buff->h > oldh)
             oldh = img_buff->h;
@@ -488,9 +476,6 @@ gboolean on_next(GtkButton* self, gpointer user_data)
         shared_stack_push(before, img_buff);
         SDL_FreeSurface(img_buff);
         img_buff = shared_stack_pop(after);
-        shared_stack_push(b2, img_buff_2);
-        SDL_FreeSurface(img_buff_2);
-        img_buff_2 = shared_stack_pop(a2);
 
         if (img_buff->h > oldh)
             oldh = img_buff->h;
