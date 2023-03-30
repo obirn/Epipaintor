@@ -10,6 +10,7 @@
 #include "../filters/filters.h"
 
 // Glade relatd
+GtkWidget *box; 
 GtkBuilder *builder;
 GtkWidget *window;
 GtkWidget *fixed1;
@@ -24,6 +25,8 @@ GtkWidget *redlight;
 GtkWidget *save_file_button;
 GtkColorChooser* color_button;
 GtkButton* bucket;
+GtkButton* undo_button;
+GtkButton* redo_button;
 
 char* image_path;
 
@@ -79,7 +82,8 @@ int init_interface(int argc, char**argv)
 	bucket = GTK_BUTTON(gtk_builder_get_object(builder, "bucket_button"));
 	gray_scale = GTK_WIDGET(gtk_builder_get_object(builder, "grayscale")); 
 	redlight = GTK_WIDGET(gtk_builder_get_object(builder, "red_light")); 
-
+	redo_button = GTK_BUTTON(gtk_builder_get_object(builder, "redo_button")); 
+	undo_button = GTK_BUTTON(gtk_builder_get_object(builder, "undo_button")); 
 	// Create events
 	gtk_widget_add_events(draw_area, GDK_POINTER_MOTION_MASK);
 	gtk_widget_add_events(draw_area, GDK_BUTTON_PRESS_MASK);
@@ -95,11 +99,14 @@ int init_interface(int argc, char**argv)
 	g_signal_connect(brush, "clicked", G_CALLBACK(on_brush), NULL);
 	g_signal_connect(bucket, "clicked", G_CALLBACK(on_bucket), NULL);
 	g_signal_connect(color_button, "color-set", G_CALLBACK(on_Color_set), NULL);
+	g_signal_connect(undo_button, "clicked", G_CALLBACK(undo_button), NULL);
+	g_signal_connect(redo_button, "clicked", G_CALLBACK(redo_button), NULL);
 
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
 	gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
 	gtk_window_set_icon_from_file(GTK_WINDOW(window),"../assets/logo_200x200.png",NULL);
+  	
 
 	/*      Modification before this line */
 	gtk_widget_show(window); // shows the window
@@ -407,7 +414,7 @@ void on_blankpage_activate(GtkMenuItem *self)
 {
 
 	widget = (GtkWidget *) self;
-	char *image_path = "../assets/Blank_image.jpg";
+	char *image_path = "../assets/drawingarea.bmp";
 	img_buff = load_image(image_path);
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 }
