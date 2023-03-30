@@ -142,9 +142,8 @@ gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data)
 	pixbuf = gdk_pixbuf_new_from_file("../cache/img_buff.bmp", NULL);
 
 	gdk_cairo_set_source_pixbuf(cr, pixbuf, 0, 0);
-
 	cairo_paint(cr);
-
+	
 	if (pixbuf)
 		g_object_unref(pixbuf);
 
@@ -205,7 +204,7 @@ gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 
 	shared_stack_push(before, img_buff);
 	shared_stack_empty(after);
-	shared_stack_push(b2, img_buff_2);                                    
+	shared_stack_push(b2, img_buff_2);
 	shared_stack_empty(a2);
 
 	printf("before->size = %li\n", before->size);
@@ -389,8 +388,6 @@ void on_sepia_activate(GtkMenuItem *self)
 	img_buff = sepia(img_buff);
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 }
-
-
 
 
 void on_gaussian_blur_activate(GtkMenuItem *self)
