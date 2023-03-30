@@ -9,7 +9,8 @@
 #include "../data_structs/shared_stack.h"
 #include "../image_utils/tools.h"
 #include "../filters/filters.h"
-// Glade relatd
+
+// Glade related
 GtkBuilder *builder;
 GtkWidget *window;
 GtkWidget *fixed1;
@@ -37,7 +38,7 @@ char* image_path;
 
 int selected_tool = NONE;
 
-// SDL Rlatd
+// SDL Related
 SDL_Surface* img_buff;
 SDL_Surface* img_buff_2;
 
@@ -55,7 +56,7 @@ int start_y = 0;
 int end_x = 0;
 int end_y = 0;
 
-// Unusd variabls to avoid warning
+// Unused variables to avoid warnings
 GtkWidget* widget;
 gpointer data;
 GdkEvent* event;
@@ -107,11 +108,18 @@ int init_interface(int argc, char**argv)
 	g_signal_connect(color_button, "color-set", G_CALLBACK(on_Color_set), NULL);
     g_signal_connect(previous, "clicked", G_CALLBACK(on_previous), NULL);
     g_signal_connect(next, "clicked", G_CALLBACK(on_next), NULL);
+    g_signal_connect (G_OBJECT (window), "key_press_event", G_CALLBACK (on_key_press), NULL);
 
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
 	gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
 	gtk_window_set_icon_from_file(GTK_WINDOW(window),"../assets/logo_200x200.png",NULL);
+
+	// Stacks Initialization
+    before = shared_stack_new();
+    after = shared_stack_new();
+    b2 = shared_stack_new();
+    a2 = shared_stack_new();
 
 	/*      Modification before this line */
 	gtk_widget_show(window); // shows the window
@@ -149,6 +157,7 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 	image_path = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(b));
 
 	img_buff = load_image(image_path);
+	img_buff_2 = load_image(image_path);
 
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 
@@ -191,9 +200,17 @@ gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 
 	//printf("(x, y) = (%i, %i)\n", start_x, start_y);
 
+	if (selected_tool == NONE)
+		return FALSE;
+
+	shared_stack_push(before, img_buff);
+	shared_stack_empty(after);
+	shared_stack_push(b2, img_buff_2);                                    
+	shared_stack_empty(a2);
+
+	printf("before->size = %li\n", before->size);
+
 	switch (selected_tool) {
-		case NONE:
-			break;
 		case BRUSH:
 			break;
 		case BUCKET:
@@ -208,17 +225,14 @@ gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 
 gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 {
+	// Used to avoid compilations warning.
 	widget = self;
 	event = event;
+	data = user_data;
 
-	// printf("Mouse on release\n");
-	if(user_data == NULL)
-	{
-		is_pressed = FALSE;
-		start_x = pos_x;
-		start_y = pos_y;
-		//printf("Start coordinates: (%u,%u)\n", start_x, start_y);
-	}
+	is_pressed = FALSE;
+	start_x = pos_x;
+	start_y = pos_y;
 
 	return FALSE;
 }
@@ -421,6 +435,7 @@ void on_blankpage_activate(GtkMenuItem *self)
 	widget = (GtkWidget *) self;
 	char *image_path = "../assets/Blank_image.jpg";
 	img_buff = load_image(image_path);
+	img_buff_2 = load_image(image_path);
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 }
 
@@ -428,12 +443,14 @@ void on_blankpage_activate(GtkMenuItem *self)
 gboolean on_previous(GtkButton* self, gpointer user_data)
 {
     //use this fonction to revert last modification
-    if (self && user_data)
-        return FALSE;
+	widget = (GtkWidget *) self;
+	data = user_data;
+
+	printf("before->size = %li\n", before->size);
 
     if (before->size > 0)
     {
-        //printf("%li\n", before->size);
+        printf("%li\n", before->size);
         int oldh = img_buff->h;
         int oldw = img_buff->w;
 
@@ -449,7 +466,8 @@ gboolean on_previous(GtkButton* self, gpointer user_data)
         if (img_buff->w > oldw)
             oldw = img_buff->w;
 
-        gtk_widget_queue_draw_area(image,0,0,oldw,oldh);
+        
+		gtk_widget_queue_draw_area(draw_area, 0, 0, oldw, oldh);
         // image_resize();
     }
 
@@ -479,8 +497,43 @@ gboolean on_next(GtkButton* self, gpointer user_data)
         if (img_buff->w > oldw)
             oldw = img_buff->w;
 
-        gtk_widget_queue_draw_area(image,0,0,oldw,oldh);
+		gtk_widget_queue_draw_area(draw_area, 0, 0, oldw, oldh);
         // image_resize();
     }
+    return FALSE;
+}
+
+gboolean on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+{
+	// Used to avoid compilation warning
+	widget = widget;
+	data = user_data;
+
+	if (!(event->type == GDK_KEY_PRESS && GDK_CONTROL_MASK))
+		return FALSE;
+
+
+    switch (event->keyval)
+    {
+        case GDK_KEY_z:
+			on_previous(NULL, NULL);
+			// image_resize();
+            return FALSE;
+        case GDK_KEY_y:
+			on_next(NULL, NULL);
+			// image_resize();
+            return FALSE;
+        case GDK_KEY_v:
+                //printf("key pressed: %s\n", "ctrl + v");
+                // shared_stack_push(before, img);                                    
+                // shared_stack_empty(after);
+                // shared_stack_push(b2, img2);                                    
+                // shared_stack_empty(a2);
+
+                // past_selection(img, copy_crop_img, pos_x, pos_y);
+                // gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
+            return FALSE;
+    }
+
     return FALSE;
 }

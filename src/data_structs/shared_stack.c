@@ -2,26 +2,29 @@
 #include <stdlib.h>
 #include "shared_stack.h"
 
+// SDL_Surface* copy_image(SDL_Surface* img)
+// {
+//     Uint32 pixel;
+//     SDL_Surface *copy;
+//     copy = SDL_CreateRGBSurfaceFrom(img->pixels, img->w, img->h, img->format->BitsPerPixel, img->format->Rmask, img->format->Gmask, img->format->Bmask, img->format->Amask);
 
-SDL_Surface* copy_image(SDL_Surface* img)
+//     if(copy == NULL || img == NULL)
+//         errx(EXIT_FAILURE, "Copy_Image() NULL\n");
+
+//     return copy;
+// }
+
+SDL_Surface *copy_image(SDL_Surface *src)
 {
-    Uint32 pixel;
-    SDL_Surface *copy;
-    copy = SDL_CreateRGBSurface(SDL_HWSURFACE, img->w, img->h, img->format->BitsPerPixel, img->format->Rmask, img->format->Gmask, img->format->Bmask, img->format->Amask);
+    SDL_Surface *dst = NULL;
+    dst = SDL_CreateRGBSurface(SDL_SWSURFACE, src->w, src->h, src->format->BitsPerPixel, src->format->Rmask, src->format->Gmask, src->format->Bmask, src->format->Amask);
 
-    if(copy == NULL || img == NULL)
-        errx(EXIT_FAILURE, "Copy_Image() NULL\n");
-    int x, y;
-    for (x = 0; x < img->w; x++)
-    {
-        for (y = 0; y < img->h; y++)
-        {
-            pixel = get_pixel(img, x, y);
-            put_pixel(copy, x, y, pixel);
-        }
-    }
+    if(dst == NULL || src == NULL)
+        return NULL;
 
-    return copy;
+    SDL_BlitSurface(src, NULL, dst , NULL);
+
+    return dst;
 }
 
 shared_stack* shared_stack_new()

@@ -190,11 +190,11 @@ SDL_Surface* load_image(const char* path)
 }
 
 // Draw and render surface.
-void draw(SDL_Renderer* renderer, SDL_Texture* texture)
-{
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
-    SDL_RenderPresent(renderer);
-}
+// void draw(SDL_Renderer* renderer, SDL_Texture* texture)
+// {
+//     SDL_RenderCopy(renderer, texture, NULL, NULL);
+//     SDL_RenderPresent(renderer);
+// }
 
 // Save image to path.
 void save_image(SDL_Surface *image_surface, char *path)
