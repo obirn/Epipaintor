@@ -375,15 +375,37 @@ void on_open_file(GtkMenuItem *menu_item, gpointer user_data)
 	gtk_widget_destroy(file_chooser_dialog);
 }
 
-void on_save_file(GtkButton *b)
+// void on_save_file(GtkButton *b)
+// {
+// 	// Unused variables
+// 	widget = (GtkWidget *) b;
+
+// 	SDL_Surface * img_buff = SDL_LoadBMP("../cache/img_buff.bmp");
+// 	SDL_SaveBMP(img_buff,"../save/saved_img.bmp");
+
+// }
+
+void on_save_file(GtkMenuItem *menu_item, gpointer user_data)
 {
-	// Unused variables
-	widget = (GtkWidget *) b;
-
-	SDL_Surface * img_buff = SDL_LoadBMP("../cache/img_buff.bmp");
-	SDL_SaveBMP(img_buff,"../save/saved_img.bmp");
-
+	// Used to avoid compilations warning
+	widget = (GtkWidget *) widget;
+	data = user_data;
+	
+  	GtkWidget *file_saver_dialog = gtk_file_chooser_dialog_new("Save File", NULL,
+                                                              GTK_FILE_CHOOSER_ACTION_SAVE,
+                                                              "gtk-cancel", GTK_RESPONSE_CANCEL,
+                                                              "gtk-save", GTK_RESPONSE_OK,
+                                                              NULL);
+	gint response = gtk_dialog_run(GTK_DIALOG(file_saver_dialog));
+	if (response == GTK_RESPONSE_OK)
+	{
+		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_saver_dialog));
+		g_print("Selected file: %s\n", filename);
+		g_free(filename);
+	}
+	gtk_widget_destroy(file_saver_dialog);
 }
+
 void on_grayscale_activate(GtkMenuItem *self)
 {
 	if(img_buff==NULL)
