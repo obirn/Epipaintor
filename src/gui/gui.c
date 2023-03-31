@@ -244,33 +244,30 @@ gboolean on_Color_set(GtkColorChooser *self, gpointer user_data)
 
 gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data) 
 {
-	if (!img_buff) return FALSE;
+	if (!img_buff || !is_pressed) return FALSE;
 
 	//Unused parameters :
 	widget = widget;
+	data = user_data;
+	
+	if (!(event->type==GDK_MOTION_NOTIFY))
+		return TRUE;
 
+	GdkEventMotion* e =(GdkEventMotion*)event;
+	old_x = pos_x;
+	old_y = pos_y;
+	pos_x = (guint) e->x;
+	pos_y = (guint) e->y;
 
-	if (event->type==GDK_MOTION_NOTIFY && user_data == NULL) 
-	{
-		GdkEventMotion* e =(GdkEventMotion*)event;
-		old_x = pos_x;
-		old_y = pos_y;
-		pos_x = (guint) e->x;
-		pos_y = (guint) e->y;
-
-		//printf("Old coordinates: (%u,%u)\n", old_x, old_y);
-		//printf("coordinates: (%u,%u)\n", pos_x, pos_y);
-		switch (selected_tool) {
-			case BRUSH:
-				if (is_pressed)
-				{
-					drawline(img_buff, selected_color, old_x, old_y, pos_x, pos_y, 5);
-					gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
-				}
-				break;
-		}
-
+	//printf("Old coordinates: (%u,%u)\n", old_x, old_y);
+	//printf("coordinates: (%u,%u)\n", pos_x, pos_y);
+	switch (selected_tool) {
+		case BRUSH:
+			drawline(img_buff, selected_color, old_x, old_y, pos_x, pos_y, 5);
+			gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+			return TRUE;
 	}
+
 	return TRUE;
 }
 
