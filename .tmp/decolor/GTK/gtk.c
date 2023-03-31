@@ -50,7 +50,7 @@ shared_stack* a2;
 GtkWidget *image;
 GtkFileChooser *FileChooser;
 GtkFileChooser *chooser;
-GtkScale* scale;
+GtkScale* scale_glider;
 unsigned char scale_nb = 10;
 GtkComboBoxText* filtres;
 GtkButton* apply;
@@ -200,7 +200,7 @@ int create_window_decolor(int argc, char *argv[])
 
 
     //set_tools_group(toolsgrid, brush);
-    scale = GTK_SCALE(gtk_builder_get_object(Builder, "Scale")); 
+    scale_glider = GTK_SCALE(gtk_builder_get_object(Builder, "Scale")); 
     filtres = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(Builder, "Filtres"));
     apply = GTK_BUTTON(gtk_builder_get_object(Builder, "Appliquer"));
     reverse1 = GTK_BUTTON(gtk_builder_get_object(Builder, "Reverse_1"));
@@ -242,7 +242,7 @@ int create_window_decolor(int argc, char *argv[])
     g_signal_connect(square,"toggled", G_CALLBACK(on_square), NULL);
     g_signal_connect(triangle, "toggled", G_CALLBACK(on_triangle), NULL);
     g_signal_connect(circle, "toggled", G_CALLBACK(on_circle), NULL);
-    g_signal_connect(scale, "value_changed", G_CALLBACK(update_scale_val), NULL);
+    g_signal_connect(scale_glider, "value_changed", G_CALLBACK(update_scale_val), NULL);
     g_signal_connect(apply, "clicked", G_CALLBACK(on_apply_clicked), NULL);
     g_signal_connect(Crop, "toggled", G_CALLBACK(on_Crop), NULL);
     g_signal_connect(Theme, "changed", G_CALLBACK(theme_changed), NULL);
@@ -1398,7 +1398,6 @@ gboolean update_scale_val(GtkScale *self, gpointer user_data)
 
     //Actual function :
     scale_nb = gtk_range_get_value(&(self->range));
-    //printf("Scale number : %i\n", scale_nb);
 
     return FALSE;
 }

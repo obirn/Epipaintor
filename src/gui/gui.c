@@ -27,6 +27,8 @@ GtkColorChooser* color_button;
 GtkButton* bucket;
 GtkWidget* previous;
 GtkWidget* next;
+GtkScale* scale_glider;
+
 
 // Shared stack used to stock modifications
 shared_stack* before;
@@ -35,6 +37,8 @@ shared_stack* after;
 char* image_path;
 
 int selected_tool = NONE;
+unsigned char scale_nb = 10;
+int brush_size;
 
 // SDL Related
 SDL_Surface* img_buff;
@@ -86,7 +90,8 @@ int init_interface(int argc, char**argv)
 	gray_scale = GTK_WIDGET(gtk_builder_get_object(builder, "grayscale")); 
 	redlight = GTK_WIDGET(gtk_builder_get_object(builder, "red_light")); 
 	next = GTK_WIDGET(gtk_builder_get_object(builder, "redo")); 
-	previous = GTK_WIDGET(gtk_builder_get_object(builder, "undo")); 
+	previous = GTK_WIDGET(gtk_builder_get_object(builder, "undo"));
+    scale_glider = GTK_SCALE(gtk_builder_get_object(builder, "Scale")); 
 
 	// Create events
 	gtk_widget_add_events(draw_area, GDK_POINTER_MOTION_MASK);
@@ -106,6 +111,7 @@ int init_interface(int argc, char**argv)
     g_signal_connect(previous, "clicked", G_CALLBACK(on_previous), NULL);
     g_signal_connect(next, "clicked", G_CALLBACK(on_next), NULL);
     g_signal_connect (G_OBJECT (window), "key_press_event", G_CALLBACK (on_key_press), NULL);
+    g_signal_connect(scale_glider, "value_changed", G_CALLBACK(update_scale_val), NULL);
 
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
@@ -244,7 +250,6 @@ gboolean on_Color_set(GtkColorChooser *self, gpointer user_data)
 
 gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data) 
 {
-	if (!img_buff || !is_pressed) return FALSE;
 
 	//Unused parameters :
 	widget = widget;
@@ -259,11 +264,14 @@ gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data)
 	pos_x = (guint) e->x;
 	pos_y = (guint) e->y;
 
+
+	if (!img_buff || !is_pressed) return FALSE;
+
 	//printf("Old coordinates: (%u,%u)\n", old_x, old_y);
 	//printf("coordinates: (%u,%u)\n", pos_x, pos_y);
 	switch (selected_tool) {
 		case BRUSH:
-			drawline(img_buff, selected_color, old_x, old_y, pos_x, pos_y, 5);
+			drawline(img_buff, selected_color, old_x, old_y, pos_x, pos_y, brush_size);
 			gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 			return TRUE;
 	}
@@ -516,6 +524,20 @@ gboolean on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data
                 // gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
             return FALSE;
     }
+
+    return FALSE;
+}
+
+gboolean update_scale_val(GtkScale *self, gpointer user_data)
+{
+    //Unused parameters :
+	widget = (GtkWidget *) self;
+    user_data = user_data;
+
+    //Actual function :
+    scale_nb = gtk_range_get_value(&(self->range));
+	brush_size = (scale_nb + 10) / 10;
+
 
     return FALSE;
 }
