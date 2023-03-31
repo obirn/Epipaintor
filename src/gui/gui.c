@@ -38,7 +38,7 @@ char* image_path;
 
 int selected_tool = NONE;
 unsigned char scale_nb = 10;
-int brush_size;
+int brush_size = 2;
 
 // SDL Related
 SDL_Surface* img_buff;
@@ -206,7 +206,6 @@ gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 	shared_stack_push(before, img_buff);
 	shared_stack_empty(after);
 
-	printf("before->size = %li\n", before->size);
 
 	switch (selected_tool) {
 		case BRUSH:
@@ -430,7 +429,7 @@ void on_blankpage_activate(GtkMenuItem *self)
 {
 
 	widget = (GtkWidget *) self;
-	char *image_path = "../assets/Blank_image.jpg";
+	char *image_path = "../assets/medium_blank.png";
 	img_buff = load_image(image_path);
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 }
@@ -442,11 +441,9 @@ gboolean on_previous(GtkButton* self, gpointer user_data)
 	widget = (GtkWidget *) self;
 	data = user_data;
 
-	printf("before->size = %li\n", before->size);
 
     if (before->size > 0)
     {
-        printf("%li\n", before->size);
         int oldh = img_buff->h;
         int oldw = img_buff->w;
 
