@@ -39,9 +39,11 @@ shared_stack* after;
 
 char* image_path;
 
+double scale_factor = 1.0;
+
 int selected_tool = NONE;
-unsigned char scale_nb = 10;
 int brush_size = 2;
+unsigned char bursh_size_scale = 10;
 
 // SDL Related
 SDL_Surface* img_buff;
@@ -104,6 +106,7 @@ int init_interface(int argc, char**argv)
 	gtk_widget_add_events(draw_area, GDK_POINTER_MOTION_MASK);
 	gtk_widget_add_events(draw_area, GDK_BUTTON_PRESS_MASK);
 	gtk_widget_add_events(draw_area, GDK_BUTTON_RELEASE_MASK);
+	gtk_widget_add_events(draw_area, GDK_SCROLL_MASK);
 
 	// Connecting signals
 	gtk_builder_connect_signals(builder,NULL);
@@ -124,6 +127,8 @@ int init_interface(int argc, char**argv)
     g_signal_connect(open_file, "activate", G_CALLBACK(on_open_file), NULL);
     g_signal_connect(save_file, "activate", G_CALLBACK(on_save_file), NULL);
     g_signal_connect(quit, "activate", G_CALLBACK(epipaintor_free), NULL);
+	g_signal_connect(draw_area, "scroll-event", G_CALLBACK(on_scroll_event), NULL);
+
 	
 
 	// Window settings
@@ -161,6 +166,8 @@ gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data)
 	widget = widget;
 	data = data;
 
+	cairo_scale(cr, scale_factor, scale_factor);
+
 	if (!img_buff) return FALSE;
 
 	//Actual function :
@@ -177,6 +184,23 @@ gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data)
 		g_object_unref(pixbuf);
 
 	return FALSE;
+}
+
+gboolean on_scroll_event(GtkWidget *widget, GdkEventScroll *event, gpointer user_data)
+{
+	(void) user_data; // Used to avoid compilation warning.
+
+    // Adjust the scale factor based on the scroll event
+    if (event->direction == GDK_SCROLL_UP) {
+        scale_factor *= 1.1;
+    } else if (event->direction == GDK_SCROLL_DOWN) {
+        scale_factor /= 1.1;
+    }
+
+    // Redraw the drawing area to reflect the new scale factor
+    gtk_widget_queue_draw(widget);
+
+    return TRUE;
 }
 
 gboolean on_open_file_file_activated(GtkFileChooserButton * b)
@@ -375,22 +399,12 @@ void on_open_file(GtkMenuItem *menu_item, gpointer user_data)
 	gtk_widget_destroy(file_chooser_dialog);
 }
 
-// void on_save_file(GtkButton *b)
-// {
-// 	// Unused variables
-// 	widget = (GtkWidget *) b;
-
-// 	SDL_Surface * img_buff = SDL_LoadBMP("../cache/img_buff.bmp");
-// 	SDL_SaveBMP(img_buff,"../save/saved_img.bmp");
-
-// }
-
 void on_save_file(GtkMenuItem *menu_item, gpointer user_data)
 {
 	// Used to avoid compilations warning
-	widget = (GtkWidget *) widget;
-	data = user_data;
-	
+	(void) menu_item;
+	(void) user_data;
+
   	GtkWidget *file_saver_dialog = gtk_file_chooser_dialog_new("Save File", NULL,
                                                               GTK_FILE_CHOOSER_ACTION_SAVE,
                                                               "gtk-cancel", GTK_RESPONSE_CANCEL,
@@ -581,8 +595,8 @@ gboolean update_scale_val(GtkScale *self, gpointer user_data)
     user_data = user_data;
 
     //Actual function :
-    scale_nb = gtk_range_get_value(&(self->range));
-	brush_size = (scale_nb + 10) / 10;
+    bursh_size_scale = gtk_range_get_value(&(self->range));
+	brush_size = (bursh_size_scale + 10) / 10;
 
 
     return FALSE;

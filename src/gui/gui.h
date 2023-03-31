@@ -24,6 +24,7 @@ gboolean on_previous(GtkButton *self, gpointer user_data);
 gboolean on_next(GtkButton *self, gpointer user_data);
 gboolean on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data);
 gboolean update_scale_val(GtkScale *self, gpointer user_data);
+gboolean on_scroll_event(GtkWidget *widget, GdkEventScroll *event, gpointer user_data);
 void on_new_file(GtkMenuItem *self);
 void on_open_file(GtkMenuItem *menu_item, gpointer user_data);
 void on_save_file(GtkMenuItem *menu_item, gpointer user_data);

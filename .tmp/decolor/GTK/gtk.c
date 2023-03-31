@@ -51,7 +51,7 @@ GtkWidget *image;
 GtkFileChooser *FileChooser;
 GtkFileChooser *chooser;
 GtkScale* scale_glider;
-unsigned char scale_nb = 10;
+unsigned char bursh_size_scale = 10;
 GtkComboBoxText* filtres;
 GtkButton* apply;
 GtkWidget* eventbox;
@@ -433,7 +433,7 @@ gboolean mouse_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
                     pre_img = NULL;
                 }
 
-                drawline(img, sdl_color, start_x, start_y, end_x, end_y, (int)scale_nb / 3, brush_value);
+                drawline(img, sdl_color, start_x, start_y, end_x, end_y, (int)bursh_size_scale / 3, brush_value);
                 gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                 break;
 
@@ -452,7 +452,7 @@ gboolean mouse_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
                     pre_img = NULL;
                 }
 
-                make_empty_square(img, start_x, start_y, end_x, end_y, sdl_color, (int)scale_nb / 2);
+                make_empty_square(img, start_x, start_y, end_x, end_y, sdl_color, (int)bursh_size_scale / 2);
                 gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                 break;
 
@@ -471,7 +471,7 @@ gboolean mouse_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
                     pre_img = NULL;
                 }
 
-                make_empty_triangle(img, start_x, start_y, end_x, end_y, sdl_color, (int)scale_nb / 3, brush_value);
+                make_empty_triangle(img, start_x, start_y, end_x, end_y, sdl_color, (int)bursh_size_scale / 3, brush_value);
                 gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                 break;
 
@@ -490,7 +490,7 @@ gboolean mouse_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
                     pre_img = NULL;
                 }
 
-                bresenham_circle(img, start_x, start_y, end_x, end_y, sdl_color, (int)scale_nb / 3, brush_value);
+                bresenham_circle(img, start_x, start_y, end_x, end_y, sdl_color, (int)bursh_size_scale / 3, brush_value);
                 gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                 break;
 
@@ -585,7 +585,7 @@ gboolean mouse_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
                 shared_stack_push(b2, img2);                                    
                 shared_stack_empty(a2);
 
-                point(img, sdl_color, start_x, start_y, (int)scale_nb / 3, brush_value);   
+                point(img, sdl_color, start_x, start_y, (int)bursh_size_scale / 3, brush_value);   
                 gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                 break;
 
@@ -596,7 +596,7 @@ gboolean mouse_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
                 shared_stack_push(b2, img2);                                    
                 shared_stack_empty(a2);
 
-                filling_seal(img, start_x, start_y, sdl_color, ((int)scale_nb * 255) / 100);   
+                filling_seal(img, start_x, start_y, sdl_color, ((int)bursh_size_scale * 255) / 100);   
                 gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                 break;
                     
@@ -606,7 +606,7 @@ gboolean mouse_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
                 shared_stack_push(b2, img2);                                    
                 shared_stack_empty(a2);
 
-                drawline(img, white, old_x, old_y, pos_x, pos_y, (int)scale_nb / 3, 0);
+                drawline(img, white, old_x, old_y, pos_x, pos_y, (int)bursh_size_scale / 3, 0);
                 gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                 break;
 
@@ -618,7 +618,7 @@ gboolean mouse_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
                 shared_stack_push(b2, img2);                                    
                 shared_stack_empty(a2);
 
-                point_image(img, img2, start_x, start_y, (int)scale_nb / 3, brush_value);   
+                point_image(img, img2, start_x, start_y, (int)bursh_size_scale / 3, brush_value);   
                 gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                 break;
 
@@ -660,7 +660,7 @@ gboolean mouse_moved(GtkWidget *widget,GdkEvent *event, gpointer user_data)
             if (is_pressed)
             {
                 //point(img, sdl_color, pos_x, pos_y, (int)scale_nb);
-                drawline(img, sdl_color, old_x, old_y, pos_x, pos_y, (int)scale_nb / 3, brush_value);
+                drawline(img, sdl_color, old_x, old_y, pos_x, pos_y, (int)bursh_size_scale / 3, brush_value);
                 gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
             }
             /*else
@@ -685,7 +685,7 @@ gboolean mouse_moved(GtkWidget *widget,GdkEvent *event, gpointer user_data)
                 }
 
                 //point(img, sdl_color, pos_x, pos_y, (int)scale_nb);
-                drawline(img, white, old_x, old_y, pos_x, pos_y, (int)scale_nb / 3, 0);
+                drawline(img, white, old_x, old_y, pos_x, pos_y, (int)bursh_size_scale / 3, 0);
                 gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
             }
             else
@@ -702,7 +702,7 @@ gboolean mouse_moved(GtkWidget *widget,GdkEvent *event, gpointer user_data)
                     }
 
                     //point(img, sdl_color, pos_x, pos_y, (int)scale_nb);
-                    drawline_image(img, img2, old_x, old_y, pos_x, pos_y, (int)scale_nb / 3, brush_value);
+                    drawline_image(img, img2, old_x, old_y, pos_x, pos_y, (int)bursh_size_scale / 3, brush_value);
                     gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                 }
                 else
@@ -711,7 +711,7 @@ gboolean mouse_moved(GtkWidget *widget,GdkEvent *event, gpointer user_data)
                     {
                         pre_show = TRUE;
                         pre_img = copy_image(img);
-                        drawline(pre_img, sdl_color, start_x, start_y, pos_x, pos_y, (int)scale_nb / 3, brush_value);
+                        drawline(pre_img, sdl_color, start_x, start_y, pos_x, pos_y, (int)bursh_size_scale / 3, brush_value);
                         gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                     }
                     else
@@ -720,7 +720,7 @@ gboolean mouse_moved(GtkWidget *widget,GdkEvent *event, gpointer user_data)
                         {
                             pre_show = TRUE;
                             pre_img = copy_image(img);
-                            make_empty_square(pre_img, start_x, start_y, pos_x, pos_y, sdl_color, (int)scale_nb / 2);
+                            make_empty_square(pre_img, start_x, start_y, pos_x, pos_y, sdl_color, (int)bursh_size_scale / 2);
                             gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                         }
                         else
@@ -729,7 +729,7 @@ gboolean mouse_moved(GtkWidget *widget,GdkEvent *event, gpointer user_data)
                             {
                                 pre_show = TRUE;
                                 pre_img = copy_image(img);
-                                make_empty_triangle(pre_img, start_x, start_y, pos_x, pos_y, sdl_color, (int)scale_nb / 3, brush_value);
+                                make_empty_triangle(pre_img, start_x, start_y, pos_x, pos_y, sdl_color, (int)bursh_size_scale / 3, brush_value);
                                 gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                             }
                             else
@@ -738,7 +738,7 @@ gboolean mouse_moved(GtkWidget *widget,GdkEvent *event, gpointer user_data)
                                 {
                                     pre_show = TRUE;
                                     pre_img = copy_image(img);
-                                    bresenham_circle(pre_img, start_x, start_y, pos_x, pos_y, sdl_color, (int)scale_nb / 3, brush_value);
+                                    bresenham_circle(pre_img, start_x, start_y, pos_x, pos_y, sdl_color, (int)bursh_size_scale / 3, brush_value);
                                     gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                                 }
                                 else
@@ -1397,7 +1397,7 @@ gboolean update_scale_val(GtkScale *self, gpointer user_data)
     user_data = user_data;
 
     //Actual function :
-    scale_nb = gtk_range_get_value(&(self->range));
+    bursh_size_scale = gtk_range_get_value(&(self->range));
 
     return FALSE;
 }
@@ -1461,21 +1461,21 @@ gboolean on_apply_clicked(GtkButton *self, gpointer user_data)
 
         case 'L':
             {
-                brightness(img, (scale_nb * 2) - 100);
+                brightness(img, (bursh_size_scale * 2) - 100);
                 gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                 return FALSE; //Filtre de Luminosité
             }
 
         case 'F':
             {
-                blur(img, (scale_nb * 4) / 100 + 1);
+                blur(img, (bursh_size_scale * 4) / 100 + 1);
                 gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                 return FALSE; //Flou gaussien
             }
 
         case 'D':
             {
-                img = detection(img, (scale_nb * 4) / 100 + 1);
+                img = detection(img, (bursh_size_scale * 4) / 100 + 1);
                 gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
                 return FALSE; //Flou gaussien
             } 
