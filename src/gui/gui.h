@@ -23,5 +23,6 @@ gboolean on_Color_set(GtkColorChooser *self, gpointer user_data);
 gboolean on_previous(GtkButton *self, gpointer user_data);
 gboolean on_next(GtkButton *self, gpointer user_data);
 gboolean on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data);
+gboolean update_scale_val(GtkScale *self, gpointer user_data);
 
 #endif
