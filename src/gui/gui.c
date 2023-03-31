@@ -22,7 +22,10 @@ GtkWidget *draw_area;
 GtkWidget *brush;
 GtkWidget *gray_scale;
 GtkWidget *redlight;
-GtkWidget *save_file_button;
+GtkWidget *new_file;
+GtkWidget *open_file;
+GtkWidget *save_file;
+GtkWidget *quit;
 GtkColorChooser* color_button;
 GtkButton* bucket;
 GtkWidget* previous;
@@ -84,14 +87,18 @@ int init_interface(int argc, char**argv)
 	label = GTK_WIDGET(gtk_builder_get_object(builder,"label"));
 	draw_area = GTK_WIDGET(gtk_builder_get_object(builder,"draw_area"));
 	brush = GTK_WIDGET(gtk_builder_get_object(builder,"brush_button"));
-	save_file_button = GTK_WIDGET(gtk_builder_get_object(builder,"save_window"));
 	color_button = GTK_COLOR_CHOOSER(gtk_builder_get_object(builder, "color_button"));
 	bucket = GTK_BUTTON(gtk_builder_get_object(builder, "bucket_button"));
 	gray_scale = GTK_WIDGET(gtk_builder_get_object(builder, "grayscale")); 
 	redlight = GTK_WIDGET(gtk_builder_get_object(builder, "red_light")); 
 	next = GTK_WIDGET(gtk_builder_get_object(builder, "redo")); 
 	previous = GTK_WIDGET(gtk_builder_get_object(builder, "undo"));
-    scale_glider = GTK_SCALE(gtk_builder_get_object(builder, "Scale")); 
+    scale_glider = GTK_SCALE(gtk_builder_get_object(builder, "Scale"));
+	quit  = GTK_WIDGET(gtk_builder_get_object(builder,"quit"));
+	save_file = GTK_WIDGET(gtk_builder_get_object(builder,"save_file"));
+	new_file = GTK_WIDGET(gtk_builder_get_object(builder,"new_file"));
+	open_file = GTK_WIDGET(gtk_builder_get_object(builder,"open_file"));
+	quit = GTK_WIDGET(gtk_builder_get_object(builder,"quit"));
 
 	// Create events
 	gtk_widget_add_events(draw_area, GDK_POINTER_MOTION_MASK);
@@ -112,6 +119,12 @@ int init_interface(int argc, char**argv)
     g_signal_connect(next, "clicked", G_CALLBACK(on_next), NULL);
     g_signal_connect (G_OBJECT (window), "key_press_event", G_CALLBACK (on_key_press), NULL);
     g_signal_connect(scale_glider, "value_changed", G_CALLBACK(update_scale_val), NULL);
+	g_signal_connect(window, "destroy", G_CALLBACK(epipaintor_free), NULL);
+    g_signal_connect(new_file, "activate", G_CALLBACK(on_new_file), NULL);
+    g_signal_connect(open_file, "activate", G_CALLBACK(on_open_file), NULL);
+    g_signal_connect(save_file, "activate", G_CALLBACK(on_save_file), NULL);
+    g_signal_connect(quit, "activate", G_CALLBACK(epipaintor_free), NULL);
+	
 
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
@@ -126,6 +139,20 @@ int init_interface(int argc, char**argv)
 	gtk_widget_show(window); // shows the window
 	gtk_main();
 	return EXIT_SUCCESS;
+}
+
+void epipaintor_free(gpointer user_data)
+{
+	// To avoid compilation warning
+    data = user_data;
+
+    shared_stack_destroy(before);
+    shared_stack_destroy(after);
+
+    SDL_FreeSurface(img_buff);
+    //cairo_destroy (cr);
+
+    gtk_main_quit();
 }
 
 gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data)
@@ -299,7 +326,7 @@ gboolean on_bucket(GtkButton *self, gpointer user_data) {
 }
 
 
-void on_file_chooser_menu_item_activate(GtkMenuItem *menu_item, gpointer user_data)
+void on_open_file(GtkMenuItem *menu_item, gpointer user_data)
 {
 	widget = (GtkWidget *) menu_item;
 	data = user_data;
@@ -348,7 +375,7 @@ void on_file_chooser_menu_item_activate(GtkMenuItem *menu_item, gpointer user_da
 	gtk_widget_destroy(file_chooser_dialog);
 }
 
-void on_save_button_clicked(GtkButton *b)
+void on_save_file(GtkButton *b)
 {
 	// Unused variables
 	widget = (GtkWidget *) b;
@@ -425,7 +452,7 @@ void on_gamma_activate(GtkMenuItem *self)
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 }
 
-void on_blankpage_activate(GtkMenuItem *self)
+void on_new_file(GtkMenuItem *self)
 {
 
 	widget = (GtkWidget *) self;
