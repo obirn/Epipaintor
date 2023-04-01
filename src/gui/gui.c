@@ -117,7 +117,7 @@ int init_interface(int argc, char**argv)
 	g_signal_connect (draw_area, "button-release-event", G_CALLBACK(mouse_on_release), NULL);
 	g_signal_connect(brush, "clicked", G_CALLBACK(on_brush), NULL);
 	g_signal_connect(bucket, "clicked", G_CALLBACK(on_bucket), NULL);
-	g_signal_connect(color_button, "color-set", G_CALLBACK(on_Color_set), NULL);
+	g_signal_connect(color_button, "color-set", G_CALLBACK(on_color_set), NULL);
     g_signal_connect(previous, "clicked", G_CALLBACK(on_previous), NULL);
     g_signal_connect(next, "clicked", G_CALLBACK(on_next), NULL);
     g_signal_connect (G_OBJECT (window), "key_press_event", G_CALLBACK (on_key_press), NULL);
@@ -166,7 +166,8 @@ gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data)
 	widget = widget;
 	data = data;
 
-	cairo_scale(cr, scale_factor, scale_factor);
+	// Set the transformation matrix for the cairo context to scale the drawing
+    cairo_scale(cr, scale_factor, scale_factor);
 
 	if (!img_buff) return FALSE;
 
@@ -188,7 +189,7 @@ gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data)
 
 gboolean on_scroll_event(GtkWidget *widget, GdkEventScroll *event, gpointer user_data)
 {
-	(void) user_data; // Used to avoid compilation warning.
+	(void) user_data;
 
     // Adjust the scale factor based on the scroll event
     if (event->direction == GDK_SCROLL_UP) {
@@ -286,7 +287,7 @@ gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 }
 
 
-gboolean on_Color_set(GtkColorChooser *self, gpointer user_data)
+gboolean on_color_set(GtkColorChooser *self, gpointer user_data)
 {
 	data = user_data;
 
@@ -317,8 +318,8 @@ gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data)
 
 	if (!img_buff || !is_pressed) return FALSE;
 
-	//printf("Old coordinates: (%u,%u)\n", old_x, old_y);
-	//printf("coordinates: (%u,%u)\n", pos_x, pos_y);
+	printf("Old coordinates: (%u,%u)\n", old_x, old_y);
+	printf("coordinates: (%u,%u)\n", pos_x, pos_y);
 	switch (selected_tool) {
 		case BRUSH:
 			drawline(img_buff, selected_color, old_x, old_y, pos_x, pos_y, brush_size);

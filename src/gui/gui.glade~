@@ -46,16 +46,6 @@
     <property name="visible">True</property>
     <property name="can-focus">False</property>
   </object>
-  <object class="GtkAdjustment" id="scollbar_horizontal">
-    <property name="upper">1000</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="scrollbar_veritcal">
-    <property name="upper">100</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
-  </object>
   <object class="GtkWindow" id="mainpage">
     <property name="can-focus">False</property>
     <property name="title" translatable="yes">EPIPAINTOR</property>
@@ -165,19 +155,6 @@
           <packing>
             <property name="x">1666</property>
             <property name="y">263</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkScrollbar" id="horizontal_scrollbar">
-            <property name="width-request">1490</property>
-            <property name="height-request">4</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="adjustment">scollbar_horizontal</property>
-          </object>
-          <packing>
-            <property name="x">127</property>
-            <property name="y">987</property>
           </packing>
         </child>
         <child>
@@ -483,19 +460,6 @@
           </packing>
         </child>
         <child>
-          <object class="GtkScrollbar" id="vertical_scrollbar">
-            <property name="width-request">4</property>
-            <property name="height-request">987</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="orientation">vertical</property>
-            <property name="adjustment">scrollbar_veritcal</property>
-          </object>
-          <packing>
-            <property name="x">1604</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkFixed" id="darwing_area_fixed">
             <property name="width-request">1470</property>
             <property name="height-request">905</property>
@@ -503,12 +467,29 @@
             <property name="app-paintable">True</property>
             <property name="can-focus">False</property>
             <child>
-              <object class="GtkDrawingArea" id="draw_area">
+              <object class="GtkScrolledWindow">
                 <property name="width-request">1470</property>
                 <property name="height-request">905</property>
                 <property name="visible">True</property>
-                <property name="app-paintable">True</property>
-                <property name="can-focus">False</property>
+                <property name="can-focus">True</property>
+                <property name="shadow-type">in</property>
+                <child>
+                  <object class="GtkViewport">
+                    <property name="width-request">1470</property>
+                    <property name="height-request">905</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkDrawingArea" id="draw_area">
+                        <property name="width-request">1470</property>
+                        <property name="height-request">905</property>
+                        <property name="visible">True</property>
+                        <property name="app-paintable">True</property>
+                        <property name="can-focus">False</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
@@ -582,7 +563,6 @@
                         <property name="can-focus">False</property>
                         <property name="use-underline">True</property>
                         <property name="use-stock">True</property>
-                        <signal name="activate" handler="on_file_chooser_menu_item_activate" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -592,11 +572,11 @@
                         <property name="can-focus">False</property>
                         <property name="use-underline">True</property>
                         <property name="use-stock">True</property>
-                        <signal name="activate" handler="on_save_button_clicked" swapped="no"/>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkSeparatorMenuItem">
+                      <object class="GtkSeparatorMenuItem" id="separator">
+                        <property name="name">separator</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                       </object>
@@ -752,5 +732,15 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkAdjustment" id="scollbar_horizontal">
+    <property name="upper">1000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="scrollbar_veritcal">
+    <property name="upper">100</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
   </object>
 </interface>
