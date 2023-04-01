@@ -478,7 +478,7 @@ void on_new_file(GtkMenuItem *self)
 {
 
 	widget = (GtkWidget *) self;
-	char *image_path = "../assets/medium_blank.png";
+	char *image_path = "../assets/blank.png";
 	img_buff = load_image(image_path);
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 }
