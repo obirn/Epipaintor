@@ -388,7 +388,7 @@ void on_open_file(GtkMenuItem *menu_item, gpointer user_data)
 void on_save_file(GtkMenuItem *menu_item, gpointer user_data)
 {
 	// Used to avoid compilations warning
-	widget = (GtkWidget *) widget;
+	widget = (GtkWidget *) menu_item;
 	data = user_data;
 	
   	GtkWidget *file_saver_dialog = gtk_file_chooser_dialog_new("Save File", NULL,
