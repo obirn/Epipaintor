@@ -419,7 +419,7 @@ gboolean on_mouse_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 			break;
 		case LINE:
 			Uint32 color = SDL_MapRGB(pre_visualisation->format, selected_color.r, selected_color.g, selected_color.b);
-			img_buff = line(pre_visualisation, color, on_press_x, 
+			img_buff = line(img_buff, color, on_press_x, 
 									 on_press_y, curr_x, curr_y, brush_size);
 			break;
 	}
