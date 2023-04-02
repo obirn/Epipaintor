@@ -14,6 +14,8 @@
 GtkMenuItem *self;
 GtkBuilder *builder;
 GtkWidget *window;
+GtkWidget *color_window;
+GtkWidget *color_filter;
 GtkWidget *fixed1;
 GtkWidget *image;
 GtkWidget *label;
@@ -22,6 +24,7 @@ GtkWidget *fixed2;
 GtkWidget *draw_area;
 GtkWidget *brush;
 GtkWidget *gray_scale;
+GtkWidget *otsu;
 GtkWidget *redlight;
 GtkWidget *new_file;
 GtkWidget *open_file;
@@ -41,8 +44,16 @@ GtkWidget* threshold_window;
 GtkWidget *apply_button;
 GtkWidget *apply_button_gamma;
 GtkWidget *apply_button_threshold;
+GtkWidget *apply_button_color;
 GtkScale* gamma_slider;
 GtkScale* threshold_slider;
+GtkScale* color_threshold_slider;
+GtkScale* r1_slider;
+GtkScale* r2_slider;
+GtkScale* g1_slider;
+GtkScale* g2_slider;
+GtkScale* b1_slider;
+GtkScale* b2_slider;
 // Shared stack used to stock modifications
 shared_stack* before;
 shared_stack* after;
@@ -91,6 +102,7 @@ int init_interface(int argc, char**argv)
 
 	// Load wigdets
 	window = GTK_WIDGET(gtk_builder_get_object(builder,"mainpage"));
+	color_window=  GTK_WIDGET(gtk_builder_get_object(builder,"color_window"));
 	fixed1 = GTK_WIDGET(gtk_builder_get_object(builder,"fixed1"));
 	button = GTK_WIDGET(gtk_builder_get_object(builder,"button"));
 	image = GTK_WIDGET(gtk_builder_get_object(builder,"image_window"));
@@ -100,6 +112,7 @@ int init_interface(int argc, char**argv)
 	color_button = GTK_COLOR_CHOOSER(gtk_builder_get_object(builder, "color_button"));
 	bucket = GTK_BUTTON(gtk_builder_get_object(builder, "bucket_button"));
 	gray_scale = GTK_WIDGET(gtk_builder_get_object(builder, "grayscale")); 
+	gray_scale = GTK_WIDGET(gtk_builder_get_object(builder, "otsu_threshold")); 
 	redlight = GTK_WIDGET(gtk_builder_get_object(builder, "red_light")); 
 	next = GTK_WIDGET(gtk_builder_get_object(builder, "redo")); 
 	previous = GTK_WIDGET(gtk_builder_get_object(builder, "undo"));
@@ -113,14 +126,20 @@ int init_interface(int argc, char**argv)
 	gaussian_blur_slider =GTK_SCALE(gtk_builder_get_object(builder,"gaussian_blur_slider"));
 	apply_button = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button"));
 	apply_button_gamma = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button_gamma"));
+	apply_button_color = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button_color"));
 	gamma_slider=GTK_SCALE(gtk_builder_get_object(builder,"gamma_slider"));
 	threshold_slider=GTK_SCALE(gtk_builder_get_object(builder,"threshold_slider"));
 	apply_button_threshold = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button_threshold"));
-	/*color_threshold_window;
-	gaussian_blur_window;
-	custom_filter_window;*/
 	gamma_window = GTK_WIDGET(gtk_builder_get_object(builder,"gamma_window"));
-	threshold_window = GTK_WIDGET(gtk_builder_get_object(builder,"threshold_window"));;
+	threshold_window = GTK_WIDGET(gtk_builder_get_object(builder,"threshold_window"));
+	//r1_slider= GTK_SCALE(gtk_builder_get_object(builder,"r1_slider"));
+	r1_slider= GTK_SCALE(gtk_builder_get_object(builder,"r1_slider"));
+	r2_slider = GTK_SCALE(gtk_builder_get_object(builder,"r2_slider"));
+	g1_slider= GTK_SCALE(gtk_builder_get_object(builder,"g1_slider"));
+	g2_slider= GTK_SCALE(gtk_builder_get_object(builder,"g2_slider"));
+	b1_slider= GTK_SCALE(gtk_builder_get_object(builder,"b1_slider"));
+	b2_slider= GTK_SCALE(gtk_builder_get_object(builder,"b2_slider"));
+	color_threshold_slider= GTK_SCALE(gtk_builder_get_object(builder,"color_threshold_slider"));
 
 	// Create events
 	gtk_widget_add_events(draw_area, GDK_POINTER_MOTION_MASK);
@@ -148,10 +167,23 @@ int init_interface(int argc, char**argv)
     g_signal_connect(quit, "activate", G_CALLBACK(epipaintor_free), NULL);
 	g_signal_connect(gaussian_blur_slider, "value_changed", G_CALLBACK(gaussian_blur_value), NULL);
 	g_signal_connect(apply_button, "clicked", G_CALLBACK(gaussian_blur_apply), NULL);
+	g_signal_connect(apply_button, "clicked", G_CALLBACK(gaussian_blur_apply), NULL);
 	g_signal_connect(apply_button_gamma, "clicked", G_CALLBACK(gamma_apply), NULL); 
 	g_signal_connect(gamma_slider, "value_changed", G_CALLBACK(gamma_value), NULL);
 	g_signal_connect(apply_button_threshold, "clicked", G_CALLBACK(threshold_apply), NULL);
 	g_signal_connect(threshold_slider, "value_changed", G_CALLBACK(threshold_value), NULL);
+	g_signal_connect(color_threshold_slider, "value_changed", G_CALLBACK(color_threshold_value), NULL);
+	g_signal_connect(r1_slider, "value_changed", G_CALLBACK(r1_value), NULL);
+	g_signal_connect(r2_slider, "value_changed", G_CALLBACK(r2_value), NULL);
+	g_signal_connect(g1_slider, "value_changed", G_CALLBACK(g1_value), NULL);
+	g_signal_connect(g2_slider, "value_changed", G_CALLBACK(g2_value), NULL);
+	g_signal_connect(b1_slider, "value_changed", G_CALLBACK(b1_value), NULL);
+	g_signal_connect(b2_slider, "value_changed", G_CALLBACK(b2_value), NULL); 
+	g_signal_connect(apply_button_color, "clicked", G_CALLBACK(color_apply), NULL);
+
+
+
+
 
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
@@ -441,6 +473,17 @@ void on_grayscale_activate(GtkMenuItem *self)
 }
 
 
+void on_otsu_threshold_activate(GtkMenuItem *self)
+{
+	shared_stack_push(before, img_buff);
+	shared_stack_empty(after);
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	img_buff = otsu_threshold(img_buff);
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+}
+
 void on_red_light_activate(GtkMenuItem *self)
 {
 	if(img_buff==NULL)
@@ -479,7 +522,72 @@ unsigned char gaussian_blur_value(GtkScale *self)
 	widget = (GtkWidget *) self;
 	return gtk_range_get_value(&(self->range));
 }
+void on_color_filter_activate(GtkMenuItem *self)
+{	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	GtkWidget *window = color_window;
+	gtk_window_set_title(GTK_WINDOW(window), "Color Threshold");
+    gtk_widget_show_all(window);
 
+}
+
+
+unsigned char  r1_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+}
+unsigned char  color_threshold_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+
+}
+unsigned char  r2_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+}
+unsigned char  g1_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+}
+unsigned char  g2_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+}
+unsigned char  b1_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+}
+unsigned char  b2_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+}
+gboolean color_apply(GtkScale *self, gpointer user_data)
+{
+	printf("check");
+	shared_stack_push(before, img_buff);
+	shared_stack_empty(after);
+	unsigned char value = color_threshold_value(color_threshold_slider);
+	unsigned char value_r1 = r1_value(r1_slider);
+	unsigned char value_g1 = g1_value(g1_slider);
+	unsigned char value_b1 = b1_value(b1_slider);
+	unsigned char value_r2 = r2_value(r2_slider);
+	unsigned char value_g2 = g2_value(g2_slider);
+	unsigned char value_b2 = b2_value(b2_slider);
+
+	img_buff = color_threshold(img_buff,value,value_r1,value_g1,value_b1,value_r2,value_g2,value_b2);
+	widget = (GtkWidget *) self;
+	user_data = user_data;
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	return TRUE;
+}
 
 void on_binarize_activate(GtkMenuItem *self)
 {
@@ -675,6 +783,7 @@ void on_threshold_activate(GtkMenuItem *self)
 	gtk_window_set_title(GTK_WINDOW(window), "Threshold");
     gtk_widget_show_all(window);
 }
+
 
 gboolean update_scale_val(GtkScale *self, gpointer user_data)
 {
