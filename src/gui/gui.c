@@ -468,7 +468,6 @@ gboolean gaussian_blur_apply(GtkScale *self, gpointer user_data)
 	shared_stack_push(before, img_buff);
 	shared_stack_empty(after);
 	unsigned char value = gaussian_blur_value(gaussian_blur_slider);
-	printf("value %d",value);
 	img_buff = gaussian(img_buff,value);
 	widget = (GtkWidget *) self;
 	user_data = user_data;
@@ -508,6 +507,7 @@ void on_gaussian_blur_activate(GtkMenuItem *self)
 	widget = (GtkWidget *) self;
 	
 	GtkWidget *window = gaussian_blur_window;
+	gtk_window_set_title(GTK_WINDOW(window), "Gaussian Blur");
     gtk_widget_show_all(window);
 }
 
@@ -519,7 +519,9 @@ void on_gamma_activate(GtkMenuItem *self)
 	widget = (GtkWidget *) self;
 	
 	GtkWidget *window = gamma_window;
+	gtk_window_set_title(GTK_WINDOW(window), "Gamma");
     gtk_widget_show_all(window);
+   
 }
 
 
@@ -670,6 +672,7 @@ void on_threshold_activate(GtkMenuItem *self)
 		return;
 	widget = (GtkWidget *) self;
 	GtkWidget *window = threshold_window;
+	gtk_window_set_title(GTK_WINDOW(window), "Threshold");
     gtk_widget_show_all(window);
 }
 
