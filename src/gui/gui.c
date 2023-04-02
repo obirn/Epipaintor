@@ -31,8 +31,14 @@ GtkButton* bucket;
 GtkWidget* previous;
 GtkWidget* next;
 GtkScale* scale_glider;
-
-
+GtkScale* gaussian_blur_slider;
+GtkWidget* color_threshold_window;
+GtkWidget* gaussian_blur_window;
+GtkWidget* custom_filter_window;
+GtkWidget* gamma_window;
+GtkWidget *apply_button;
+GtkWidget *apply_button_gamma;
+GtkScale* gamma_slider;
 // Shared stack used to stock modifications
 shared_stack* before;
 shared_stack* after;
@@ -99,6 +105,16 @@ int init_interface(int argc, char**argv)
 	new_file = GTK_WIDGET(gtk_builder_get_object(builder,"new_file"));
 	open_file = GTK_WIDGET(gtk_builder_get_object(builder,"open_file"));
 	quit = GTK_WIDGET(gtk_builder_get_object(builder,"quit"));
+	gaussian_blur_window = GTK_WIDGET(gtk_builder_get_object(builder,"gaussian_blur_window"));
+	gaussian_blur_slider =GTK_SCALE(gtk_builder_get_object(builder,"gaussian_blur_slider"));
+	apply_button = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button"));
+	apply_button_gamma = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button_gamma"));
+	gamma_slider=GTK_SCALE(gtk_builder_get_object(builder,"gamma_slider"));
+	
+	/*color_threshold_window;
+	gaussian_blur_window;
+	custom_filter_window;*/
+	gamma_window = GTK_WIDGET(gtk_builder_get_object(builder,"gamma_window"));;
 
 	// Create events
 	gtk_widget_add_events(draw_area, GDK_POINTER_MOTION_MASK);
@@ -124,7 +140,10 @@ int init_interface(int argc, char**argv)
     g_signal_connect(open_file, "activate", G_CALLBACK(on_open_file), NULL);
     g_signal_connect(save_file, "activate", G_CALLBACK(on_save_file), NULL);
     g_signal_connect(quit, "activate", G_CALLBACK(epipaintor_free), NULL);
-	
+	g_signal_connect(gaussian_blur_slider, "value_changed", G_CALLBACK(gaussian_blur_value), NULL);
+	g_signal_connect(apply_button, "clicked", G_CALLBACK(gaussian_blur_apply), NULL);
+	g_signal_connect(apply_button_gamma, "clicked", G_CALLBACK(gamma_apply), NULL); ;
+	g_signal_connect(gamma_slider, "value_changed", G_CALLBACK(gamma_value), NULL);
 
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
@@ -438,14 +457,25 @@ void on_sepia_activate(GtkMenuItem *self)
 
 
 
-void on_gaussian_blur_activate(GtkMenuItem *self)
+gboolean gaussian_blur_apply(GtkScale *self, gpointer user_data)
 {
-	if(img_buff==NULL)
-		return;
+	shared_stack_push(before, img_buff);
+	shared_stack_empty(after);
+	unsigned char value = gaussian_blur_value(gaussian_blur_slider);
+	printf("value %d",value);
+	img_buff = gaussian(img_buff,value);
 	widget = (GtkWidget *) self;
-	img_buff = gaussian(img_buff,10);
+	user_data = user_data;
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	return TRUE;
 }
+unsigned char gaussian_blur_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+}
+
+
 void on_binarize_activate(GtkMenuItem *self)
 {
 	if(img_buff==NULL)
@@ -464,14 +494,47 @@ void on_negative_activate(GtkMenuItem *self)
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 }
 
-
-void on_gamma_activate(GtkMenuItem *self)
+void on_gaussian_blur_activate(GtkMenuItem *self)
 {
+    
 	if(img_buff==NULL)
 		return;
 	widget = (GtkWidget *) self;
-	img_buff = gam(img_buff,10);
+	
+	GtkWidget *window = gaussian_blur_window;
+    gtk_widget_show(window);
+}
+
+void on_gamma_activate(GtkMenuItem *self)
+{
+    
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	
+	GtkWidget *window = gamma_window;
+    gtk_widget_show(window);
+}
+
+
+unsigned char gamma_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return (gtk_range_get_value(&(self->range)));
+}
+
+gboolean gamma_apply(GtkScale *self, gpointer user_data)
+{
+
+	shared_stack_push(before, img_buff);
+	shared_stack_empty(after);
+	widget = (GtkWidget *) self;
+	unsigned char value = gamma_value(gamma_slider);
+	img_buff = gam(img_buff,value);
+		user_data = user_data;
+
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	return TRUE;
 }
 
 void on_new_file(GtkMenuItem *self)
@@ -587,3 +650,4 @@ gboolean update_scale_val(GtkScale *self, gpointer user_data)
 
     return FALSE;
 }
+
