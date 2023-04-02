@@ -9,6 +9,7 @@
 #include "../data_structs/shared_stack.h"
 #include "../image_utils/tools.h"
 #include "../filters/filters.h"
+#include "../shapes/shapes.h"
 
 // Glade related
 GtkMenuItem *self;
@@ -32,6 +33,10 @@ GtkWidget *save_file;
 GtkWidget *quit;
 GtkColorChooser* color_button;
 GtkButton* bucket;
+GtkButton* line_button;
+GtkButton* rectangle_button;
+GtkButton* triangle_button;
+GtkButton* circle_button;
 GtkWidget* previous;
 GtkWidget* next;
 GtkScale* scale_glider;
@@ -65,19 +70,21 @@ unsigned char scale_nb = 10;
 int brush_size = 2;
 
 // SDL Related
-SDL_Surface* img_buff;
+SDL_Surface* img_buff= NULL;
+SDL_Surface* pre_visualisation = NULL;
 
 // Booleans
-int is_pressed;
+int is_pressed = FALSE;
 
 // Mouse coordinates
-int pos_x = 0;
-int pos_y = 0;
-int old_x = 0;
-int old_y = 0;
+int curr_x = 0;
+int curr_y = 0;
 
-int start_x = 0;
-int start_y = 0;
+int last_x = 0;
+int last_y = 0;
+
+int on_press_x = 0;
+int on_press_y = 0;
 int end_x = 0;
 int end_y = 0;
 
@@ -90,7 +97,6 @@ GdkEvent* event;
 GdkRGBA gdk_color = {.red = 0, .green = 0, .blue = 0, .alpha = 1};
 
 SDL_Color selected_color = {.r = 0, .g = 0, .b = 0};
-SDL_Color color_buff = {.r = 0, .g = 0, .b = 0};
 SDL_Color white = {.r = 255, .g = 255, .b = 255};
 
 
@@ -111,6 +117,10 @@ int init_interface(int argc, char**argv)
 	brush = GTK_WIDGET(gtk_builder_get_object(builder,"brush_button"));
 	color_button = GTK_COLOR_CHOOSER(gtk_builder_get_object(builder, "color_button"));
 	bucket = GTK_BUTTON(gtk_builder_get_object(builder, "bucket_button"));
+	line_button = GTK_BUTTON(gtk_builder_get_object(builder, "line"));
+	rectangle_button = GTK_BUTTON(gtk_builder_get_object(builder, "rectangle"));
+	circle_button = GTK_BUTTON(gtk_builder_get_object(builder, "circle"));
+	triangle_button = GTK_BUTTON(gtk_builder_get_object(builder, "triangle"));
 	gray_scale = GTK_WIDGET(gtk_builder_get_object(builder, "grayscale")); 
 	gray_scale = GTK_WIDGET(gtk_builder_get_object(builder, "otsu_threshold")); 
 	redlight = GTK_WIDGET(gtk_builder_get_object(builder, "red_light")); 
@@ -150,12 +160,16 @@ int init_interface(int argc, char**argv)
 	gtk_builder_connect_signals(builder,NULL);
 	g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL);
 	g_signal_connect (G_OBJECT (draw_area), "draw", G_CALLBACK (draw_callback), NULL);
-	g_signal_connect (draw_area, "motion-notify-event", G_CALLBACK(mouse_on_move), NULL);
-	g_signal_connect (draw_area, "button-press-event", G_CALLBACK(mouse_on_press), NULL);
-	g_signal_connect (draw_area, "button-release-event", G_CALLBACK(mouse_on_release), NULL);
-	g_signal_connect(brush, "clicked", G_CALLBACK(on_brush), NULL);
-	g_signal_connect(bucket, "clicked", G_CALLBACK(on_bucket), NULL);
-	g_signal_connect(color_button, "color-set", G_CALLBACK(on_Color_set), NULL);
+	g_signal_connect (draw_area, "motion-notify-event", G_CALLBACK(on_mouse_move), NULL);
+	g_signal_connect (draw_area, "button-press-event", G_CALLBACK(on_mouse_press), NULL);
+	g_signal_connect (draw_area, "button-release-event", G_CALLBACK(on_mouse_release), NULL);
+	g_signal_connect(brush, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *) BRUSH);
+	g_signal_connect(bucket, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *)BUCKET);
+	g_signal_connect(rectangle_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *)RECTANGLE);
+	g_signal_connect(triangle_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *)TRIANGLE);
+	g_signal_connect(circle_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *) CIRCLE);
+	g_signal_connect(line_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *) LINE);
+	g_signal_connect(color_button, "color-set", G_CALLBACK(on_color_set), NULL);
     g_signal_connect(previous, "clicked", G_CALLBACK(on_previous), NULL);
     g_signal_connect(next, "clicked", G_CALLBACK(on_next), NULL);
     g_signal_connect (G_OBJECT (window), "key_press_event", G_CALLBACK (on_key_press), NULL);
@@ -166,7 +180,6 @@ int init_interface(int argc, char**argv)
     g_signal_connect(save_file, "activate", G_CALLBACK(on_save_file), NULL);
     g_signal_connect(quit, "activate", G_CALLBACK(epipaintor_free), NULL);
 	g_signal_connect(gaussian_blur_slider, "value_changed", G_CALLBACK(gaussian_blur_value), NULL);
-	g_signal_connect(apply_button, "clicked", G_CALLBACK(gaussian_blur_apply), NULL);
 	g_signal_connect(apply_button, "clicked", G_CALLBACK(gaussian_blur_apply), NULL);
 	g_signal_connect(apply_button_gamma, "clicked", G_CALLBACK(gamma_apply), NULL); 
 	g_signal_connect(gamma_slider, "value_changed", G_CALLBACK(gamma_value), NULL);
@@ -215,13 +228,21 @@ void epipaintor_free(gpointer user_data)
 gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data)
 {
 	//Unused parameters :
-	widget = widget;
-	data = data;
+	(void) widget;
+	(void) data;
 
 	if (!img_buff) return FALSE;
 
 	//Actual function :
-	SDL_SaveBMP(img_buff, "../cache/img_buff.bmp");
+	if (pre_visualisation) {
+		SDL_SaveBMP(pre_visualisation, "../cache/img_buff.bmp");
+		SDL_FreeSurface(pre_visualisation);
+		pre_visualisation = NULL;
+	}
+	else {
+		SDL_SaveBMP(img_buff, "../cache/img_buff.bmp");
+	}
+
 	GdkPixbuf *pixbuf;
 
 	pixbuf = gdk_pixbuf_new_from_file("../cache/img_buff.bmp", NULL);
@@ -271,20 +292,20 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 	return FALSE;
 }
 
-gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
+gboolean on_mouse_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 {
-	// Save unused variables to avoid warning
-	widget = self;
-	event = event;
-	data = user_data;
+	// Cast unused variables to void to avoid warning
+	(void) self;
+	(void) event;
+	(void) user_data;
 
 	is_pressed = TRUE;
-	start_x = pos_x;
-	start_y = pos_y;
+	on_press_x = curr_x;
+	on_press_y = curr_y;
 
-	//printf("(x, y) = (%i, %i)\n", start_x, start_y);
+	//printf("(x, y) = (%i, %i)\n", on_press_x, on_press_y);
 
-	if (selected_tool == NONE)
+	if (!img_buff || selected_tool == NONE)
 		return FALSE;
 
 	shared_stack_push(before, img_buff);
@@ -295,7 +316,7 @@ gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 		case BRUSH:
 			break;
 		case BUCKET:
-			img_buff = bucket_fill(img_buff, start_x, start_y, (Uint8) selected_color.r, \
+			img_buff = bucket_fill(img_buff, on_press_x, on_press_y, (Uint8) selected_color.r, \
 					(Uint8) selected_color.g, (Uint8) selected_color.b,70);
 			gtk_widget_queue_draw_area(draw_area, 0, 0, img_buff->w, img_buff->h);
 			break;
@@ -304,7 +325,63 @@ gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 	return FALSE;
 }
 
-gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
+gboolean on_mouse_move(GtkWidget *widget,GdkEvent *event, gpointer user_data) 
+{
+	// Unused parameters :
+	(void) widget;
+	(void) user_data;
+	
+	if (!(event->type==GDK_MOTION_NOTIFY))
+		return TRUE;
+
+	GdkEventMotion* e = (GdkEventMotion*) event;
+	last_x = curr_x;
+	last_y = curr_y;
+	curr_x = (guint) e->x;
+	curr_y = (guint) e->y;
+
+
+	if (!img_buff || !is_pressed) return FALSE;
+
+	switch (selected_tool) {
+		case BRUSH:
+			drawline(img_buff, selected_color, last_x, last_y, curr_x, curr_y, brush_size);
+			break;
+		case RECTANGLE:
+			pre_visualisation = copy_image(img_buff);
+			pre_visualisation = rectangle(pre_visualisation, on_press_x, 
+										  on_press_y, curr_x, curr_y, 
+										  selected_color.r, selected_color.g, 
+										  selected_color.b, brush_size);
+			break;
+		case TRIANGLE:
+			pre_visualisation = copy_image(img_buff);
+			pre_visualisation = triangle(pre_visualisation, on_press_x, 
+										  on_press_y, curr_x, curr_y, 
+										  selected_color.r, selected_color.g, 
+										  selected_color.b, brush_size);
+			break;
+		case CIRCLE:
+			pre_visualisation = copy_image(img_buff);
+			pre_visualisation = circle(pre_visualisation, on_press_x, 
+										  on_press_y, curr_x, curr_y, 
+										  selected_color.r, selected_color.g, 
+										  selected_color.b, brush_size);
+			break;
+		case LINE:
+			pre_visualisation = copy_image(img_buff);
+			Uint32 color = SDL_MapRGB(pre_visualisation->format, selected_color.r, selected_color.g, selected_color.b);
+			pre_visualisation = line(pre_visualisation, color, on_press_x, 
+									 on_press_y, curr_x, curr_y, brush_size);
+			break;
+	}
+
+
+	gtk_widget_queue_draw_area(draw_area, 0, 0, img_buff->w, img_buff->h);
+	return TRUE;
+}
+
+gboolean on_mouse_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 {
 	// Used to avoid compilations warning.
 	widget = self;
@@ -312,14 +389,47 @@ gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 	data = user_data;
 
 	is_pressed = FALSE;
-	start_x = pos_x;
-	start_y = pos_y;
+	// on_press_x = curr_x;
+	// on_press_y = curr_y;
 
+	if (pre_visualisation)
+	{
+		SDL_FreeSurface(pre_visualisation);
+		pre_visualisation = NULL;
+	}
+
+	switch (selected_tool) {
+		case RECTANGLE:
+			img_buff = rectangle(img_buff, on_press_x, 
+										  on_press_y, curr_x, curr_y, 
+										  selected_color.r, selected_color.g, 
+										  selected_color.b, brush_size);
+			break;
+		case TRIANGLE:
+			img_buff = triangle(img_buff, on_press_x, 
+										  on_press_y, curr_x, curr_y, 
+										  selected_color.r, selected_color.g, 
+										  selected_color.b, brush_size);
+			break;
+		case CIRCLE:
+			img_buff = circle(img_buff, on_press_x, 
+										  on_press_y, curr_x, curr_y, 
+										  selected_color.r, selected_color.g, 
+										  selected_color.b, brush_size);
+			break;
+		case LINE:
+			Uint32 color = SDL_MapRGB(pre_visualisation->format, selected_color.r, selected_color.g, selected_color.b);
+			img_buff = line(pre_visualisation, color, on_press_x, 
+									 on_press_y, curr_x, curr_y, brush_size);
+			break;
+	}
+
+	gtk_widget_queue_draw_area(draw_area, 0, 0, img_buff->w, img_buff->h);
 	return FALSE;
 }
 
 
-gboolean on_Color_set(GtkColorChooser *self, gpointer user_data)
+gboolean on_color_set(GtkColorChooser *self, gpointer user_data)
 {
 	data = user_data;
 
@@ -330,54 +440,11 @@ gboolean on_Color_set(GtkColorChooser *self, gpointer user_data)
 	return FALSE;
 }
 
-
-gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data) 
-{
-
-	//Unused parameters :
-	widget = widget;
-	data = user_data;
-	
-	if (!(event->type==GDK_MOTION_NOTIFY))
-		return TRUE;
-
-	GdkEventMotion* e =(GdkEventMotion*)event;
-	old_x = pos_x;
-	old_y = pos_y;
-	pos_x = (guint) e->x;
-	pos_y = (guint) e->y;
-
-
-	if (!img_buff || !is_pressed) return FALSE;
-
-	//printf("Old coordinates: (%u,%u)\n", old_x, old_y);
-	//printf("coordinates: (%u,%u)\n", pos_x, pos_y);
-	switch (selected_tool) {
-		case BRUSH:
-			drawline(img_buff, selected_color, old_x, old_y, pos_x, pos_y, brush_size);
-			gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
-			return TRUE;
-	}
-
-	return TRUE;
-}
-
-gboolean on_brush(GtkButton *self, gpointer user_data) {
+gboolean on_tool_clicked(GtkButton *self, gpointer user_data) {
 	// Unused variables
-	widget = (GtkWidget *) self;
-	data = user_data;
+	(void) self;
 
-	selected_tool = BRUSH; 
-
-	return FALSE;
-}
-
-gboolean on_bucket(GtkButton *self, gpointer user_data) {
-	// Unused variables
-	widget = (GtkWidget *) self;
-	data = user_data;
-
-	selected_tool = BUCKET; 
+	selected_tool = (intptr_t) user_data;
 
 	return FALSE;
 }
@@ -767,7 +834,7 @@ gboolean on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data
                 // shared_stack_push(b2, img2);                                    
                 // shared_stack_empty(a2);
 
-                // past_selection(img, copy_crop_img, pos_x, pos_y);
+                // past_selection(img, copy_crop_img, curr_x, pos_y);
                 // gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
             return FALSE;
     }
