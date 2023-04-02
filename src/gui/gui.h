@@ -26,6 +26,8 @@ gboolean on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data
 gboolean update_scale_val(GtkScale *self, gpointer user_data);
 gboolean gaussian_blur_apply(GtkScale *self, gpointer user_data);
 gboolean gamma_apply(GtkScale *self, gpointer user_data);
+gboolean threshold_apply(GtkScale *self, gpointer user_data);
+unsigned char threshold_value(GtkScale *self);
 unsigned char gamma_value(GtkScale *self);
 unsigned char gaussian_blur_value(GtkScale *self);
 void on_new_file(GtkMenuItem *self);
