@@ -11,6 +11,7 @@
 #include "../filters/filters.h"
 
 // Glade related
+GtkMenuItem *self;
 GtkBuilder *builder;
 GtkWidget *window;
 GtkWidget *fixed1;
@@ -36,9 +37,12 @@ GtkWidget* color_threshold_window;
 GtkWidget* gaussian_blur_window;
 GtkWidget* custom_filter_window;
 GtkWidget* gamma_window;
+GtkWidget* threshold_window;
 GtkWidget *apply_button;
 GtkWidget *apply_button_gamma;
+GtkWidget *apply_button_threshold;
 GtkScale* gamma_slider;
+GtkScale* threshold_slider;
 // Shared stack used to stock modifications
 shared_stack* before;
 shared_stack* after;
@@ -110,11 +114,13 @@ int init_interface(int argc, char**argv)
 	apply_button = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button"));
 	apply_button_gamma = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button_gamma"));
 	gamma_slider=GTK_SCALE(gtk_builder_get_object(builder,"gamma_slider"));
-	
+	threshold_slider=GTK_SCALE(gtk_builder_get_object(builder,"threshold_slider"));
+	apply_button_threshold = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button_threshold"));
 	/*color_threshold_window;
 	gaussian_blur_window;
 	custom_filter_window;*/
-	gamma_window = GTK_WIDGET(gtk_builder_get_object(builder,"gamma_window"));;
+	gamma_window = GTK_WIDGET(gtk_builder_get_object(builder,"gamma_window"));
+	threshold_window = GTK_WIDGET(gtk_builder_get_object(builder,"threshold_window"));;
 
 	// Create events
 	gtk_widget_add_events(draw_area, GDK_POINTER_MOTION_MASK);
@@ -142,15 +148,15 @@ int init_interface(int argc, char**argv)
     g_signal_connect(quit, "activate", G_CALLBACK(epipaintor_free), NULL);
 	g_signal_connect(gaussian_blur_slider, "value_changed", G_CALLBACK(gaussian_blur_value), NULL);
 	g_signal_connect(apply_button, "clicked", G_CALLBACK(gaussian_blur_apply), NULL);
-	g_signal_connect(apply_button_gamma, "clicked", G_CALLBACK(gamma_apply), NULL); ;
+	g_signal_connect(apply_button_gamma, "clicked", G_CALLBACK(gamma_apply), NULL); 
 	g_signal_connect(gamma_slider, "value_changed", G_CALLBACK(gamma_value), NULL);
+	g_signal_connect(apply_button_threshold, "clicked", G_CALLBACK(threshold_apply), NULL);
+	g_signal_connect(threshold_slider, "value_changed", G_CALLBACK(threshold_value), NULL);
 
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
 	gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
-	gtk_window_set_icon_from_file(GTK_WINDOW(window),"../assets/logo_200x200.png",NULL);
-
-	// Stacks Initialization
+	gtk_window_set_icon_from_file(GTK_WINDOW(window),"../assets/logo_200x200.png",NULL);	// Stacks Initialization
     before = shared_stack_new();
     after = shared_stack_new();
 
@@ -502,7 +508,7 @@ void on_gaussian_blur_activate(GtkMenuItem *self)
 	widget = (GtkWidget *) self;
 	
 	GtkWidget *window = gaussian_blur_window;
-    gtk_widget_show(window);
+    gtk_widget_show_all(window);
 }
 
 void on_gamma_activate(GtkMenuItem *self)
@@ -513,7 +519,29 @@ void on_gamma_activate(GtkMenuItem *self)
 	widget = (GtkWidget *) self;
 	
 	GtkWidget *window = gamma_window;
-    gtk_widget_show(window);
+    gtk_widget_show_all(window);
+}
+
+
+
+unsigned char threshold_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return (gtk_range_get_value(&(self->range)));
+}
+
+gboolean threshold_apply(GtkScale *self, gpointer user_data)
+{
+	shared_stack_push(before, img_buff);
+	shared_stack_empty(after);
+	widget = (GtkWidget *) self;
+	unsigned char value = threshold_value(threshold_slider);
+	img_buff = threshold(img_buff,value);
+	user_data = user_data;
+
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	return TRUE;
+
 }
 
 
@@ -635,6 +663,14 @@ gboolean on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data
     }
 
     return FALSE;
+}
+void on_threshold_activate(GtkMenuItem *self)
+{
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	GtkWidget *window = threshold_window;
+    gtk_widget_show_all(window);
 }
 
 gboolean update_scale_val(GtkScale *self, gpointer user_data)
