@@ -1,10 +1,7 @@
 #ifndef GUI_H
 #define GUI_H
 
-// Tools:
-#define NONE 0
-#define BRUSH 1
-#define BUCKET 2
+enum tools {NONE, BRUSH, BUCKET, SQUARE, CIRCLE, TRIANGLE};
 
 #include <gtk/gtk.h>
 
@@ -19,6 +16,7 @@ gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data);
 gboolean on_Color_set(GtkColorChooser *self, gpointer user_data);
 gboolean on_brush(GtkButton *self, gpointer user_data);
 gboolean on_bucket(GtkButton *self, gpointer user_data);
+gboolean on_square(GtkButton *self, gpointer user_data);
 gboolean on_Color_set(GtkColorChooser *self, gpointer user_data);
 gboolean on_previous(GtkButton *self, gpointer user_data);
 gboolean on_next(GtkButton *self, gpointer user_data);

@@ -32,6 +32,9 @@ GtkWidget *save_file;
 GtkWidget *quit;
 GtkColorChooser* color_button;
 GtkButton* bucket;
+GtkButton* square;
+GtkButton* triangle;
+GtkButton* circle;
 GtkWidget* previous;
 GtkWidget* next;
 GtkScale* scale_glider;
@@ -111,6 +114,7 @@ int init_interface(int argc, char**argv)
 	brush = GTK_WIDGET(gtk_builder_get_object(builder,"brush_button"));
 	color_button = GTK_COLOR_CHOOSER(gtk_builder_get_object(builder, "color_button"));
 	bucket = GTK_BUTTON(gtk_builder_get_object(builder, "bucket_button"));
+	square = GTK_BUTTON(gtk_builder_get_object(builder, "square"));
 	gray_scale = GTK_WIDGET(gtk_builder_get_object(builder, "grayscale")); 
 	gray_scale = GTK_WIDGET(gtk_builder_get_object(builder, "otsu_threshold")); 
 	redlight = GTK_WIDGET(gtk_builder_get_object(builder, "red_light")); 
@@ -378,6 +382,16 @@ gboolean on_bucket(GtkButton *self, gpointer user_data) {
 	data = user_data;
 
 	selected_tool = BUCKET; 
+
+	return FALSE;
+}
+
+gboolean on_square(GtkButton *self, gpointer user_data) {
+	// Unused variables
+	(void) self;
+	(void) user_data;
+
+	selected_tool = SQUARE; 
 
 	return FALSE;
 }
