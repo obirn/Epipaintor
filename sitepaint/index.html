@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Epipaintor</title>
+    <meta charset="UTF-8" />
+    <meta lang="fr" />
+    <meta name="robots" content="index" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- displays site properly based on user's device -->
+    <link rel="icon" type="image/png" sizes="32x32" href="./images/logopaint2.png" />
+    <script
+      nomodule=""
+      src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.js"
+    ></script>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.esm.js"
+    ></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-M7FETKJQY1"
+    ></script>
+    <link rel="stylesheet" type="text/css" href="./css/styles.css" />
+    <link rel="stylesheet" type="text/css" href="./css/menu-style.css" />
+  </head>
+  <body>
+    <div class="back_to_top" id="backtotop">
+      <button onclick="topFunction()">
+        <ion-icon name="chevron-up-outline"></ion-icon>
+      </button>
+    </div>
+    <div id="root-nav">
+      <div id="topnav" class="topnav">
+        <!-- Classic Menu -->
+        <nav class="nav" id="nav-menu">
+          <a href="" class="logo"
+            > Epipaintor</a
+          >
+          <div class="contact_content">
+            <a href="#about-content" class="clickable" id="projet">Le projet</a>
+            <a href="#chronologie" class="clickable" id="">Chronologie</a>
+            <a href="#libs" class="clickable" id="app-repo">Les librairies</a>
+            <a href="#team" class="clickable">L'équipe</a>
+            <a href="#telecharger" class="clickable">Téléchargement</a>
+          </div>
+        </nav>
+
+        <a
+          id="topnav_hamburger_icon"
+          href="javascript:void(0);"
+          onclick="showResponsiveMenu()"
+        >
+          <!-- Some spans to act as a hamburger -->
+          <span></span>
+          <span></span>
+          <span></span>
+        </a>
+
+        <!-- Responsive Menu -->
+        <nav role="navigation" id="topnav_responsive_menu">
+          <ul>
+    
+            <li>
+              <a href="#about-content" class="clickable" id="projet"
+                >Le projet</a>
+            </li>
+            <li>
+              <a href="#chronologie" class="clickable" id="">Chronologie</a>
+            </li>
+            <li>
+              <a href="#libs" class="clickable" id="app-repo">Les librairies</a>
+            </li>
+            <li>
+              <a href="#team" class="clickable">L'équipe</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <header class="hero" id="hero">
+        <div class="hero_content">
+          <div class="hero-text">
+            <h1 class="hero_title">
+              Bienvenue sur<br />
+              <span>Epipaintor</span><br />le projet porté sur l'édition d'image
+            </h1>
+            <img src="./images/logopaint.png" />
+          </div>
+          <a href="#telecharger" class="btn">Telecharger</a>
+          <a href="./files/Cahier_des_charges.pdf" download class="btn">Cahier des charges</a>
+        </div>
+      </header>
+
+      <section class="about" id="about">
+        <div class="about-content" id="about-content">
+          <h2>Quel est l'objectif du projet ?</h2>
+          <h3>
+            Notre projet est simple: un photoshop intelligent, permettant d'aider les personnes qui étudient ou travaillent à EPITA !
+          </h3>
+          <p>
+            Derrière le doux nom d'Epipaintor résidera un utilitaire, permettant de dessiner ou modifier une image.
+            L'idée est d'implémenter tout un éventail de fonctionnalités graphiques, utilisant chacunes leur algorithme propre, sur le modèle du logiciel Photoshop.
+          </p>
+          <p>
+            Notre logiciel permet à n'importe qui de pouvoir dessiner simplement, d'appliquer des filtres, de pour retoucher des photos, retirer des éléments...
+          </p>
+          <p>
+            C'est un formidable outils qui peut être utile pour les étudiants d'EPITA par exemple, pour faire des croquis lors de révision.
+            Il est simple d'utilisation et très intuitif.
+          </p>
+          <p>Avec notre ligiciel il sera possible :</p>
+          <ul>
+            <li>
+              <i class="ion-arrow-right-c"></i> Dessiner avec différents outils (pinceau, seau, gomme...)
+            </li>
+            <li>
+              <i class="ion-arrow-right-c"></i> Selectionner des éléments (outil baguette magique ou simple selection rectangulaire)
+            </li>
+            <li>
+              <i class="ion-arrow-right-c"></i> Appliquer des filtres (noir et blanc, sepia...)
+            </li>
+            <li>
+              <i class="ion-arrow-right-c"></i> Ajouter des formes
+            </li>
+            <li>
+              <i class="ion-arrow-right-c"></i> Utiliser un systeme de superposition de calques
+            </li>
+          </ul>
+        </div>
+      </section>
+      <hr>
+      <section id="team">
+        <h2>Le groupe Fast-Thinking</h2>
+
+        <div class="flex-overflow">
+          <div class="team-member">
+            <h2 class="member">AZIAKA Christian</h2>
+            <img src="./images/christian.jpg" alt="Photo de CHRISTIAN">
+          </div>
+          <div class="team-member">
+            <h2 class="member">Adam MAHRAOUI</h2>
+            <img src="./images/adam.jpg" alt="Photo de ADAM">
+          </div>
+          <div class="team-member">
+            <h2 class="member">VARLIETTE Robin</h2>
+            <img src="./images/robin.jpg" alt="Photo de ROBIN">
+          </div>
+          <div class="team-member">
+            <h2 class="member">HAMDOUN Zaky</h2>
+            <img src="./images/zacky.jpg" alt="Photo de ZACKY">
+          </div>
+        </div>
+      </section>
+      
+      <section class="chronologie" id="chronologie">
+        <h2>Chronologie du projet</h2>
+        <div class="flex-overflow">
+          <div class="box">
+            <div class="icon" style="background: #fee2ed">
+              <ion-icon name="people-outline"></ion-icon>
+            </div>
+            <h4 class="title">
+              <a href="#team">14/01/2023 : Création du groupe Fast-Thinking</a>
+            </h4>
+            <p class="description">
+              Nous avons dû former un groupe de quatre personnes pour ce projet
+              de notre quatrième semestre à
+              <a href="https://www.epita.fr/" target="_blank">EPITA</a>.
+            </p>
+          </div>
+          <div class="box">
+            <div class="icon" style="background: #fff0da">
+              <ion-icon name="book-outline"></ion-icon>
+            </div>
+            <h4 class="title">
+              <a href="./files/Cahier_des_charges.pdf" target="_blank"
+                >20/01/2023 : Remise du cahier des charges</a
+              >
+            </h4>
+            <p class="description">
+              Nous avons pour devoir de rendre un
+              <a
+                href=""
+                target="_blank"
+                >cahier des charges</a
+              >
+              complet donnant les détails de ce projet.
+            </p>
+          </div>
+          <div class="box">
+            <div class="icon" style="background: #eafde7">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </div>
+            <h4 class="title">
+              <a href="#services"
+                >27/01/2023 : Validation du cahier des charges</a
+              >
+            </h4>
+            <p class="description">
+              Notre projet Epipaintor a été accepté. Nous nous
+              pouvons commencer !
+            </p>
+          </div>
+          <div class="box">
+            <div class="icon" style="background: #e5fcff">
+              <ion-icon name="star-outline"></ion-icon>
+            </div>
+            <h4 class="title">
+              <a href="./files/Rapport_Soutenance_1.pdf" target="_blank">13/02/2023 : Première soutenance</a>
+            </h4>
+            <p class="description">
+              Nous avons finalisé notre rapport de première soutenance.
+            </p>
+          </div>
+          <div class="box">
+            <div class="icon" style="background: #e5fcff">
+              <ion-icon name="star-outline"></ion-icon>
+            </div>
+            <h4 class="title">
+              <a href="./files/Rapport_Soutenance_2.pdf" target="_blank">03/04/2023 : Seconde soutenance</a>
+            </h4>
+            <p class="description">
+              Nous avons finalisé notre rapport de seconde soutenance.
+            </p>
+          </div>
+          <!--div class="box">
+            <div class="icon" style="background: #e5fcff">
+              <ion-icon name="star-outline"></ion-icon>
+            </div>
+            <h4 class="title">
+              <a href="./files/Rapport_de_projet.pdf" target="_blank">XX/XX/2023 : Dernière soutenance</a>
+            </h4>
+            <p class="description">
+              Nous avons finalisé notre rapport de denière soutenance et mis a disposition plusieurs ressources pour voir le projet dans sa globalité.
+            </p>
+          </div-->
+        </div>
+      </section>
+
+
+      <section id="worflow">
+        <div class="section-tittle">
+          <h2>Notre organisation de travail</h2>
+          <h4>
+            Comment tout s'organise ?
+          </h4>
+        </div>
+        <div class="section-content">
+          <img src="./images/Work-From-Home-Jobs-5.png" />
+          <div class="content">
+            <ul>
+              <li>
+                Afin de pouvoir avancer sur le projet indépendamment les uns des autres, nous avons utilisé l'outil <b>Git</b>.
+                Git permet de travailler chacun de son côté sur le projet, tout en nous donnant la possibilité de pouvoir rassembler notre travail.
+                Il permet aussi d'éviter les potentiels problèmes liés à l'unification de nos parties avec un système de commit, push et pull.
+              </li>
+              <li>
+                En ce qui concerne la rédaction des documents nous utilisons <b> <a href="https://www.overleaf.com/"> Overleaf</a></b> .
+                Ce site nous permet de pouvoir rédiger en LaTeX tous documents tel que les rapports, le cahier de charges... Chacun des membres peut donc écrire sur le document et obtenir un aperçu du PDF final instantanément.
+                Tout comme git, c'est un outil très collaboratif.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      
+
+      <section class="chronologie" id="libs">
+        <h2>Les librairies utilisées</h2>
+        <div class="flex-overflow">
+          <div class="box">
+            <div class="icon" style="background: #ecf6ff">
+              <ion-icon name="folder-open-outline"></ion-icon>
+            </div>
+            <h4 class="title">
+              <a href="https://www.gtk.org/" target="_blank">GTK</a>
+            </h4>
+            <p class="description">
+              GTK (The GIMP Toolkit) est un ensemble de bibliothèques permettant de réaliser des interfaces graphiques. Cette bibliothèque a été développée originellement pour les
+              besoins du logiciel de traitement d'images GIMP.
+            </p>
+          </div>
+          <div class="box">
+            <div class="icon" style="background: #fceef3">
+              <ion-icon name="color-filter"></ion-icon>
+            </div>
+            <h4 class="title">
+              <a href="https://wiki.libsdl.org/" target="_blank">SDL 2.0</a>
+            </h4>
+            <p class="description">
+              Simple DirectMedia Layer (SDL) est une bibliothèque
+              libre. Son API est utilisée pour créer des applications
+              multimédias en deux dimensions pouvant comprendre du son comme les
+              jeux vidéo, les démos graphiques, les éditeurs d'images...
+            </p>
+          </div>
+          <div class="box">
+            <div class="icon" style="background: #fff0da">
+              <ion-icon name="images"></ion-icon>
+            </div>
+            <h4 class="title">
+              <a
+                href="https://www.libsdl.org/projects/SDL_image/"
+                target="_blank"
+                >SDL_image</a
+              >
+            </h4>
+            <p class="description">
+              Cette librairie permet de charger des images, d'analyser un
+              fichier pour connaître son format d'image.
+            </p>
+          </div>
+        </div>
+      </section>
+
+
+      <section id="call-to-action" class="call-to-action">
+        <div id="telecharger" class="container">
+          <div class="row">
+            <div>
+              <h3 class="cta-title">Comment utiliser Epipaintor ?</h3>
+              <p class="cta-text">
+                Pas de panique ! Pour vous guider dans l'utilisation de notre outil, nous avons mis a votre disposition un manuel d'utilisation.
+              </p>
+            </div>
+            <div>
+              <a class="cta-btn align-middle" href="./files/manuel" target="_blank"
+                >Télécharger le manuel</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section id="telechargement" class="telechargement">
+        <div class="container">
+          <header class="section-header">
+            <h3>Téléchargements</h3>
+            <p>
+              Vous pourrez trouver ci-dessous un lien vous permettant de
+              télécharger notre dernier rapport de soutenance ainsi que notre
+              projet accompagné de sa version "lite"
+            </p>
+          </header>
+          <div class="flex-overflow">
+            <div class="card">
+              <div class="card-block">
+                <h4 class="card-title">Rapport</h4>
+                <ul class="list-group">
+                  <li class="list-group-item">Rapport de Présentation</li>
+                  <li class="list-group-item">Ecrit en LaTeX</li>
+                </ul>
+                <a href="./files/Rapport" target="_blank" class="btn">Ouvrir</a>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-block">
+                <h4 class="card-title">Projet</h4>
+                <ul class="list-group">
+                  <li class="list-group-item">Ecrit en C</li>
+                  <li class="list-group-item">Compile avec gcc</li>
+                </ul>
+                <a href="./files/Projet" download="true" class="btn">Télécharger</a>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-block">
+                <h4 class="card-title">Projet version "Lite"</h4>
+                <ul class="list-group">
+                  <li class="list-group-item">Ecrit en C</li>
+                  <li class="list-group-item">Compile avec gcc</li>
+                </ul>
+                <a href="./files/ProjetLite" download="true" class="btn">Télécharger</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="footer">
+      <a> Projet Epipaintor</a
+      >
+      <p>Année 2023</p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js"></script>
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
