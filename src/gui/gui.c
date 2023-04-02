@@ -33,6 +33,7 @@ GtkWidget *save_file;
 GtkWidget *quit;
 GtkColorChooser* color_button;
 GtkButton* bucket;
+GtkButton* line_button;
 GtkButton* rectangle_button;
 GtkButton* triangle_button;
 GtkButton* circle_button;
@@ -116,7 +117,8 @@ int init_interface(int argc, char**argv)
 	brush = GTK_WIDGET(gtk_builder_get_object(builder,"brush_button"));
 	color_button = GTK_COLOR_CHOOSER(gtk_builder_get_object(builder, "color_button"));
 	bucket = GTK_BUTTON(gtk_builder_get_object(builder, "bucket_button"));
-	rectangle_button = GTK_BUTTON(gtk_builder_get_object(builder, "square"));
+	line_button = GTK_BUTTON(gtk_builder_get_object(builder, "line"));
+	rectangle_button = GTK_BUTTON(gtk_builder_get_object(builder, "rectangle"));
 	circle_button = GTK_BUTTON(gtk_builder_get_object(builder, "circle"));
 	triangle_button = GTK_BUTTON(gtk_builder_get_object(builder, "triangle"));
 	gray_scale = GTK_WIDGET(gtk_builder_get_object(builder, "grayscale")); 
@@ -166,7 +168,8 @@ int init_interface(int argc, char**argv)
 	g_signal_connect(rectangle_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *)RECTANGLE);
 	g_signal_connect(triangle_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *)TRIANGLE);
 	g_signal_connect(circle_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *) CIRCLE);
-	g_signal_connect(color_button, "color-set", G_CALLBACK(on_Color_set), NULL);
+	g_signal_connect(line_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *) LINE);
+	g_signal_connect(color_button, "color-set", G_CALLBACK(on_color_set), NULL);
     g_signal_connect(previous, "clicked", G_CALLBACK(on_previous), NULL);
     g_signal_connect(next, "clicked", G_CALLBACK(on_next), NULL);
     g_signal_connect (G_OBJECT (window), "key_press_event", G_CALLBACK (on_key_press), NULL);
@@ -365,6 +368,12 @@ gboolean on_mouse_move(GtkWidget *widget,GdkEvent *event, gpointer user_data)
 										  selected_color.r, selected_color.g, 
 										  selected_color.b, brush_size);
 			break;
+		case LINE:
+			pre_visualisation = copy_image(img_buff);
+			Uint32 color = SDL_MapRGB(pre_visualisation->format, selected_color.r, selected_color.g, selected_color.b);
+			pre_visualisation = line(pre_visualisation, color, on_press_x, 
+									 on_press_y, curr_x, curr_y, brush_size);
+			break;
 	}
 
 
@@ -408,6 +417,11 @@ gboolean on_mouse_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 										  selected_color.r, selected_color.g, 
 										  selected_color.b, brush_size);
 			break;
+		case LINE:
+			Uint32 color = SDL_MapRGB(pre_visualisation->format, selected_color.r, selected_color.g, selected_color.b);
+			img_buff = line(pre_visualisation, color, on_press_x, 
+									 on_press_y, curr_x, curr_y, brush_size);
+			break;
 	}
 
 	gtk_widget_queue_draw_area(draw_area, 0, 0, img_buff->w, img_buff->h);
@@ -415,7 +429,7 @@ gboolean on_mouse_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 }
 
 
-gboolean on_Color_set(GtkColorChooser *self, gpointer user_data)
+gboolean on_color_set(GtkColorChooser *self, gpointer user_data)
 {
 	data = user_data;
 

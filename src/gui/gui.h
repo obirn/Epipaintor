@@ -1,7 +1,7 @@
 #ifndef GUI_H
 #define GUI_H
 
-enum tools {NONE, BRUSH, BUCKET, RECTANGLE, CIRCLE, TRIANGLE};
+enum tools {NONE, BRUSH, BUCKET, RECTANGLE, CIRCLE, TRIANGLE, LINE};
 
 #include <gtk/gtk.h>
 
@@ -14,8 +14,8 @@ gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data);
 gboolean on_mouse_press(GtkWidget* self, GdkEvent* event, gpointer user_data);
 gboolean on_mouse_release(GtkWidget* self, GdkEvent* event, gpointer user_data);
 gboolean on_mouse_move(GtkWidget *widget,GdkEvent *event, gpointer user_data);
-gboolean on_Color_set(GtkColorChooser *self, gpointer user_data);
-gboolean on_Color_set(GtkColorChooser *self, gpointer user_data);
+gboolean on_color_set(GtkColorChooser *self, gpointer user_data);
+gboolean on_color_set(GtkColorChooser *self, gpointer user_data);
 gboolean on_previous(GtkButton *self, gpointer user_data);
 gboolean on_next(GtkButton *self, gpointer user_data);
 gboolean on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data);
