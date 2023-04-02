@@ -102,6 +102,12 @@ a {
   }
 }
 
+.image_exemple{
+  margin: 50px;
+  text-align: center;
+
+}
+
 /*Hero styling*/
 
 .hero_content {
