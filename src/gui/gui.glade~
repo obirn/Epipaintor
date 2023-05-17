@@ -262,378 +262,6 @@
     <property name="visible">True</property>
     <property name="can-focus">False</property>
   </object>
-  <object class="GtkAdjustment" id="otsu">
-    <property name="upper">255</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
-  </object>
-  <object class="GtkWindow" id="threshold_window">
-    <property name="can-focus">False</property>
-    <child>
-      <object class="GtkFixed">
-        <property name="width-request">32</property>
-        <property name="height-request">32</property>
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <child>
-          <object class="GtkBox">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Threshold:</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                  <attribute name="foreground" value="#ffffffffffff"/>
-                </attributes>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScale" id="threshold_slider">
-                <property name="name">int</property>
-                <property name="width-request">250</property>
-                <property name="height-request">80</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Taille/ Intensité</property>
-                <property name="adjustment">otsu</property>
-                <property name="lower-stepper-sensitivity">off</property>
-                <property name="upper-stepper-sensitivity">off</property>
-                <property name="show-fill-level">True</property>
-                <property name="restrict-to-fill-level">False</property>
-                <property name="fill-level">255</property>
-                <property name="round-digits">0</property>
-                <property name="digits">0</property>
-                <property name="value-pos">right</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="apply_button_threshold">
-                <property name="label" translatable="yes">Apply</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-          </object>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkAdjustment" id="r1">
-    <property name="upper">255</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="r2">
-    <property name="upper">255</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
-  </object>
-  <object class="GtkWindow" id="color_window">
-    <property name="can-focus">False</property>
-    <child>
-      <object class="GtkFixed" id="color">
-        <property name="width-request">32</property>
-        <property name="height-request">32</property>
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <child>
-          <object class="GtkBox">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Threshold:</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                  <attribute name="foreground" value="#ffffffffffff"/>
-                </attributes>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScale" id="color_threshold_slider">
-                <property name="name">int</property>
-                <property name="width-request">250</property>
-                <property name="height-request">80</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Taille/ Intensité</property>
-                <property name="adjustment">color_threshold</property>
-                <property name="lower-stepper-sensitivity">off</property>
-                <property name="upper-stepper-sensitivity">off</property>
-                <property name="show-fill-level">True</property>
-                <property name="restrict-to-fill-level">False</property>
-                <property name="fill-level">255</property>
-                <property name="round-digits">0</property>
-                <property name="digits">0</property>
-                <property name="value-pos">right</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Color Control:</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                  <attribute name="foreground" value="#ffffffffffff"/>
-                </attributes>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <!-- n-columns=4 n-rows=3 -->
-              <object class="GtkGrid">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">R1:</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                      <attribute name="foreground" value="#ffffffffffff"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkScale" id="r2_slider">
-                    <property name="width-request">250</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="adjustment">r2</property>
-                    <property name="fill-level">255</property>
-                    <property name="round-digits">0</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">3</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">R2:</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                      <attribute name="foreground" value="#ffffffffffff"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="left-attach">2</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkScale" id="g1_slider">
-                    <property name="width-request">250</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="adjustment">g1</property>
-                    <property name="fill-level">255</property>
-                    <property name="round-digits">0</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">G1:</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                      <attribute name="foreground" value="#ffffffffffff"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkScale" id="g2_slider">
-                    <property name="width-request">250</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="adjustment">g2</property>
-                    <property name="fill-level">255</property>
-                    <property name="round-digits">0</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">3</property>
-                    <property name="top-attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">G2:</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                      <attribute name="foreground" value="#ffffffffffff"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="left-attach">2</property>
-                    <property name="top-attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">B1:</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                      <attribute name="foreground" value="#ffffffffffff"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkScale" id="b1_slider">
-                    <property name="width-request">250</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="adjustment">b1</property>
-                    <property name="fill-level">255</property>
-                    <property name="round-digits">0</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">B2:</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                      <attribute name="foreground" value="#ffffffffffff"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="left-attach">2</property>
-                    <property name="top-attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkScale" id="b2_slider">
-                    <property name="width-request">250</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="adjustment">b2</property>
-                    <property name="round-digits">0</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">3</property>
-                    <property name="top-attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkScale" id="r1_slider">
-                    <property name="width-request">250</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="adjustment">r1</property>
-                    <property name="round-digits">1</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="padding">6</property>
-                <property name="position">3</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="apply_button_color">
-                <property name="label" translatable="yes">Apply</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">4</property>
-              </packing>
-            </child>
-          </object>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkAdjustment" id="scollbar_horizontal">
-    <property name="upper">1000</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="scrollbar_veritcal">
-    <property name="upper">100</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
-  </object>
   <object class="GtkWindow" id="mainpage">
     <property name="can-focus">False</property>
     <property name="title" translatable="yes">EPIPAINTOR</property>
@@ -643,65 +271,6 @@
       <object class="GtkFixed" id="fixed1">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <child>
-          <object class="GtkScrollbar" id="brightness_bar">
-            <property name="width-request">125</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="adjustment">adjustment1</property>
-          </object>
-          <packing>
-            <property name="x">1700</property>
-            <property name="y">600</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="brightness_text">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="label" translatable="yes">Brightness</property>
-            <attributes>
-              <attribute name="weight" value="bold"/>
-              <attribute name="foreground" value="#91914141acac"/>
-            </attributes>
-          </object>
-          <packing>
-            <property name="x">1710</property>
-            <property name="y">540</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkScrollbar" id="opacity_bar">
-            <property name="width-request">125</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="adjustment">adjustment2</property>
-          </object>
-          <packing>
-            <property name="x">1700</property>
-            <property name="y">500</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="opacity_text">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="label" translatable="yes">Opacity
-</property>
-            <attributes>
-              <attribute name="weight" value="bold"/>
-              <attribute name="foreground" value="#91914141acac"/>
-            </attributes>
-          </object>
-          <packing>
-            <property name="x">1710</property>
-            <property name="y">440</property>
-          </packing>
-        </child>
         <child>
           <object class="GtkFrame" id="tweaksframe">
             <property name="width-request">250</property>
@@ -719,6 +288,43 @@
                   <object class="GtkFixed">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkLabel" id="Multiplayer">
+                        <property name="width-request">100</property>
+                        <property name="height-request">80</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Multidrawing:</property>
+                        <property name="width-chars">12</property>
+                        <attributes>
+                          <attribute name="font-desc" value="DejaVu Sans Bold 21"/>
+                          <attribute name="weight" value="bold"/>
+                          <attribute name="foreground" value="#91914141acac"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="y">20</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="multiplayer state">
+                        <property name="width-request">100</property>
+                        <property name="height-request">80</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Not connected</property>
+                        <property name="width-chars">12</property>
+                        <attributes>
+                          <attribute name="font-desc" value="DejaVu Sans Bold 15"/>
+                          <attribute name="style" value="italic"/>
+                          <attribute name="weight" value="normal"/>
+                          <attribute name="foreground" value="#c0c06161cbcb"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="y">111</property>
+                      </packing>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -743,19 +349,6 @@
           <packing>
             <property name="x">1666</property>
             <property name="y">263</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkScrollbar" id="horizontal_scrollbar">
-            <property name="width-request">1440</property>
-            <property name="height-request">4</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="adjustment">scollbar_horizontal</property>
-          </object>
-          <packing>
-            <property name="x">163</property>
-            <property name="y">987</property>
           </packing>
         </child>
         <child>
@@ -1504,19 +1097,6 @@
           </packing>
         </child>
         <child>
-          <object class="GtkScrollbar" id="vertical_scrollbar">
-            <property name="width-request">4</property>
-            <property name="height-request">999</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="orientation">vertical</property>
-            <property name="adjustment">scrollbar_veritcal</property>
-          </object>
-          <packing>
-            <property name="x">1601</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkFixed" id="darwing_area_fixed">
             <property name="width-request">1452</property>
             <property name="height-request">902</property>
@@ -1536,40 +1116,6 @@
           <packing>
             <property name="x">184</property>
             <property name="y">34</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkScale" id="zoom_scrollbar">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="adjustment">Curseur</property>
-            <property name="lower-stepper-sensitivity">on</property>
-            <property name="upper-stepper-sensitivity">on</property>
-            <property name="round-digits">1</property>
-            <property name="digits">0</property>
-            <property name="value-pos">left</property>
-          </object>
-          <packing>
-            <property name="x">1500</property>
-            <property name="y">31</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="zoom_label">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="can-focus">False</property>
-            <property name="label" translatable="yes">Zoom</property>
-            <attributes>
-              <attribute name="weight" value="bold"/>
-              <attribute name="foreground" value="#91914141acac"/>
-            </attributes>
-          </object>
-          <packing>
-            <property name="x">1514</property>
-            <property name="y">8</property>
           </packing>
         </child>
         <child>
@@ -1820,7 +1366,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="host">
-                        <property name="label">Host Drawing</property>
+                        <property name="label">Host Lobby</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="image">image12</property>
@@ -1829,7 +1375,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="join">
-                        <property name="label">Join Multidrawing</property>
+                        <property name="label">Join Lobby</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="image">image13</property>
@@ -1844,5 +1390,377 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkAdjustment" id="otsu">
+    <property name="upper">255</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkWindow" id="threshold_window">
+    <property name="can-focus">False</property>
+    <child>
+      <object class="GtkFixed">
+        <property name="width-request">32</property>
+        <property name="height-request">32</property>
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <child>
+          <object class="GtkBox">
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Threshold:</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                  <attribute name="foreground" value="#ffffffffffff"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="threshold_slider">
+                <property name="name">int</property>
+                <property name="width-request">250</property>
+                <property name="height-request">80</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Taille/ Intensité</property>
+                <property name="adjustment">otsu</property>
+                <property name="lower-stepper-sensitivity">off</property>
+                <property name="upper-stepper-sensitivity">off</property>
+                <property name="show-fill-level">True</property>
+                <property name="restrict-to-fill-level">False</property>
+                <property name="fill-level">255</property>
+                <property name="round-digits">0</property>
+                <property name="digits">0</property>
+                <property name="value-pos">right</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="apply_button_threshold">
+                <property name="label" translatable="yes">Apply</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkAdjustment" id="r1">
+    <property name="upper">255</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="r2">
+    <property name="upper">255</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkWindow" id="color_window">
+    <property name="can-focus">False</property>
+    <child>
+      <object class="GtkFixed" id="color">
+        <property name="width-request">32</property>
+        <property name="height-request">32</property>
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <child>
+          <object class="GtkBox">
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Threshold:</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                  <attribute name="foreground" value="#ffffffffffff"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="color_threshold_slider">
+                <property name="name">int</property>
+                <property name="width-request">250</property>
+                <property name="height-request">80</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Taille/ Intensité</property>
+                <property name="adjustment">color_threshold</property>
+                <property name="lower-stepper-sensitivity">off</property>
+                <property name="upper-stepper-sensitivity">off</property>
+                <property name="show-fill-level">True</property>
+                <property name="restrict-to-fill-level">False</property>
+                <property name="fill-level">255</property>
+                <property name="round-digits">0</property>
+                <property name="digits">0</property>
+                <property name="value-pos">right</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Color Control:</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                  <attribute name="foreground" value="#ffffffffffff"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <!-- n-columns=4 n-rows=3 -->
+              <object class="GtkGrid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">R1:</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                      <attribute name="foreground" value="#ffffffffffff"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScale" id="r2_slider">
+                    <property name="width-request">250</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="adjustment">r2</property>
+                    <property name="fill-level">255</property>
+                    <property name="round-digits">0</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">3</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">R2:</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                      <attribute name="foreground" value="#ffffffffffff"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScale" id="g1_slider">
+                    <property name="width-request">250</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="adjustment">g1</property>
+                    <property name="fill-level">255</property>
+                    <property name="round-digits">0</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">G1:</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                      <attribute name="foreground" value="#ffffffffffff"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScale" id="g2_slider">
+                    <property name="width-request">250</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="adjustment">g2</property>
+                    <property name="fill-level">255</property>
+                    <property name="round-digits">0</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">3</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">G2:</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                      <attribute name="foreground" value="#ffffffffffff"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">B1:</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                      <attribute name="foreground" value="#ffffffffffff"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScale" id="b1_slider">
+                    <property name="width-request">250</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="adjustment">b1</property>
+                    <property name="fill-level">255</property>
+                    <property name="round-digits">0</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">B2:</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                      <attribute name="foreground" value="#ffffffffffff"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScale" id="b2_slider">
+                    <property name="width-request">250</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="adjustment">b2</property>
+                    <property name="round-digits">0</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">3</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScale" id="r1_slider">
+                    <property name="width-request">250</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="adjustment">r1</property>
+                    <property name="round-digits">1</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="padding">6</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="apply_button_color">
+                <property name="label" translatable="yes">Apply</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkAdjustment" id="scollbar_horizontal">
+    <property name="upper">1000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="scrollbar_veritcal">
+    <property name="upper">100</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
   </object>
 </interface>

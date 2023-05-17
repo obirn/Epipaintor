@@ -2,6 +2,90 @@
 <!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
+  <object class="GtkWindow" id="Create window">
+    <property name="can-focus">False</property>
+    <property name="title" translatable="yes">Create Multidrawing</property>
+    <child>
+      <object class="GtkBox">
+        <property name="width-request">100</property>
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="margin-top">10</property>
+            <property name="margin-bottom">19</property>
+            <property name="label" translatable="yes">Create Multidrawing:</property>
+            <attributes>
+              <attribute name="weight" value="bold"/>
+              <attribute name="foreground" value="#ffffffffffff"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <!-- n-columns=2 n-rows=1 -->
+          <object class="GtkGrid">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Enter your name:</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                  <attribute name="foreground" value="#ffffffffffff"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="margin-start">64</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">0</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="create_confirm">
+            <property name="label" translatable="yes">Confirm
+</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="valign">end</property>
+            <property name="margin-top">43</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">4</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkAdjustment" id="Curseur">
     <property name="upper">100</property>
     <property name="value">10</property>
@@ -215,11 +299,6 @@
     <property name="visible">True</property>
     <property name="can-focus">False</property>
   </object>
-  <object class="GtkImage" id="image11">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="stock">gtk-missing-image</property>
-  </object>
   <object class="GtkImage" id="image12">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -272,65 +351,6 @@
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <child>
-          <object class="GtkScrollbar" id="brightness_bar">
-            <property name="width-request">125</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="adjustment">adjustment1</property>
-          </object>
-          <packing>
-            <property name="x">1700</property>
-            <property name="y">600</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="brightness_text">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="label" translatable="yes">Brightness</property>
-            <attributes>
-              <attribute name="weight" value="bold"/>
-              <attribute name="foreground" value="#91914141acac"/>
-            </attributes>
-          </object>
-          <packing>
-            <property name="x">1710</property>
-            <property name="y">540</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkScrollbar" id="opacity_bar">
-            <property name="width-request">125</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="adjustment">adjustment2</property>
-          </object>
-          <packing>
-            <property name="x">1700</property>
-            <property name="y">500</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="opacity_text">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="label" translatable="yes">Opacity
-</property>
-            <attributes>
-              <attribute name="weight" value="bold"/>
-              <attribute name="foreground" value="#91914141acac"/>
-            </attributes>
-          </object>
-          <packing>
-            <property name="x">1710</property>
-            <property name="y">440</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkFrame" id="tweaksframe">
             <property name="width-request">250</property>
             <property name="height-request">250</property>
@@ -347,6 +367,43 @@
                   <object class="GtkFixed">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkLabel" id="Multiplayer">
+                        <property name="width-request">100</property>
+                        <property name="height-request">80</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Multidrawing:</property>
+                        <property name="width-chars">12</property>
+                        <attributes>
+                          <attribute name="font-desc" value="DejaVu Sans Bold 21"/>
+                          <attribute name="weight" value="bold"/>
+                          <attribute name="foreground" value="#91914141acac"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="y">20</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="multiplayer state">
+                        <property name="width-request">100</property>
+                        <property name="height-request">80</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Not connected</property>
+                        <property name="width-chars">12</property>
+                        <attributes>
+                          <attribute name="font-desc" value="DejaVu Sans Bold 15"/>
+                          <attribute name="style" value="italic"/>
+                          <attribute name="weight" value="normal"/>
+                          <attribute name="foreground" value="#c0c06161cbcb"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="y">111</property>
+                      </packing>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -1378,17 +1435,8 @@
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem" id="edit_name">
-                        <property name="label">Edit name</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="image">image11</property>
-                        <property name="use-stock">False</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem" id="host">
-                        <property name="label">Host Drawing</property>
+                      <object class="GtkImageMenuItem" id="create">
+                        <property name="label">Create Multidrawing</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="image">image12</property>
