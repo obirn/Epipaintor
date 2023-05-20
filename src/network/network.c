@@ -1,17 +1,5 @@
-// Imports for networking
-#define _GNU_SOURCE
-#define _POSIX_C_SOURCE 200112L
-#define BUFFER_SIZE 512
-
-#include <netdb.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <err.h>
-#include <unistd.h>
-#include "./base64.c"
-
-const size_t BUFFER_SIZE = 32;
+#include "./network.h"
+#include "./base64.h"
 
 void rewrite(int fd, const void *buf, size_t count)
 {
@@ -23,14 +11,14 @@ void rewrite(int fd, const void *buf, size_t count)
         if (written == -1) errx(1, "Write FAILED.");
         total_written += written;
     }
-    while (total_written < count);
+    while (total_written < (ssize_t) count);
 }
 
 char *encode_image(char* image_path)
 {
     FILE *file;
     size_t decoded_len, encoded_len;
-    unsigned char *decoded, *encoded;
+    char *decoded, *encoded;
 
     //Open file                                                                                                                                                                                                
     file = fopen(image_path , "rb");
@@ -43,7 +31,7 @@ char *encode_image(char* image_path)
     fseek(file, 0, SEEK_SET);
 
     //Allocate memory                                                                                                                                                                                          
-    decoded = (char *) malloc(decoded_len+1);
+    decoded = malloc(decoded_len+1);
     if (!decoded)
     {
         fclose(file);
@@ -52,13 +40,13 @@ char *encode_image(char* image_path)
 
     //Read file contents into buffer                                                                                                                                                                           
     fread(decoded, decoded_len, 1, file);
-    int encodedLen = Base64encode_len(decoded_len);
-    char *encoded = (char *) malloc(sizeof(char) * encodedLen);
+    encoded_len = Base64encode_len(decoded_len);
+    encoded = malloc(sizeof(char) * encoded_len);
 
     size_t tmp = Base64encode(encoded, decoded, decoded_len);
     printf("Pratical = %lu\n, Theoritical = %lu\n", tmp, encoded_len);
 
-    printf("%s\n", encoded);
+    // printf("%s\n", encoded);
     fclose(file);
     free(decoded);
 
@@ -75,11 +63,11 @@ char *build_query(const char *host, size_t *len, char* image_path)
         asprintf(&request, "GET http://www.%s/?img=%s HTTP/1.0\r\n\r\n", host, encoded_image);
     
     if (request_len == -1) errx(1, "Asprint FAILED.");
-
+    *len = request_len;
     return request;
 }
 
-void print_page(const char *host)
+void send_image(const char *host, char* image_path)
 {
     char buffer[BUFFER_SIZE];
     
@@ -87,6 +75,8 @@ void print_page(const char *host)
     struct addrinfo hints;
     int sfd, s;
     ssize_t nread, nwritten;
+
+    host = "google.com";
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
@@ -117,7 +107,8 @@ void print_page(const char *host)
 
     size_t request_len;
     char* request;
-    request = build_query(host, &request_len);
+    request = build_query(host, &request_len, image_path);
+    printf("request length is %lu\n", request_len);
 
     rewrite(sfd, request, request_len);
 
