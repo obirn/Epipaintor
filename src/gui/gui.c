@@ -1,7 +1,7 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <gtk/gtk.h>
-#include <string.h>
+// Important: include first the network.h file,
+// As it contains the POSIX_SOURCE_C define macro,
+// that's being redefined in SDL2.h if undefined.
+#include "../network/network.h"
 #include "./gui.h"
 #include "../auxiliary/auxiliary.h"
 #include "../data_structs/queue.h"
@@ -10,6 +10,14 @@
 #include "../image_utils/tools.h"
 #include "../filters/filters.h"
 #include "../shapes/shapes.h"
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <gtk/gtk.h>
+#include <string.h>
+
+
+
 
 // Glade related
 GtkMenuItem *self;
@@ -59,6 +67,8 @@ GtkScale* g1_slider;
 GtkScale* g2_slider;
 GtkScale* b1_slider;
 GtkScale* b2_slider;
+GtkWidget* create_button;
+
 // Shared stack used to stock modifications
 shared_stack* before;
 shared_stack* after;
@@ -142,6 +152,8 @@ int init_interface(int argc, char**argv)
 	apply_button_threshold = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button_threshold"));
 	gamma_window = GTK_WIDGET(gtk_builder_get_object(builder,"gamma_window"));
 	threshold_window = GTK_WIDGET(gtk_builder_get_object(builder,"threshold_window"));
+	create_button = GTK_WIDGET(gtk_builder_get_object(builder, "create"));
+
 	//r1_slider= GTK_SCALE(gtk_builder_get_object(builder,"r1_slider"));
 	r1_slider= GTK_SCALE(gtk_builder_get_object(builder,"r1_slider"));
 	r2_slider = GTK_SCALE(gtk_builder_get_object(builder,"r2_slider"));
@@ -194,10 +206,6 @@ int init_interface(int argc, char**argv)
 	g_signal_connect(b2_slider, "value_changed", G_CALLBACK(b2_value), NULL); 
 	g_signal_connect(apply_button_color, "clicked", G_CALLBACK(color_apply), NULL);
 
-
-
-
-
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
 	gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
@@ -209,6 +217,70 @@ int init_interface(int argc, char**argv)
 	gtk_widget_show(window); // shows the window
 	gtk_main();
 	return EXIT_SUCCESS;
+}
+
+void on_create(gpointer user_data)
+{
+	(void) user_data;
+}
+
+void print_page(const char *host)
+{
+    char buffer[BUFFER_SIZE];
+    
+    struct addrinfo *addr, *result;
+    struct addrinfo hints;
+    int sfd, s;
+    ssize_t nread, nwritten;
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+
+    s = getaddrinfo(host, "80", &hints, &result);
+    if (s != 0) {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+        exit(EXIT_FAILURE);
+    }
+
+    for (addr = result; addr != NULL; addr = addr->ai_next) {
+        sfd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
+        if (sfd == -1)
+            continue;
+
+        if (connect(sfd, addr->ai_addr, addr->ai_addrlen) == 0)
+            break;
+
+        close(sfd);
+    }
+
+    freeaddrinfo(result);
+
+    if (addr == NULL) {
+        errx(1, "Couldn't connect.");
+    }
+
+    size_t request_len;
+    char* request;
+    request = build_query(host, &request_len);
+
+    rewrite(sfd, request, request_len);
+
+    free(request);
+
+    do {
+        nread = read(sfd, buffer, BUFFER_SIZE);
+        if (nread == -1)
+            errx(1, "Read FAILED.");
+
+        nwritten = write(STDOUT_FILENO, buffer, nread);
+        if (nwritten == -1)
+            errx(1, "Write FAILED.");
+
+    }
+    while (nread != 0);
+
+    close(sfd);
 }
 
 void epipaintor_free(gpointer user_data)
