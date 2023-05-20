@@ -1,14 +1,14 @@
 import { SSTConfig } from "sst";
-import { ExampleStack } from "./stacks/ExampleStack";
+import { ApiStack } from "./stacks/ApiStack";
 
 export default {
   config(_input) {
     return {
       name: "rest-api",
-      region: "us-east-1",
+      region: "eu-west-1",
     };
   },
   stacks(app) {
-    app.stack(ExampleStack);
+    app.stack(ApiStack);
   }
 } satisfies SSTConfig;
