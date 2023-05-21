@@ -72,6 +72,9 @@ GtkWidget* join_multiplayer;
 shared_stack* before;
 shared_stack* after;
 
+// Callbacks arguments
+gint update_callback_id;
+
 char* image_path;
 
 int selected_tool = NONE;
@@ -235,12 +238,9 @@ gboolean on_create_multiplayer(GtkMenuItem *menu_item, gpointer user_data)
 gboolean on_join_multiplayer(GtkMenuItem *menu_item, gpointer user_data)
 {
 	//Unused parameters :
-	gint gtk_timeout_add (guint32 interval,
-                      GtkFunction function,
-                      gpointer data);
+	update_callback_id = g_timeout_add(4000, update_image, "4d3f2zejqh.execute-api.eu-west-1.amazonaws.com");
 	(void) menu_item;
 	(void) user_data;
-	send_image("4d3f2zejqh.execute-api.eu-west-1.amazonaws.com","../cache/img_buff.bmp");
 	return FALSE;
 }
 

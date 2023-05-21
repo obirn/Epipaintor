@@ -21,46 +21,7 @@ void rewrite(SSL* ssl, const void *buf, size_t count)
     while (total_written < (ssize_t) count);
 }
 
-char *encode_image(char* image_path, size_t *len)
-{
-    FILE *file;
-    size_t decoded_len, encoded_len;
-    char *decoded, *encoded;
-
-    //Open file                                                                                                                                                                                                
-    file = fopen(image_path , "rb");
-    if (!file)
-        errx(EXIT_FAILURE, "Unable to open file %s", image_path);
-
-    //Get file length                                                                                                                                                                                          
-    fseek(file, 0, SEEK_END);
-    decoded_len=ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    //Allocate memory                                                                                                                                                                                          
-    decoded = malloc(decoded_len+1);
-    if (!decoded)
-    {
-        fclose(file);
-        errx(EXIT_FAILURE, "Not enough memory");
-    }
-
-    //Read file contents into buffer                                                                                                                                                                           
-    fread(decoded, decoded_len, 1, file);
-    encoded_len = Base64encode_len(decoded_len);
-    encoded = malloc(sizeof(char) * encoded_len);
-
-    *len = Base64encode(encoded, decoded, decoded_len);
-    // printf("Pratical = %lu\n, Theoritical = %lu\n", tmp, encoded_len);
-
-    // printf("%s\n", encoded);
-    fclose(file);
-    free(decoded);
-
-    return encoded;
-}
-
-char *build_query(const char *host, size_t *len, char* image_path)
+char *send_query(const char *host, size_t *len, char* image_path)
 {
     // size_t encodedLen;
     (void) host;
@@ -113,9 +74,111 @@ char *build_query(const char *host, size_t *len, char* image_path)
     return request;
 }
 
+gint update_image (gpointer data)
+{
+    char *host = (char *) data;
+    char buffer[BUFFER_SIZE];
+    
+    struct addrinfo *addr, *result;
+    struct addrinfo hints;
+    int sfd, s;
+    ssize_t nread, nwritten;
+
+    SSL_library_init();
+    OpenSSL_add_all_algorithms();
+    SSL_load_error_strings();
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+
+    s = getaddrinfo(host, "443", &hints, &result);
+    if (s != 0) {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+        exit(EXIT_FAILURE);
+    }
+
+    for (addr = result; addr != NULL; addr = addr->ai_next) {
+        sfd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
+        // printf("socket = %i\n", sfd);
+        if (sfd == -1)
+            continue;
+
+        if (connect(sfd, addr->ai_addr, addr->ai_addrlen) == 0)
+            break;
+
+        // printf("Connect: %s\n", strerror(errno));
+
+        close(sfd);
+    }
+
+    freeaddrinfo(result);
+
+    if (addr == NULL) {
+        errx(1, "Couldn't connect.");
+    }
+
+    SSL_CTX* ctx = SSL_CTX_new(TLS_client_method());
+    if (!ctx)
+        errx(EXIT_FAILURE, "Failed to create SSL context.\n");
+
+    // Establish the SSL/TLS connection
+    SSL* ssl = SSL_new(ctx);
+    if (!ssl) {
+        fprintf(stderr, "Failed to create SSL object.\n");
+    }
+
+    if (SSL_set_fd(ssl, sfd) == 0) {
+        fprintf(stderr, "Failed to set SSL file descriptor.\n");
+    }
+
+    if (SSL_connect(ssl) != 1) {
+        fprintf(stderr, "Failed to establish SSL connection.\n");
+        ERR_print_errors_fp(stderr);
+    }
+
+    
+    char* request = "POST /update HTTP/1.1\r\n"
+                    "Connection: close\r\n"
+                    "Host: 4d3f2zejqh.execute-api.eu-west-1.amazonaws.com\r\n\r\n";
+    size_t request_len = strlen(request);
+
+    rewrite(ssl, request, request_len);
+
+    FILE* file = fopen("../cache/img_buff.bmp", "w+");
+
+    printf("Now listening server response for update... \n");
+    do {
+        nread = SSL_read(ssl, buffer, BUFFER_SIZE-1);
+        printf("nread = %ld\n", nread);
+        buffer[BUFFER_SIZE-1] = 0;
+        if (nread == -1)
+            errx(1, "Read FAILED.");
+
+        nwritten = write(STDOUT_FILENO, buffer, nread);
+        if (nwritten == -1)
+            errx(1, "Write FAILED.");
+
+        nwritten = fputs(buffer, file);
+        printf("wrote in file = %ld\n", nwritten);
+        if (nwritten == -1)
+            errx(1, "Write FAILED.");
+            
+    }
+    while (nread != 0);
+
+    SSL_shutdown(ssl);
+    SSL_free(ssl);
+    close(sfd);
+    fclose(file);
+
+    // returns true so that the function get called back.
+    return TRUE;
+}
+
 void send_image(const char *host, char* image_path)
 {
-    char buffer[BUFFER_SIZE];
+	char buffer[BUFFER_SIZE];
     
     struct addrinfo *addr, *result;
     struct addrinfo hints;
@@ -177,14 +240,14 @@ void send_image(const char *host, char* image_path)
 
     size_t request_len;
     
-    char* request = build_query(host, &request_len, image_path);
+    char* request = send_query(host, &request_len, image_path);
     printf("request length is %lu\n", request_len);
 
     rewrite(ssl, request, request_len);
 
     // free(request);
 
-    printf("Now listening server response... \n");
+    printf("Now listening server response after sending... \n");
     do {
         nread = SSL_read(ssl, buffer, BUFFER_SIZE);
         if (nread == -1)
@@ -199,9 +262,4 @@ void send_image(const char *host, char* image_path)
     SSL_shutdown(ssl);
     SSL_free(ssl);
     close(sfd);
-
-}
-
-gint get_images (gpointer data) {
-	
 }
