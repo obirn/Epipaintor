@@ -205,7 +205,6 @@ int init_interface(int argc, char**argv)
 	g_signal_connect(b1_slider, "value_changed", G_CALLBACK(b1_value), NULL);
 	g_signal_connect(b2_slider, "value_changed", G_CALLBACK(b2_value), NULL); 
 	g_signal_connect(apply_button_color, "clicked", G_CALLBACK(color_apply), NULL);
-	g_signal_connect(create_multiplayer, "activate", G_CALLBACK(on_create_multiplayer), NULL);
 
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
@@ -221,12 +220,14 @@ int init_interface(int argc, char**argv)
 }
 
 
-void on_create_multiplayer(GtkMenuItem *menu_item, gpointer user_data)
+gboolean on_create_multiplayer(GtkMenuItem *menu_item, gpointer user_data)
 {
 	//Unused parameters :
+	printf("\n IT HAS BEEN ACTIVATED \n");
 	(void) menu_item;
 	(void) user_data;
 	send_image("4d3f2zejqh.execute-api.eu-west-1.amazonaws.com","../cache/img_buff.bmp");
+	return FALSE;
 }
 
 void epipaintor_free(gpointer user_data)

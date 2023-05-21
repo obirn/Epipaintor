@@ -61,16 +61,16 @@ char *encode_image(char* image_path, size_t *len)
 
 char *build_query(const char *host, size_t *len, char* image_path)
 {
-    size_t encodedLen;
+    // size_t encodedLen;
     (void) host;
-    char *encoded_image = encode_image(image_path, &encodedLen);
-    (void) encoded_image;
+    // char *encoded_image = encode_image(image_path, &encodedLen);
+    // (void) encoded_image;
 
     const char* requestFormat = "POST /send HTTP/1.1\r\n"
                                 "Host: 4d3f2zejqh.execute-api.eu-west-1.amazonaws.com\r\n"
                                 "Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryABC123\r\n"
                                 "Connection: close\r\n"
-                                "Content-Length: 180\r\n\r\n"
+                                "Content-Length: %d\r\n\r\n"
                                 "------WebKitFormBoundaryABC123\r\n"
                                 "Content-Disposition: form-data; name=\"file\"; filename=\"image.jpg\"\r\n"
                                 "Content-Type: image/jpeg\r\n\r\n";
@@ -78,39 +78,37 @@ char *build_query(const char *host, size_t *len, char* image_path)
     const char* requestEnd = "\r\n------WebKitFormBoundaryABC123--\r\n";
 
     // Open the image file
-    // FILE* file = fopen(image_path, "rb");
-    // if (!file) {
-    //     perror("fopen");
-    // }
+    FILE* file = fopen(image_path, "rb");
+    if (!file) {
+        perror("fopen");
+    }
 
-    // // Calculate the content length
-    // fseek(file, 0, SEEK_END);
-    // long fileSize = ftell(file);
-    // fseek(file, 0, SEEK_SET);
+    // Calculate the content length
+    fseek(file, 0, SEEK_END);
+    long fileSize = ftell(file);
+    fseek(file, 0, SEEK_SET);
 
 
-    // Format the request
-    char* request = NULL;
-    size_t requestFormatLength = asprintf(&request, requestFormat);
+    // Allocate memory for the request
+    int requestSize = snprintf(NULL, 0, requestFormat, fileSize) + fileSize + strlen(requestEnd);
+    char* request = (char*)malloc(requestSize);
     if (!request) {
         fprintf(stderr, "Failed to allocate memory for the request.\n");
+        fclose(file);
     }
-    // printf("requestFormat = %s\n", request);
-    // getchar();
 
-    size_t requestLen = requestFormatLength + encodedLen + strlen(requestEnd);
-    request = realloc(request, requestLen);
-    memcpy(request + requestFormatLength, encoded_image, encodedLen);
-    memcpy(request + requestFormatLength + encodedLen, requestEnd, strlen(requestEnd));
+    // Format the request
+    snprintf(request, requestSize, requestFormat, fileSize);
+    char* requestBody = request + strlen(request);
+    fread(requestBody, 1, fileSize, file);
+    strcpy(requestBody + fileSize, requestEnd);
 
-
-
-    // printf("encodedlen = %ld\n", encodedLen);
+    printf("content length = %ld\n", fileSize);
     // printf("requestFormat = %s\n", request);
     // printf("requestEnd = %s\n", requestBody + encodedLen);
     // printf("request size = %d\n", requestSize);
     // getchar();
-    *len = requestLen;
+    *len = requestSize;
     return request;
 }
 
@@ -127,7 +125,8 @@ void send_image(const char *host, char* image_path)
     OpenSSL_add_all_algorithms();
     SSL_load_error_strings();
 
-
+    printf("Checkpoint1 \n");
+    
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
@@ -195,13 +194,11 @@ void send_image(const char *host, char* image_path)
         nwritten = write(STDOUT_FILENO, buffer, nread);
         if (nwritten == -1)
             errx(1, "Write FAILED.");
-
-        printf("nread = %ld\n", nread);
-
     }
     while (nread != 0);
 
     SSL_shutdown(ssl);
     SSL_free(ssl);
     close(sfd);
+
 }
