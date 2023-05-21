@@ -1,20 +1,26 @@
 #include "./network.h"
 #include "./base64.h"
+#include <errno.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 
-void rewrite(int fd, const void *buf, size_t count)
+
+void rewrite(SSL* ssl, const void *buf, size_t count)
 {
     ssize_t written = 0, total_written = 0;
     const char *buffer_char = buf;
 
     do {
-        written = write(fd, buffer_char + written, count);
+        // write(STDOUT_FILENO, buffer_char + written, count);
+        written = SSL_write(ssl, buffer_char + written, count);
         if (written == -1) errx(1, "Write FAILED.");
         total_written += written;
+        printf("%ld/%ld\n", total_written, count);
     }
     while (total_written < (ssize_t) count);
 }
 
-char *encode_image(char* image_path)
+char *encode_image(char* image_path, size_t *len)
 {
     FILE *file;
     size_t decoded_len, encoded_len;
@@ -43,8 +49,8 @@ char *encode_image(char* image_path)
     encoded_len = Base64encode_len(decoded_len);
     encoded = malloc(sizeof(char) * encoded_len);
 
-    size_t tmp = Base64encode(encoded, decoded, decoded_len);
-    printf("Pratical = %lu\n, Theoritical = %lu\n", tmp, encoded_len);
+    *len = Base64encode(encoded, decoded, decoded_len);
+    // printf("Pratical = %lu\n, Theoritical = %lu\n", tmp, encoded_len);
 
     // printf("%s\n", encoded);
     fclose(file);
@@ -55,15 +61,56 @@ char *encode_image(char* image_path)
 
 char *build_query(const char *host, size_t *len, char* image_path)
 {
-    char *encoded_image = encode_image(image_path);
+    size_t encodedLen;
+    (void) host;
+    char *encoded_image = encode_image(image_path, &encodedLen);
+    (void) encoded_image;
 
-    char *request = NULL;
+    const char* requestFormat = "POST /send HTTP/1.1\r\n"
+                                "Host: 4d3f2zejqh.execute-api.eu-west-1.amazonaws.com\r\n"
+                                "Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryABC123\r\n"
+                                "Connection: close\r\n"
+                                "Content-Length: %d\r\n\r\n"
+                                "------WebKitFormBoundaryABC123\r\n"
+                                "Content-Disposition: form-data; name=\"file\"; filename=\"image.jpg\"\r\n"
+                                "Content-Type: image/jpeg\r\n\r\n";
 
-    ssize_t request_len = 
-        asprintf(&request, "GET http://www.%s/?img=%s HTTP/1.0\r\n\r\n", host, encoded_image);
-    
-    if (request_len == -1) errx(1, "Asprint FAILED.");
-    *len = request_len;
+    const char* requestEnd = "\r\n------WebKitFormBoundaryABC123--\r\n";
+
+    // Open the image file
+    // FILE* file = fopen(image_path, "rb");
+    // if (!file) {
+    //     perror("fopen");
+    // }
+
+    // // Calculate the content length
+    // fseek(file, 0, SEEK_END);
+    // long fileSize = ftell(file);
+    // fseek(file, 0, SEEK_SET);
+
+
+    // Format the request
+    char* request = NULL;
+    size_t requestFormatLength = asprintf(&request, requestFormat, encodedLen);    
+    if (!request) {
+        fprintf(stderr, "Failed to allocate memory for the request.\n");
+    }
+    // printf("requestFormat = %s\n", request);
+    // getchar();
+
+    size_t requestLen = requestFormatLength + encodedLen + strlen(requestEnd);
+    request = realloc(request, requestLen);
+    memcpy(request + requestFormatLength, encoded_image, encodedLen);
+    memcpy(request + requestFormatLength + encodedLen, requestEnd, strlen(requestEnd));
+
+
+
+    // printf("encodedlen = %ld\n", encodedLen);
+    // printf("requestFormat = %s\n", request);
+    // printf("requestEnd = %s\n", requestBody + encodedLen);
+    // printf("request size = %d\n", requestSize);
+    // getchar();
+    *len = requestLen;
     return request;
 }
 
@@ -76,13 +123,16 @@ void send_image(const char *host, char* image_path)
     int sfd, s;
     ssize_t nread, nwritten;
 
-    host = "google.com";
+    SSL_library_init();
+    OpenSSL_add_all_algorithms();
+    SSL_load_error_strings();
+
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
 
-    s = getaddrinfo(host, "80", &hints, &result);
+    s = getaddrinfo(host, "443", &hints, &result);
     if (s != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
         exit(EXIT_FAILURE);
@@ -90,11 +140,14 @@ void send_image(const char *host, char* image_path)
 
     for (addr = result; addr != NULL; addr = addr->ai_next) {
         sfd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
+        printf("socket = %i\n", sfd);
         if (sfd == -1)
             continue;
 
         if (connect(sfd, addr->ai_addr, addr->ai_addrlen) == 0)
             break;
+
+        printf("Connect: %s\n", strerror(errno));
 
         close(sfd);
     }
@@ -105,17 +158,37 @@ void send_image(const char *host, char* image_path)
         errx(1, "Couldn't connect.");
     }
 
+    SSL_CTX* ctx = SSL_CTX_new(TLS_client_method());
+    if (!ctx)
+        errx(EXIT_FAILURE, "Failed to create SSL context.\n");
+
+    // Establish the SSL/TLS connection
+    SSL* ssl = SSL_new(ctx);
+    if (!ssl) {
+        fprintf(stderr, "Failed to create SSL object.\n");
+    }
+
+    if (SSL_set_fd(ssl, sfd) == 0) {
+        fprintf(stderr, "Failed to set SSL file descriptor.\n");
+    }
+
+    if (SSL_connect(ssl) != 1) {
+        fprintf(stderr, "Failed to establish SSL connection.\n");
+        ERR_print_errors_fp(stderr);
+    }
+
     size_t request_len;
     char* request;
     request = build_query(host, &request_len, image_path);
     printf("request length is %lu\n", request_len);
 
-    rewrite(sfd, request, request_len);
+    rewrite(ssl, request, request_len);
 
     free(request);
 
+    printf("Now listening server response... \n");
     do {
-        nread = read(sfd, buffer, BUFFER_SIZE);
+        nread = SSL_read(ssl, buffer, BUFFER_SIZE);
         if (nread == -1)
             errx(1, "Read FAILED.");
 
@@ -123,8 +196,12 @@ void send_image(const char *host, char* image_path)
         if (nwritten == -1)
             errx(1, "Write FAILED.");
 
+        printf("nread = %ld\n", nread);
+
     }
     while (nread != 0);
 
+    SSL_shutdown(ssl);
+    SSL_free(ssl);
     close(sfd);
 }

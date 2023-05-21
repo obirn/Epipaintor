@@ -4,7 +4,7 @@ export function ApiStack({ stack }: StackContext) {
   // Create the HTTP API
   const api = new Api(stack, "Api", {
     routes: {
-      "GET /send": "packages/functions/src/send.handler",
+      "POST /send": "packages/functions/src/send.handler",
       "GET /update": "packages/functions/src/update.handler",
     },
   });
