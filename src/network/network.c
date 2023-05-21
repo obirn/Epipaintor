@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#include <gtk/gtk.h>
 
 
 void rewrite(SSL* ssl, const void *buf, size_t count)
@@ -15,7 +16,7 @@ void rewrite(SSL* ssl, const void *buf, size_t count)
         written = SSL_write(ssl, buffer_char + written, count);
         if (written == -1) errx(1, "Write FAILED.");
         total_written += written;
-        printf("%ld/%ld\n", total_written, count);
+        // printf("%ld/%ld\n", total_written, count);
     }
     while (total_written < (ssize_t) count);
 }
@@ -91,7 +92,7 @@ char *build_query(const char *host, size_t *len, char* image_path)
 
     // Allocate memory for the request
     int requestSize = snprintf(NULL, 0, requestFormat, fileSize) + fileSize + strlen(requestEnd);
-    char* request = (char*)malloc(requestSize);
+    char* request = malloc(requestSize);
     if (!request) {
         fprintf(stderr, "Failed to allocate memory for the request.\n");
         fclose(file);
@@ -103,7 +104,7 @@ char *build_query(const char *host, size_t *len, char* image_path)
     fread(requestBody, 1, fileSize, file);
     strcpy(requestBody + fileSize, requestEnd);
 
-    printf("content length = %ld\n", fileSize);
+    // printf("content length = %ld\n", fileSize);
     // printf("requestFormat = %s\n", request);
     // printf("requestEnd = %s\n", requestBody + encodedLen);
     // printf("request size = %d\n", requestSize);
@@ -125,8 +126,6 @@ void send_image(const char *host, char* image_path)
     OpenSSL_add_all_algorithms();
     SSL_load_error_strings();
 
-    printf("Checkpoint1 \n");
-    
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
@@ -177,15 +176,15 @@ void send_image(const char *host, char* image_path)
     }
 
     size_t request_len;
-    char* request;
-    request = build_query(host, &request_len, image_path);
-    // printf("request length is %lu\n", request_len);
+    
+    char* request = build_query(host, &request_len, image_path);
+    printf("request length is %lu\n", request_len);
 
     rewrite(ssl, request, request_len);
 
-    free(request);
+    // free(request);
 
-    // printf("Now listening server response... \n");
+    printf("Now listening server response... \n");
     do {
         nread = SSL_read(ssl, buffer, BUFFER_SIZE);
         if (nread == -1)
@@ -201,4 +200,8 @@ void send_image(const char *host, char* image_path)
     SSL_free(ssl);
     close(sfd);
 
+}
+
+gint get_images (gpointer data) {
+	
 }

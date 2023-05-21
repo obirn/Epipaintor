@@ -38,6 +38,7 @@ void on_new_file(GtkMenuItem *self);
 void on_open_file(GtkMenuItem *menu_item, gpointer user_data);
 void on_save_file(GtkMenuItem *menu_item, gpointer user_data);
 gboolean on_create_multiplayer(GtkMenuItem *menu_item, gpointer user_data);
+gboolean on_join_multiplayer(GtkMenuItem *menu_item, gpointer user_data);
 void epipaintor_free(gpointer user_data);
 
 #endif

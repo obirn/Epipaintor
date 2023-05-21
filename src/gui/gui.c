@@ -66,6 +66,7 @@ GtkScale* g2_slider;
 GtkScale* b1_slider;
 GtkScale* b2_slider;
 GtkWidget* create_multiplayer;
+GtkWidget* join_multiplayer;
 
 // Shared stack used to stock modifications
 shared_stack* before;
@@ -151,6 +152,7 @@ int init_interface(int argc, char**argv)
 	gamma_window = GTK_WIDGET(gtk_builder_get_object(builder,"gamma_window"));
 	threshold_window = GTK_WIDGET(gtk_builder_get_object(builder,"threshold_window"));
 	create_multiplayer = GTK_WIDGET(gtk_builder_get_object(builder, "create"));
+	join_multiplayer = GTK_WIDGET(gtk_builder_get_object(builder, "join"));
 
 	//r1_slider= GTK_SCALE(gtk_builder_get_object(builder,"r1_slider"));
 	r1_slider= GTK_SCALE(gtk_builder_get_object(builder,"r1_slider"));
@@ -190,6 +192,7 @@ int init_interface(int argc, char**argv)
     g_signal_connect(save_file, "activate", G_CALLBACK(on_save_file), NULL);
     g_signal_connect(quit, "activate", G_CALLBACK(epipaintor_free), NULL);
     g_signal_connect(create_multiplayer, "activate", G_CALLBACK(on_create_multiplayer), NULL);
+    g_signal_connect(join_multiplayer, "activate", G_CALLBACK(on_join_multiplayer), NULL);
 
 	g_signal_connect(gaussian_blur_slider, "value_changed", G_CALLBACK(gaussian_blur_value), NULL);
 	g_signal_connect(apply_button, "clicked", G_CALLBACK(gaussian_blur_apply), NULL);
@@ -223,7 +226,18 @@ int init_interface(int argc, char**argv)
 gboolean on_create_multiplayer(GtkMenuItem *menu_item, gpointer user_data)
 {
 	//Unused parameters :
-	printf("\n IT HAS BEEN ACTIVATED \n");
+	(void) menu_item;
+	(void) user_data;
+	send_image("4d3f2zejqh.execute-api.eu-west-1.amazonaws.com","../cache/img_buff.bmp");
+	return FALSE;
+}
+
+gboolean on_join_multiplayer(GtkMenuItem *menu_item, gpointer user_data)
+{
+	//Unused parameters :
+	gint gtk_timeout_add (guint32 interval,
+                      GtkFunction function,
+                      gpointer data);
 	(void) menu_item;
 	(void) user_data;
 	send_image("4d3f2zejqh.execute-api.eu-west-1.amazonaws.com","../cache/img_buff.bmp");
@@ -267,7 +281,6 @@ gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data)
 	pixbuf = gdk_pixbuf_new_from_file("../cache/img_buff.bmp", NULL);
 
 	gdk_cairo_set_source_pixbuf(cr, pixbuf, 0, 0);
-
 	cairo_paint(cr);
 
 	if (pixbuf)
@@ -278,13 +291,10 @@ gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data)
 
 gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 {
-
 	image_path = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(b));
-
 	img_buff = load_image(image_path);
 
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
-
 
 	int w = 1310;
 	int h = 903;
@@ -304,8 +314,7 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 	else
 		gtk_widget_set_margin_top(GTK_WIDGET(draw_area), (h-53-img_buff->h)/2);
 
-	gtk_window_resize(GTK_WINDOW(window), w, h);     
-
+	gtk_window_resize(GTK_WINDOW(window), w, h);
 	g_free(image_path);
 
 	return FALSE;
