@@ -70,7 +70,7 @@ char *build_query(const char *host, size_t *len, char* image_path)
                                 "Host: 4d3f2zejqh.execute-api.eu-west-1.amazonaws.com\r\n"
                                 "Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryABC123\r\n"
                                 "Connection: close\r\n"
-                                "Content-Length: %d\r\n\r\n"
+                                "Content-Length: 180\r\n\r\n"
                                 "------WebKitFormBoundaryABC123\r\n"
                                 "Content-Disposition: form-data; name=\"file\"; filename=\"image.jpg\"\r\n"
                                 "Content-Type: image/jpeg\r\n\r\n";
@@ -91,7 +91,7 @@ char *build_query(const char *host, size_t *len, char* image_path)
 
     // Format the request
     char* request = NULL;
-    size_t requestFormatLength = asprintf(&request, requestFormat, encodedLen);    
+    size_t requestFormatLength = asprintf(&request, requestFormat);
     if (!request) {
         fprintf(stderr, "Failed to allocate memory for the request.\n");
     }
@@ -140,14 +140,14 @@ void send_image(const char *host, char* image_path)
 
     for (addr = result; addr != NULL; addr = addr->ai_next) {
         sfd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
-        printf("socket = %i\n", sfd);
+        // printf("socket = %i\n", sfd);
         if (sfd == -1)
             continue;
 
         if (connect(sfd, addr->ai_addr, addr->ai_addrlen) == 0)
             break;
 
-        printf("Connect: %s\n", strerror(errno));
+        // printf("Connect: %s\n", strerror(errno));
 
         close(sfd);
     }
@@ -180,13 +180,13 @@ void send_image(const char *host, char* image_path)
     size_t request_len;
     char* request;
     request = build_query(host, &request_len, image_path);
-    printf("request length is %lu\n", request_len);
+    // printf("request length is %lu\n", request_len);
 
     rewrite(ssl, request, request_len);
 
     free(request);
 
-    printf("Now listening server response... \n");
+    // printf("Now listening server response... \n");
     do {
         nread = SSL_read(ssl, buffer, BUFFER_SIZE);
         if (nread == -1)
