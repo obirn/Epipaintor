@@ -10,12 +10,14 @@
 #include "../image_utils/tools.h"
 #include "../filters/filters.h"
 #include "../shapes/shapes.h"
+#include "../transforms/transforms.h"
 
 // Glade related
 GtkMenuItem *self;
 GtkBuilder *builder;
 GtkWidget *window;
 GtkWidget *color_window;
+GtkWidget *resize_window;
 GtkWidget *color_filter;
 GtkWidget *fixed1;
 GtkWidget *image;
@@ -32,11 +34,22 @@ GtkWidget *open_file;
 GtkWidget *save_file;
 GtkWidget *quit;
 GtkColorChooser* color_button;
+GtkButton* seletion_button;
+GtkButton* clear_selection_button;
+GtkButton* display_selection_button;
+GtkButton* copy_selection_button;
+GtkButton* paste_selection_button;
+GtkButton* cut_selection_button;
 GtkButton* bucket;
 GtkButton* line_button;
 GtkButton* rectangle_button;
 GtkButton* triangle_button;
 GtkButton* circle_button;
+GtkButton* rotate_left;
+GtkButton* rotate_right;
+GtkButton* flip_horizontally;
+GtkButton* flip_vertically;
+GtkButton* resize_button;
 GtkWidget* previous;
 GtkWidget* next;
 GtkScale* scale_glider;
@@ -53,6 +66,7 @@ GtkWidget *apply_button_color;
 GtkScale* gamma_slider;
 GtkScale* threshold_slider;
 GtkScale* color_threshold_slider;
+GtkScale* resize_slider;
 GtkScale* r1_slider;
 GtkScale* r2_slider;
 GtkScale* g1_slider;
@@ -109,6 +123,7 @@ int init_interface(int argc, char**argv)
 	// Load wigdets
 	window = GTK_WIDGET(gtk_builder_get_object(builder,"mainpage"));
 	color_window=  GTK_WIDGET(gtk_builder_get_object(builder,"color_window"));
+	resize_window=  GTK_WIDGET(gtk_builder_get_object(builder,"resize_window"));
 	fixed1 = GTK_WIDGET(gtk_builder_get_object(builder,"fixed1"));
 	button = GTK_WIDGET(gtk_builder_get_object(builder,"button"));
 	image = GTK_WIDGET(gtk_builder_get_object(builder,"image_window"));
@@ -142,7 +157,18 @@ int init_interface(int argc, char**argv)
 	apply_button_threshold = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button_threshold"));
 	gamma_window = GTK_WIDGET(gtk_builder_get_object(builder,"gamma_window"));
 	threshold_window = GTK_WIDGET(gtk_builder_get_object(builder,"threshold_window"));
-	//r1_slider= GTK_SCALE(gtk_builder_get_object(builder,"r1_slider"));
+	seletion_button= GTK_BUTTON(gtk_builder_get_object(builder,"seletion_button"));
+    clear_selection_button = GTK_BUTTON(gtk_builder_get_object(builder,"clear_selection_button"));
+    display_selection_button = GTK_BUTTON(gtk_builder_get_object(builder,"display_selection_button"));
+	copy_selection_button = GTK_BUTTON(gtk_builder_get_object(builder,"copy_selection_button")); 
+	paste_selection_button = GTK_BUTTON(gtk_builder_get_object(builder,"paste_selection_button")); 
+	cut_selection_button = GTK_BUTTON(gtk_builder_get_object(builder,"cut_selection_button")); 
+	rotate_left =  GTK_BUTTON(gtk_builder_get_object(builder,"rotate_left"));
+	rotate_right = GTK_BUTTON(gtk_builder_get_object(builder,"rotate_right"));
+	flip_horizontally = GTK_BUTTON(gtk_builder_get_object(builder,"flip_horizontally"));
+	flip_vertically = GTK_BUTTON(gtk_builder_get_object(builder,"flip_vertically"));
+	resize_button = GTK_BUTTON(gtk_builder_get_object(builder,"resize_button"));
+	resize_slider= GTK_SCALE(gtk_builder_get_object(builder,"resize_slider"));
 	r1_slider= GTK_SCALE(gtk_builder_get_object(builder,"r1_slider"));
 	r2_slider = GTK_SCALE(gtk_builder_get_object(builder,"r2_slider"));
 	g1_slider= GTK_SCALE(gtk_builder_get_object(builder,"g1_slider"));
@@ -187,11 +213,13 @@ int init_interface(int argc, char**argv)
 	g_signal_connect(threshold_slider, "value_changed", G_CALLBACK(threshold_value), NULL);
 	g_signal_connect(color_threshold_slider, "value_changed", G_CALLBACK(color_threshold_value), NULL);
 	g_signal_connect(r1_slider, "value_changed", G_CALLBACK(r1_value), NULL);
+	//g_signal_connect(resize_slider, "value_changed", G_CALLBACK(resize_value), NULL);
 	g_signal_connect(r2_slider, "value_changed", G_CALLBACK(r2_value), NULL);
 	g_signal_connect(g1_slider, "value_changed", G_CALLBACK(g1_value), NULL);
 	g_signal_connect(g2_slider, "value_changed", G_CALLBACK(g2_value), NULL);
 	g_signal_connect(b1_slider, "value_changed", G_CALLBACK(b1_value), NULL);
 	g_signal_connect(b2_slider, "value_changed", G_CALLBACK(b2_value), NULL); 
+	g_signal_connect(resize_slider, "value_changed", G_CALLBACK(resize_value), NULL);
 	g_signal_connect(apply_button_color, "clicked", G_CALLBACK(color_apply), NULL);
 
 
@@ -449,7 +477,30 @@ gboolean on_tool_clicked(GtkButton *self, gpointer user_data) {
 	return FALSE;
 }
 
-
+void on_clear_selection_button_clicked (GtkMenuItem *self)
+{
+	widget = (GtkWidget *) self;
+}
+void on_display_selection_button_clicked (GtkMenuItem *self)
+{
+	widget = (GtkWidget *) self;
+}
+void on_copy_selection_button_clicked (GtkMenuItem *self)
+{
+	widget = (GtkWidget *) self;
+}
+void on_selection_button_clicked (GtkMenuItem *self)
+{
+	widget = (GtkWidget *) self;
+}
+void on_paste_selection_button_clicked (GtkMenuItem *self)
+{
+	widget = (GtkWidget *) self;
+}
+void on_cut_selection_button_clicked (GtkMenuItem *self)
+{
+	widget = (GtkWidget *) self;
+}
 void on_open_file(GtkMenuItem *menu_item, gpointer user_data)
 {
 	widget = (GtkWidget *) menu_item;
@@ -570,6 +621,170 @@ void on_sepia_activate(GtkMenuItem *self)
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 }
 
+void on_rotate_left_clicked(GtkMenuItem *self)
+{
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	//img_buff = NULL;
+	
+	SDL_Surface* resized = rotate_by_angle(img_buff,-90);
+	SDL_SaveBMP(resized, "../cache/right.bmp");
+	
+	widget = (GtkWidget *) self;
+	
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	SDL_FreeSurface(resized);
+
+    img_buff=load_image("../cache/right.bmp");
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	int w = 1310;
+	int h = 903;
+	if(img_buff->w > 1080)
+	{
+		w = img_buff->w+230;
+		gtk_widget_set_margin_start(GTK_WIDGET(draw_area), 0);
+	}
+	else
+		gtk_widget_set_margin_start(GTK_WIDGET(draw_area), (w-230-img_buff->w)/2);
+
+	if(img_buff->h > 850)
+	{
+		h = img_buff->h+53;
+		gtk_widget_set_margin_top(GTK_WIDGET(draw_area), 0);
+	}
+	else
+		gtk_widget_set_margin_top(GTK_WIDGET(draw_area), (h-53-img_buff->h)/2);
+	gtk_window_resize(GTK_WINDOW(window), w, h);     
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	
+}
+
+
+void on_rotate_right_clicked(GtkMenuItem *self)
+{
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	//img_buff = NULL;
+	
+	SDL_Surface* resized = rotate_by_angle(img_buff,90);
+	SDL_SaveBMP(resized, "../cache/right.bmp");
+	
+	widget = (GtkWidget *) self;
+	
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	SDL_FreeSurface(resized);
+
+    img_buff=load_image("../cache/right.bmp");
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	int w = 1310;
+	int h = 903;
+	if(img_buff->w > 1080)
+	{
+		w = img_buff->w+230;
+		gtk_widget_set_margin_start(GTK_WIDGET(draw_area), 0);
+	}
+	else
+		gtk_widget_set_margin_start(GTK_WIDGET(draw_area), (w-230-img_buff->w)/2);
+
+	if(img_buff->h > 850)
+	{
+		h = img_buff->h+53;
+		gtk_widget_set_margin_top(GTK_WIDGET(draw_area), 0);
+	}
+	else
+		gtk_widget_set_margin_top(GTK_WIDGET(draw_area), (h-53-img_buff->h)/2);
+	gtk_window_resize(GTK_WINDOW(window), w, h);     
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	
+}
+void on_flip_horizontally_clicked(GtkMenuItem *self)
+{
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	//img_buff = NULL;
+	img_buff = flipSurfaceHorizontal(img_buff);
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	
+}
+void on_flip_vertically_clicked(GtkMenuItem *self)
+{
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	//img_buff = NULL;
+	img_buff = flipSurfaceVertical(img_buff);
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	
+}
+
+void on_resize_button_clicked(GtkMenuItem *self)
+{
+
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	GtkWidget *window = resize_window;
+	gtk_window_set_title(GTK_WINDOW(window), "Resize");
+    gtk_widget_show_all(window);
+
+	
+
+}
+double  resize_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	
+	return gtk_range_get_value(&(self->range));
+
+}
+
+void on_apply_resize_button_clicked(GtkMenuItem *self)
+{
+	
+	double value = resize_value(resize_slider)/100;
+	
+	widget = (GtkWidget *) self;
+
+
+	//printf("%d",value);
+	SDL_Surface* resized = resizeSurface(img_buff,value);
+	SDL_SaveBMP(resized, "../cache/resized.bmp");
+	
+	widget = (GtkWidget *) self;
+	
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	SDL_FreeSurface(resized);
+
+    img_buff=load_image("../cache/resized.bmp");
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	int w = 1310;
+	int h = 903;
+	if(img_buff->w > 1080)
+	{
+		w = img_buff->w+230;
+		gtk_widget_set_margin_start(GTK_WIDGET(draw_area), 0);
+	}
+	else
+		gtk_widget_set_margin_start(GTK_WIDGET(draw_area), (w-230-img_buff->w)/2);
+
+	if(img_buff->h > 850)
+	{
+		h = img_buff->h+53;
+		gtk_widget_set_margin_top(GTK_WIDGET(draw_area), 0);
+	}
+	else
+		gtk_widget_set_margin_top(GTK_WIDGET(draw_area), (h-53-img_buff->h)/2);
+	gtk_window_resize(GTK_WINDOW(window), w, h);     
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	//img_buff = color_threshold(img_buff,value,value_r1,value_g1,value_b1,value_r2,value_g2,value_b2);
+
+	
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+
+}
 
 
 
@@ -598,6 +813,7 @@ void on_color_filter_activate(GtkMenuItem *self)
     gtk_widget_show_all(window);
 
 }
+
 
 
 unsigned char  r1_value(GtkScale *self)
@@ -850,6 +1066,7 @@ void on_threshold_activate(GtkMenuItem *self)
 	gtk_window_set_title(GTK_WINDOW(window), "Threshold");
     gtk_widget_show_all(window);
 }
+
 
 
 gboolean update_scale_val(GtkScale *self, gpointer user_data)
