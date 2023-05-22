@@ -28,6 +28,7 @@ unsigned char threshold_value(GtkScale *self);
 unsigned char gamma_value(GtkScale *self);
 unsigned char gaussian_blur_value(GtkScale *self);
 unsigned char  color_threshold_value(GtkScale *self);
+double  resize_value(GtkScale *self);
 unsigned char  r1_value(GtkScale *self);
 unsigned char  r2_value(GtkScale *self);
 unsigned char  g1_value(GtkScale *self);
@@ -38,5 +39,6 @@ void on_new_file(GtkMenuItem *self);
 void on_open_file(GtkMenuItem *menu_item, gpointer user_data);
 void on_save_file(GtkMenuItem *menu_item, gpointer user_data);
 void epipaintor_free(gpointer user_data);
-
+void on_rotate_left_clicked(GtkMenuItem *self);
+void on_rotate_right_clicked(GtkMenuItem *self);
 #endif

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
   <object class="GtkAdjustment" id="Curseur">
@@ -609,6 +609,88 @@
       </object>
     </child>
   </object>
+  <object class="GtkAdjustment" id="resize">
+    <property name="upper">255</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkWindow" id="resize_window">
+    <property name="width-request">80</property>
+    <property name="height-request">80</property>
+    <property name="can-focus">False</property>
+    <property name="destroy-with-parent">True</property>
+    <child>
+      <object class="GtkFixed">
+        <property name="width-request">32</property>
+        <property name="height-request">32</property>
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <child>
+          <object class="GtkBox">
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Ratio</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                  <attribute name="foreground" value="#ffffffffffff"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="resize_slider">
+                <property name="name">int</property>
+                <property name="width-request">250</property>
+                <property name="height-request">80</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Taille/ Intensité</property>
+                <property name="adjustment">resize</property>
+                <property name="lower-stepper-sensitivity">off</property>
+                <property name="upper-stepper-sensitivity">off</property>
+                <property name="show-fill-level">True</property>
+                <property name="restrict-to-fill-level">False</property>
+                <property name="fill-level">255</property>
+                <property name="round-digits">0</property>
+                <property name="digits">0</property>
+                <property name="value-pos">right</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="apply_resize_button">
+                <property name="label" translatable="yes">Apply</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <signal name="clicked" handler="on_apply_resize_button_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkAdjustment" id="scollbar_horizontal">
     <property name="upper">1000</property>
     <property name="step-increment">1</property>
@@ -1022,32 +1104,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="seletion_button">
-                            <property name="width-request">40</property>
-                            <property name="height-request">40</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="receives-default">True</property>
-                            <property name="tooltip-text" translatable="yes">Bucket Tool</property>
-                            <property name="halign">start</property>
-                            <property name="valign">start</property>
-                            <property name="hexpand">True</property>
-                            <property name="vexpand">True</property>
-                            <property name="resize-mode">queue</property>
-                            <property name="use-underline">True</property>
-                            <property name="always-show-image">True</property>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="pixbuf">assets/177529-200.png</property>
-                              </object>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">1</property>
-                          </packing>
+                          <placeholder/>
                         </child>
                         <child>
                           <placeholder/>
@@ -1274,6 +1331,7 @@
                             <property name="resize-mode">queue</property>
                             <property name="use-underline">True</property>
                             <property name="always-show-image">True</property>
+                            <signal name="clicked" handler="on_resize_button_clicked" swapped="no"/>
                             <child>
                               <object class="GtkImage">
                                 <property name="visible">True</property>
@@ -1304,6 +1362,7 @@
                             <property name="resize-mode">queue</property>
                             <property name="use-underline">True</property>
                             <property name="always-show-image">True</property>
+                            <signal name="clicked" handler="on_rotate_left_clicked" swapped="no"/>
                             <child>
                               <object class="GtkImage">
                                 <property name="visible">True</property>
@@ -1334,6 +1393,7 @@
                             <property name="resize-mode">queue</property>
                             <property name="use-underline">True</property>
                             <property name="always-show-image">True</property>
+                            <signal name="clicked" handler="on_rotate_right_clicked" swapped="no"/>
                             <child>
                               <object class="GtkImage">
                                 <property name="visible">True</property>
@@ -1364,6 +1424,7 @@
                             <property name="resize-mode">queue</property>
                             <property name="use-underline">True</property>
                             <property name="always-show-image">True</property>
+                            <signal name="clicked" handler="on_flip_horizontally_clicked" swapped="no"/>
                             <child>
                               <object class="GtkImage">
                                 <property name="visible">True</property>
@@ -1394,6 +1455,7 @@
                             <property name="resize-mode">queue</property>
                             <property name="use-underline">True</property>
                             <property name="always-show-image">True</property>
+                            <signal name="clicked" handler="on_flip_vertically_clicked" swapped="no"/>
                             <child>
                               <object class="GtkImage">
                                 <property name="visible">True</property>
@@ -1783,6 +1845,256 @@
               </object>
             </child>
           </object>
+        </child>
+        <child>
+          <object class="GtkFrame" id="menuframe1">
+            <property name="width-request">246</property>
+            <property name="height-request">-1</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label-xalign">0</property>
+            <property name="label-yalign">0</property>
+            <property name="shadow-type">out</property>
+            <child>
+              <object class="GtkFixed" id="Menu1">
+                <property name="width-request">29</property>
+                <property name="height-request">-1</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <child>
+                  <object class="GtkBox" id="Tools1">
+                    <property name="width-request">100</property>
+                    <property name="height-request">80</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="width-request">100</property>
+                        <property name="height-request">80</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Selection</property>
+                        <attributes>
+                          <attribute name="weight" value="bold"/>
+                          <attribute name="foreground" value="#ffffffffffff"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <!-- n-columns=3 n-rows=2 -->
+                      <object class="GtkGrid">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <object class="GtkButton" id="clear_selection_button">
+                            <property name="use-action-appearance">True</property>
+                            <property name="width-request">40</property>
+                            <property name="height-request">40</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="halign">start</property>
+                            <property name="valign">start</property>
+                            <property name="hexpand">True</property>
+                            <property name="vexpand">True</property>
+                            <property name="resize-mode">queue</property>
+                            <property name="relief">half</property>
+                            <property name="use-underline">True</property>
+                            <property name="always-show-image">True</property>
+                            <signal name="clicked" handler="on_clear_selection_button_clicked" swapped="no"/>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="tooltip-text" translatable="yes">Brush Tool</property>
+                                <property name="pixbuf">assets/broom.png</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="display_selection_button">
+                            <property name="use-action-appearance">True</property>
+                            <property name="width-request">40</property>
+                            <property name="height-request">40</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="halign">start</property>
+                            <property name="valign">start</property>
+                            <property name="hexpand">True</property>
+                            <property name="vexpand">True</property>
+                            <property name="resize-mode">queue</property>
+                            <property name="use-underline">True</property>
+                            <property name="always-show-image">True</property>
+                            <signal name="clicked" handler="on_display_selection_button_clicked" swapped="no"/>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="tooltip-text" translatable="yes">Magic Wand Tool</property>
+                                <property name="pixbuf">assets/eye.png</property>
+                                <property name="icon_size">6</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="left-attach">2</property>
+                            <property name="top-attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="copy_selection_button">
+                            <property name="use-action-appearance">True</property>
+                            <property name="width-request">40</property>
+                            <property name="height-request">40</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="halign">start</property>
+                            <property name="valign">start</property>
+                            <property name="hexpand">True</property>
+                            <property name="vexpand">True</property>
+                            <property name="resize-mode">queue</property>
+                            <property name="use-underline">True</property>
+                            <property name="always-show-image">True</property>
+                            <signal name="clicked" handler="on_copy_selection_button_clicked" swapped="no"/>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="tooltip-text" translatable="yes">Text Tool</property>
+                                <property name="pixbuf">assets/copy.png</property>
+                                <property name="icon_size">6</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="selection_button">
+                            <property name="width-request">40</property>
+                            <property name="height-request">40</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="tooltip-text" translatable="yes">Bucket Tool</property>
+                            <property name="halign">start</property>
+                            <property name="valign">start</property>
+                            <property name="hexpand">True</property>
+                            <property name="vexpand">True</property>
+                            <property name="resize-mode">queue</property>
+                            <property name="use-underline">True</property>
+                            <property name="always-show-image">True</property>
+                            <signal name="clicked" handler="on_selection_button_clicked" swapped="no"/>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="pixbuf">assets/177529-200.png</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="paste_selection_button">
+                            <property name="width-request">40</property>
+                            <property name="height-request">40</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="tooltip-text" translatable="yes">Bucket Tool</property>
+                            <property name="halign">start</property>
+                            <property name="valign">start</property>
+                            <property name="hexpand">True</property>
+                            <property name="vexpand">True</property>
+                            <property name="resize-mode">queue</property>
+                            <property name="use-underline">True</property>
+                            <property name="always-show-image">True</property>
+                            <signal name="clicked" handler="on_paste_selection_button_clicked" swapped="no"/>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="pixbuf">assets/paste.png</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="cut_selection_button">
+                            <property name="width-request">40</property>
+                            <property name="height-request">40</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="tooltip-text" translatable="yes">Bucket Tool</property>
+                            <property name="halign">start</property>
+                            <property name="valign">start</property>
+                            <property name="hexpand">True</property>
+                            <property name="vexpand">True</property>
+                            <property name="resize-mode">queue</property>
+                            <property name="use-underline">True</property>
+                            <property name="always-show-image">True</property>
+                            <signal name="clicked" handler="on_cut_selection_button_clicked" swapped="no"/>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="width-request">40</property>
+                                <property name="height-request">40</property>
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="pixbuf">assets/scissors.png</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="left-attach">2</property>
+                            <property name="top-attach">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="x">44</property>
+                    <property name="y">50</property>
+                  </packing>
+                </child>
+              </object>
+            </child>
+            <child type="label_item">
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="x">1641</property>
+          </packing>
         </child>
       </object>
     </child>
