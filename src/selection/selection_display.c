@@ -8,7 +8,7 @@
 
 SDL_Surface* display_selection_on_image(SDL_Surface *s_surface, int status)
 {
-    SDL_surface* selection = load_image("selection.png");
+    SDL_Surface* selection = load_image("../../cache/selection.png");
 
     if (status == 1)
     {
@@ -24,7 +24,7 @@ SDL_Surface* display_selection_on_image(SDL_Surface *s_surface, int status)
     Uint32* pixels = s_surface->pixels;
     SDL_PixelFormat* format = s_surface->format;
     Uint32* selection_pixels = selection->pixels;
-    SDL_PixelFormat* selection_format = pixels->format;
+    SDL_PixelFormat* selection_format = selection->format;
 
     SDL_LockSurface(s_surface);
     SDL_LockSurface(selection);
@@ -56,5 +56,5 @@ SDL_Surface* display_selection_on_image(SDL_Surface *s_surface, int status)
     SDL_UnlockSurface(s_surface);
     SDL_UnlockSurface(selection);
 
-    return s_surface
+    return s_surface;
 }

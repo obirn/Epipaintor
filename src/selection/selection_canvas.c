@@ -8,16 +8,16 @@
 
 void create_selection_base(SDL_Surface *s_surface)
 {
-    SDL_surface* selection;
+    SDL_Surface* selection;
 
-    selection = SDL_CreateRGBSurface(SDL_SWSURFACE, d_width, d_height, 
+    selection = SDL_CreateRGBSurface(SDL_SWSURFACE, s_surface->w, s_surface->h, 
         s_surface->format->BitsPerPixel, s_surface->format->Rmask,
         s_surface->format->Gmask, s_surface->format->Bmask,
         s_surface->format->Amask);
 
     // Unique pixel identifier is (253, 254, 255).
     SDL_FillRect(selection, NULL,
-                 SDL_MapRGB(selection->format, 253, 254, 255));
+                 SDL_MapRGB(selection->format, 0, 0, 0));
 
     save_image(selection, "../../cache/selection.png");
 
