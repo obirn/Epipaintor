@@ -238,7 +238,10 @@ gboolean on_create_multiplayer(GtkMenuItem *menu_item, gpointer user_data)
 gboolean on_join_multiplayer(GtkMenuItem *menu_item, gpointer user_data)
 {
 	//Unused parameters :
-	update_callback_id = g_timeout_add(4000, update_image, "4d3f2zejqh.execute-api.eu-west-1.amazonaws.com");
+	char* request_url = get_download_url("4d3f2zejqh.execute-api.eu-west-1.amazonaws.com");
+	printf("Ok Let's go \n");
+	update_callback_id = g_timeout_add(4000, get_image_from_url, request_url);
+	printf("update_callback_id = %d\n", update_callback_id);
 	(void) menu_item;
 	(void) user_data;
 	return FALSE;

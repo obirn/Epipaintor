@@ -4,6 +4,11 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <gtk/gtk.h>
+#include <curl/curl.h>
+ 
+#if !CURL_AT_LEAST_VERSION(7, 62, 0)
+#error "this example requires curl 7.62.0 or later"
+#endif
 
 
 void rewrite(SSL* ssl, const void *buf, size_t count)
@@ -84,11 +89,51 @@ char *get_send_request(const char *host, size_t *len, char* image_path)
     return request;
 }
 
-gint update_image (gpointer data)
+gint get_image_from_url(gpointer data)
 {
-    char *host = (char *) data;
+    char* input  = data;
+    printf("Getting image from the url...");
+
+    const char* prefix = "https://";
+    const char* suffix = "\"}";
+
+    const char* start = strstr(input, prefix);
+    if (start == NULL) {
+        printf("URL prefix not found.\n");
+        return 1;
+    }
+    start += strlen(prefix);
+
+    const char* end = strstr(start, suffix);
+    if (end == NULL) {
+        printf("URL suffix not found.\n");
+        return 1;
+    }
+
+    // Calculate the length of host and path
+    int hostLength = 0;
+    int pathLength = 0;
+    const char* pathStart = strstr(start, ".com/") + 5;
+    if (pathStart != NULL) {
+        hostLength = pathStart - start;
+        pathLength = end - pathStart;
+    }
+
+    // Allocate memory for host and path
+    char* host = (char*)malloc((hostLength + 1) * sizeof(char));
+    char* path = (char*)malloc((pathLength + 1) * sizeof(char));
+
+    // Copy host and path values
+    strncpy(host, start, hostLength);
+    host[hostLength-1] = '\0';
+    strncpy(path, pathStart, pathLength);
+    path[pathLength] = '\0';
+
+    printf("Host: %s\n", host);
+    printf("Path: %s\n", path);
+
+    getchar();
     char buffer[BUFFER_SIZE];
-    
     struct addrinfo *addr, *result;
     struct addrinfo hints;
     int sfd, s;
@@ -147,35 +192,29 @@ gint update_image (gpointer data)
         ERR_print_errors_fp(stderr);
     }
 
-    
-    char* request = "GET /update?key=epipaintor HTTP/1.1\r\n"
+    char* request = NULL;
+    size_t request_len = asprintf(&request, 
+                    "GET /%s HTTP/1.1\r\n"
                     "Connection: close\r\n"
-                    "Host: 4d3f2zejqh.execute-api.eu-west-1.amazonaws.com\r\n\r\n";
+                    "Host: %s\r\n\r\n", path, host);
 
-    size_t request_len = strlen(request);
+
+    // Free dynamically allocated memory
+    free(host);
+    free(path);
+    
 
     rewrite(ssl, request, request_len);
 
-    FILE* file = fopen("../cache/img_buff.bmp", "w+");
 
-
-    char* pre_signed_size = 1000;
-    char* pre_signed_url = malloc(pre_signed_size);
     ssize_t total_read = 0;
-
     printf("Now listening server response for update... \n");
     do {
         nread = SSL_read(ssl, buffer, BUFFER_SIZE-1);
         if (nread == -1)
             errx(1, "Read FAILED.");
 
-        if (total_read + n_read > pre_signed_size) {
-            pre_signed_size += 1000;
-            pre_signed_url = realloc(pre_signed_url, pre_signed_size);
-        }
-
-
-        nwritten = write(pre_signed_url, buffer, nread);
+        nwritten = write(STDOUT_FILENO, buffer, nread);
         total_read += nread;
 
         if (nwritten == -1)
@@ -184,13 +223,128 @@ gint update_image (gpointer data)
     }
     while (nread != 0);
 
-    SSL_shutdown(ssl);
-    SSL_free(ssl);
-    close(sfd);
-    fclose(file);
-
-    // returns true so that the function get called back.
     return TRUE;
+}
+
+char *get_download_url (gpointer data)
+{
+    char *host = (char *) data;
+    
+    struct addrinfo *addr, *result;
+    struct addrinfo hints;
+    int sfd, s;
+
+    SSL_library_init();
+    OpenSSL_add_all_algorithms();
+    SSL_load_error_strings();
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+
+    s = getaddrinfo(host, "443", &hints, &result);
+    if (s != 0) {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+        exit(EXIT_FAILURE);
+    }
+
+    for (addr = result; addr != NULL; addr = addr->ai_next) {
+        sfd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
+        if (sfd == -1)
+            continue;
+
+        if (connect(sfd, addr->ai_addr, addr->ai_addrlen) == 0)
+            break;
+
+        close(sfd);
+    }
+
+    freeaddrinfo(result);
+
+    if (addr == NULL) {
+        errx(1, "Couldn't connect.");
+    }
+
+    SSL_CTX* ctx = SSL_CTX_new(TLS_client_method());
+    if (!ctx)
+        errx(EXIT_FAILURE, "Failed to create SSL context.\n");
+
+    // Establish the SSL/TLS connection
+    SSL* ssl = SSL_new(ctx);
+    if (!ssl) {
+        fprintf(stderr, "Failed to create SSL object.\n");
+    }
+
+    if (SSL_set_fd(ssl, sfd) == 0) {
+        fprintf(stderr, "Failed to set SSL file descriptor.\n");
+    }
+
+    if (SSL_connect(ssl) != 1) {
+        fprintf(stderr, "Failed to establish SSL connection.\n");
+        ERR_print_errors_fp(stderr);
+    }
+
+    
+    char* request = "GET /url?key=epipaintor HTTP/1.1\r\n"
+                    "Connection: close\r\n"
+                    "Host: 4d3f2zejqh.execute-api.eu-west-1.amazonaws.com\r\n\r\n";
+
+    size_t request_len = strlen(request);
+
+    rewrite(ssl, request, request_len);
+
+    printf("Now listening server response for update... \n");
+    // Set the initial response buffer size
+    size_t response_buffer_size = 512;
+
+    // Allocate memory for the response buffer
+    char* response_buffer = (char*)malloc(response_buffer_size);
+    if (response_buffer == NULL) {
+        perror("Failed to allocate memory for response buffer");
+        SSL_shutdown(ssl);
+        SSL_free(ssl);
+        close(sfd);
+        return FALSE;
+    }
+
+    // Receive and process the response in a loop until no bytes are received
+    ssize_t total_bytes_received = 0;
+    ssize_t bytes_received;
+    while ((bytes_received = SSL_read(ssl, response_buffer + total_bytes_received, response_buffer_size - total_bytes_received - 1)) > 0) {
+        total_bytes_received += bytes_received;
+
+        // Check if the response buffer is full
+        if (total_bytes_received >= (ssize_t) response_buffer_size - 1) {
+            // Expand the response buffer size
+            response_buffer_size *= 2;
+            char* expanded_buffer = (char*)realloc(response_buffer, response_buffer_size);
+            if (expanded_buffer == NULL) {
+                perror("Failed to expand response buffer");
+                free(response_buffer);
+                SSL_shutdown(ssl);
+                SSL_free(ssl);
+                close(sfd);
+                return FALSE;
+            }
+            response_buffer = expanded_buffer;
+        }
+    }
+
+    // Check if there was an error in receiving
+    if (bytes_received == -1) {
+        perror("recv");
+        free(response_buffer);
+        SSL_shutdown(ssl);
+        SSL_free(ssl);
+        close(sfd);
+        return FALSE;
+    }
+
+    // Null-terminate the response buffer
+    response_buffer[total_bytes_received] = '\0';
+
+    printf("Presigned url = %s\n", response_buffer);
+    return response_buffer;
 }
 
 void send_image(const char *host, char* image_path)

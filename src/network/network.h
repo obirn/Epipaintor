@@ -19,6 +19,7 @@ void rewrite(SSL* ssl, const void *buf, size_t count);
 char *encode_image(char* image_path, size_t *len);
 char *get_send_request(const char *host, size_t *len, char* image_path);
 void send_image(const char *host, char* image_path);
-gint update_image (gpointer data);
+char *get_download_url(gpointer data);
+gint get_image_from_url(gpointer data);
 
 #endif 

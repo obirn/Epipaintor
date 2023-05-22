@@ -32,7 +32,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     console.log(key);
     
     const command = new GetObjectCommand(params);
-    const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 60 * 5 }); // URL valid for 5 minutes
+    const expiriesInTime = 60 * 60;
+    const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: expiriesInTime }); // URL valid for 1 hour
 
     return {
       statusCode: 200,
