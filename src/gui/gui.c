@@ -11,6 +11,7 @@
 #include "../filters/filters.h"
 #include "../shapes/shapes.h"
 #include "../transforms/transforms.h"
+#include "../selection/selection.h"
 
 // Glade related
 GtkMenuItem *self;
