@@ -108,6 +108,13 @@ a {
 
 }
 
+.image_center{
+  margin-left: auto;
+  margin-top: 50px;
+  text-align: center;
+
+}
+
 /*Hero styling*/
 
 .hero_content {
