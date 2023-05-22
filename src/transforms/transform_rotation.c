@@ -66,3 +66,49 @@ SDL_Surface* rotate_by_angle(SDL_Surface *s_surface, double angle)
 
 	return d_surface;
 }
+
+SDL_Surface* flipSurfaceHorizontal(SDL_Surface* surface)
+{
+    SDL_Surface* flippedSurface = SDL_CreateRGBSurfaceWithFormat(0, surface->w, surface->h, surface->format->BitsPerPixel, surface->format->format);
+
+    for (int y = 0; y < surface->h; y++)
+    {
+        for (int x = 0; x < surface->w; x++)
+        {
+            Uint32 pixel = *((Uint32*)surface->pixels + y * surface->pitch / sizeof(Uint32) + x);
+            *((Uint32*)flippedSurface->pixels + y * flippedSurface->pitch / sizeof(Uint32) + (surface->w - x - 1)) = pixel;
+        }
+    }
+
+    return flippedSurface;
+}
+
+SDL_Surface* flipSurfaceVertical(SDL_Surface* surface)
+{
+    SDL_Surface* flippedSurface = SDL_CreateRGBSurfaceWithFormat(0, surface->w, surface->h, surface->format->BitsPerPixel, surface->format->format);
+
+    for (int y = 0; y < surface->h; y++)
+    {
+        for (int x = 0; x < surface->w; x++)
+        {
+            Uint32 pixel = *((Uint32*)surface->pixels + (surface->h - y - 1) * surface->pitch / sizeof(Uint32) + x);
+            *((Uint32*)flippedSurface->pixels + y * flippedSurface->pitch / sizeof(Uint32) + x) = pixel;
+        }
+    }
+
+    return flippedSurface;
+}
+
+
+SDL_Surface* resizeSurface(SDL_Surface* surface, double percentage)
+{
+    int newWidth = (int)(surface->w * percentage);
+    int newHeight = (int)(surface->h * percentage);
+
+    SDL_Surface* resizedSurface = SDL_CreateRGBSurfaceWithFormat(0, newWidth, newHeight, surface->format->BitsPerPixel, surface->format->format);
+
+    SDL_BlitScaled(surface, NULL, resizedSurface, NULL);
+
+    return resizedSurface;
+}
+
