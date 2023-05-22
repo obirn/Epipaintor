@@ -9,10 +9,14 @@
 #include "../data_structs/shared_stack.h"
 #include "../image_utils/tools.h"
 #include "../filters/filters.h"
+#include "../shapes/shapes.h"
 
 // Glade related
+GtkMenuItem *self;
 GtkBuilder *builder;
 GtkWidget *window;
+GtkWidget *color_window;
+GtkWidget *color_filter;
 GtkWidget *fixed1;
 GtkWidget *image;
 GtkWidget *label;
@@ -21,6 +25,7 @@ GtkWidget *fixed2;
 GtkWidget *draw_area;
 GtkWidget *brush;
 GtkWidget *gray_scale;
+GtkWidget *otsu;
 GtkWidget *redlight;
 GtkWidget *new_file;
 GtkWidget *open_file;
@@ -28,11 +33,32 @@ GtkWidget *save_file;
 GtkWidget *quit;
 GtkColorChooser* color_button;
 GtkButton* bucket;
+GtkButton* line_button;
+GtkButton* rectangle_button;
+GtkButton* triangle_button;
+GtkButton* circle_button;
 GtkWidget* previous;
 GtkWidget* next;
 GtkScale* scale_glider;
-
-
+GtkScale* gaussian_blur_slider;
+GtkWidget* color_threshold_window;
+GtkWidget* gaussian_blur_window;
+GtkWidget* custom_filter_window;
+GtkWidget* gamma_window;
+GtkWidget* threshold_window;
+GtkWidget *apply_button;
+GtkWidget *apply_button_gamma;
+GtkWidget *apply_button_threshold;
+GtkWidget *apply_button_color;
+GtkScale* gamma_slider;
+GtkScale* threshold_slider;
+GtkScale* color_threshold_slider;
+GtkScale* r1_slider;
+GtkScale* r2_slider;
+GtkScale* g1_slider;
+GtkScale* g2_slider;
+GtkScale* b1_slider;
+GtkScale* b2_slider;
 // Shared stack used to stock modifications
 shared_stack* before;
 shared_stack* after;
@@ -44,19 +70,21 @@ unsigned char scale_nb = 10;
 int brush_size = 2;
 
 // SDL Related
-SDL_Surface* img_buff;
+SDL_Surface* img_buff= NULL;
+SDL_Surface* pre_visualisation = NULL;
 
 // Booleans
-int is_pressed;
+int is_pressed = FALSE;
 
 // Mouse coordinates
-int pos_x = 0;
-int pos_y = 0;
-int old_x = 0;
-int old_y = 0;
+int curr_x = 0;
+int curr_y = 0;
 
-int start_x = 0;
-int start_y = 0;
+int last_x = 0;
+int last_y = 0;
+
+int on_press_x = 0;
+int on_press_y = 0;
 int end_x = 0;
 int end_y = 0;
 
@@ -69,7 +97,6 @@ GdkEvent* event;
 GdkRGBA gdk_color = {.red = 0, .green = 0, .blue = 0, .alpha = 1};
 
 SDL_Color selected_color = {.r = 0, .g = 0, .b = 0};
-SDL_Color color_buff = {.r = 0, .g = 0, .b = 0};
 SDL_Color white = {.r = 255, .g = 255, .b = 255};
 
 
@@ -81,6 +108,7 @@ int init_interface(int argc, char**argv)
 
 	// Load wigdets
 	window = GTK_WIDGET(gtk_builder_get_object(builder,"mainpage"));
+	color_window=  GTK_WIDGET(gtk_builder_get_object(builder,"color_window"));
 	fixed1 = GTK_WIDGET(gtk_builder_get_object(builder,"fixed1"));
 	button = GTK_WIDGET(gtk_builder_get_object(builder,"button"));
 	image = GTK_WIDGET(gtk_builder_get_object(builder,"image_window"));
@@ -89,7 +117,12 @@ int init_interface(int argc, char**argv)
 	brush = GTK_WIDGET(gtk_builder_get_object(builder,"brush_button"));
 	color_button = GTK_COLOR_CHOOSER(gtk_builder_get_object(builder, "color_button"));
 	bucket = GTK_BUTTON(gtk_builder_get_object(builder, "bucket_button"));
+	line_button = GTK_BUTTON(gtk_builder_get_object(builder, "line"));
+	rectangle_button = GTK_BUTTON(gtk_builder_get_object(builder, "rectangle"));
+	circle_button = GTK_BUTTON(gtk_builder_get_object(builder, "circle"));
+	triangle_button = GTK_BUTTON(gtk_builder_get_object(builder, "triangle"));
 	gray_scale = GTK_WIDGET(gtk_builder_get_object(builder, "grayscale")); 
+	gray_scale = GTK_WIDGET(gtk_builder_get_object(builder, "otsu_threshold")); 
 	redlight = GTK_WIDGET(gtk_builder_get_object(builder, "red_light")); 
 	next = GTK_WIDGET(gtk_builder_get_object(builder, "redo")); 
 	previous = GTK_WIDGET(gtk_builder_get_object(builder, "undo"));
@@ -99,6 +132,24 @@ int init_interface(int argc, char**argv)
 	new_file = GTK_WIDGET(gtk_builder_get_object(builder,"new_file"));
 	open_file = GTK_WIDGET(gtk_builder_get_object(builder,"open_file"));
 	quit = GTK_WIDGET(gtk_builder_get_object(builder,"quit"));
+	gaussian_blur_window = GTK_WIDGET(gtk_builder_get_object(builder,"gaussian_blur_window"));
+	gaussian_blur_slider =GTK_SCALE(gtk_builder_get_object(builder,"gaussian_blur_slider"));
+	apply_button = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button"));
+	apply_button_gamma = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button_gamma"));
+	apply_button_color = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button_color"));
+	gamma_slider=GTK_SCALE(gtk_builder_get_object(builder,"gamma_slider"));
+	threshold_slider=GTK_SCALE(gtk_builder_get_object(builder,"threshold_slider"));
+	apply_button_threshold = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button_threshold"));
+	gamma_window = GTK_WIDGET(gtk_builder_get_object(builder,"gamma_window"));
+	threshold_window = GTK_WIDGET(gtk_builder_get_object(builder,"threshold_window"));
+	//r1_slider= GTK_SCALE(gtk_builder_get_object(builder,"r1_slider"));
+	r1_slider= GTK_SCALE(gtk_builder_get_object(builder,"r1_slider"));
+	r2_slider = GTK_SCALE(gtk_builder_get_object(builder,"r2_slider"));
+	g1_slider= GTK_SCALE(gtk_builder_get_object(builder,"g1_slider"));
+	g2_slider= GTK_SCALE(gtk_builder_get_object(builder,"g2_slider"));
+	b1_slider= GTK_SCALE(gtk_builder_get_object(builder,"b1_slider"));
+	b2_slider= GTK_SCALE(gtk_builder_get_object(builder,"b2_slider"));
+	color_threshold_slider= GTK_SCALE(gtk_builder_get_object(builder,"color_threshold_slider"));
 
 	// Create events
 	gtk_widget_add_events(draw_area, GDK_POINTER_MOTION_MASK);
@@ -109,12 +160,16 @@ int init_interface(int argc, char**argv)
 	gtk_builder_connect_signals(builder,NULL);
 	g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL);
 	g_signal_connect (G_OBJECT (draw_area), "draw", G_CALLBACK (draw_callback), NULL);
-	g_signal_connect (draw_area, "motion-notify-event", G_CALLBACK(mouse_on_move), NULL);
-	g_signal_connect (draw_area, "button-press-event", G_CALLBACK(mouse_on_press), NULL);
-	g_signal_connect (draw_area, "button-release-event", G_CALLBACK(mouse_on_release), NULL);
-	g_signal_connect(brush, "clicked", G_CALLBACK(on_brush), NULL);
-	g_signal_connect(bucket, "clicked", G_CALLBACK(on_bucket), NULL);
-	g_signal_connect(color_button, "color-set", G_CALLBACK(on_Color_set), NULL);
+	g_signal_connect (draw_area, "motion-notify-event", G_CALLBACK(on_mouse_move), NULL);
+	g_signal_connect (draw_area, "button-press-event", G_CALLBACK(on_mouse_press), NULL);
+	g_signal_connect (draw_area, "button-release-event", G_CALLBACK(on_mouse_release), NULL);
+	g_signal_connect(brush, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *) BRUSH);
+	g_signal_connect(bucket, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *)BUCKET);
+	g_signal_connect(rectangle_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *)RECTANGLE);
+	g_signal_connect(triangle_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *)TRIANGLE);
+	g_signal_connect(circle_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *) CIRCLE);
+	g_signal_connect(line_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *) LINE);
+	g_signal_connect(color_button, "color-set", G_CALLBACK(on_color_set), NULL);
     g_signal_connect(previous, "clicked", G_CALLBACK(on_previous), NULL);
     g_signal_connect(next, "clicked", G_CALLBACK(on_next), NULL);
     g_signal_connect (G_OBJECT (window), "key_press_event", G_CALLBACK (on_key_press), NULL);
@@ -124,14 +179,29 @@ int init_interface(int argc, char**argv)
     g_signal_connect(open_file, "activate", G_CALLBACK(on_open_file), NULL);
     g_signal_connect(save_file, "activate", G_CALLBACK(on_save_file), NULL);
     g_signal_connect(quit, "activate", G_CALLBACK(epipaintor_free), NULL);
-	
+	g_signal_connect(gaussian_blur_slider, "value_changed", G_CALLBACK(gaussian_blur_value), NULL);
+	g_signal_connect(apply_button, "clicked", G_CALLBACK(gaussian_blur_apply), NULL);
+	g_signal_connect(apply_button_gamma, "clicked", G_CALLBACK(gamma_apply), NULL); 
+	g_signal_connect(gamma_slider, "value_changed", G_CALLBACK(gamma_value), NULL);
+	g_signal_connect(apply_button_threshold, "clicked", G_CALLBACK(threshold_apply), NULL);
+	g_signal_connect(threshold_slider, "value_changed", G_CALLBACK(threshold_value), NULL);
+	g_signal_connect(color_threshold_slider, "value_changed", G_CALLBACK(color_threshold_value), NULL);
+	g_signal_connect(r1_slider, "value_changed", G_CALLBACK(r1_value), NULL);
+	g_signal_connect(r2_slider, "value_changed", G_CALLBACK(r2_value), NULL);
+	g_signal_connect(g1_slider, "value_changed", G_CALLBACK(g1_value), NULL);
+	g_signal_connect(g2_slider, "value_changed", G_CALLBACK(g2_value), NULL);
+	g_signal_connect(b1_slider, "value_changed", G_CALLBACK(b1_value), NULL);
+	g_signal_connect(b2_slider, "value_changed", G_CALLBACK(b2_value), NULL); 
+	g_signal_connect(apply_button_color, "clicked", G_CALLBACK(color_apply), NULL);
+
+
+
+
 
 	// Window settings
 	gtk_window_set_default_size(GTK_WINDOW(window),1920,1080);//keep it like this please.
 	gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
-	gtk_window_set_icon_from_file(GTK_WINDOW(window),"../assets/logo_200x200.png",NULL);
-
-	// Stacks Initialization
+	gtk_window_set_icon_from_file(GTK_WINDOW(window),"../assets/logo_200x200.png",NULL);	// Stacks Initialization
     before = shared_stack_new();
     after = shared_stack_new();
 
@@ -158,13 +228,21 @@ void epipaintor_free(gpointer user_data)
 gboolean draw_callback(GtkWidget* widget, cairo_t *cr, gpointer data)
 {
 	//Unused parameters :
-	widget = widget;
-	data = data;
+	(void) widget;
+	(void) data;
 
 	if (!img_buff) return FALSE;
 
 	//Actual function :
-	SDL_SaveBMP(img_buff, "../cache/img_buff.bmp");
+	if (pre_visualisation) {
+		SDL_SaveBMP(pre_visualisation, "../cache/img_buff.bmp");
+		SDL_FreeSurface(pre_visualisation);
+		pre_visualisation = NULL;
+	}
+	else {
+		SDL_SaveBMP(img_buff, "../cache/img_buff.bmp");
+	}
+
 	GdkPixbuf *pixbuf;
 
 	pixbuf = gdk_pixbuf_new_from_file("../cache/img_buff.bmp", NULL);
@@ -214,20 +292,20 @@ gboolean on_open_file_file_activated(GtkFileChooserButton * b)
 	return FALSE;
 }
 
-gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
+gboolean on_mouse_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 {
-	// Save unused variables to avoid warning
-	widget = self;
-	event = event;
-	data = user_data;
+	// Cast unused variables to void to avoid warning
+	(void) self;
+	(void) event;
+	(void) user_data;
 
 	is_pressed = TRUE;
-	start_x = pos_x;
-	start_y = pos_y;
+	on_press_x = curr_x;
+	on_press_y = curr_y;
 
-	//printf("(x, y) = (%i, %i)\n", start_x, start_y);
+	//printf("(x, y) = (%i, %i)\n", on_press_x, on_press_y);
 
-	if (selected_tool == NONE)
+	if (!img_buff || selected_tool == NONE)
 		return FALSE;
 
 	shared_stack_push(before, img_buff);
@@ -238,7 +316,7 @@ gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 		case BRUSH:
 			break;
 		case BUCKET:
-			img_buff = bucket_fill(img_buff, start_x, start_y, (Uint8) selected_color.r, \
+			img_buff = bucket_fill(img_buff, on_press_x, on_press_y, (Uint8) selected_color.r, \
 					(Uint8) selected_color.g, (Uint8) selected_color.b,70);
 			gtk_widget_queue_draw_area(draw_area, 0, 0, img_buff->w, img_buff->h);
 			break;
@@ -247,7 +325,63 @@ gboolean mouse_on_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 	return FALSE;
 }
 
-gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
+gboolean on_mouse_move(GtkWidget *widget,GdkEvent *event, gpointer user_data) 
+{
+	// Unused parameters :
+	(void) widget;
+	(void) user_data;
+	
+	if (!(event->type==GDK_MOTION_NOTIFY))
+		return TRUE;
+
+	GdkEventMotion* e = (GdkEventMotion*) event;
+	last_x = curr_x;
+	last_y = curr_y;
+	curr_x = (guint) e->x;
+	curr_y = (guint) e->y;
+
+
+	if (!img_buff || !is_pressed) return FALSE;
+
+	switch (selected_tool) {
+		case BRUSH:
+			drawline(img_buff, selected_color, last_x, last_y, curr_x, curr_y, brush_size);
+			break;
+		case RECTANGLE:
+			pre_visualisation = copy_image(img_buff);
+			pre_visualisation = rectangle(pre_visualisation, on_press_x, 
+										  on_press_y, curr_x, curr_y, 
+										  selected_color.r, selected_color.g, 
+										  selected_color.b, brush_size);
+			break;
+		case TRIANGLE:
+			pre_visualisation = copy_image(img_buff);
+			pre_visualisation = triangle(pre_visualisation, on_press_x, 
+										  on_press_y, curr_x, curr_y, 
+										  selected_color.r, selected_color.g, 
+										  selected_color.b, brush_size);
+			break;
+		case CIRCLE:
+			pre_visualisation = copy_image(img_buff);
+			pre_visualisation = circle(pre_visualisation, on_press_x, 
+										  on_press_y, curr_x, curr_y, 
+										  selected_color.r, selected_color.g, 
+										  selected_color.b, brush_size);
+			break;
+		case LINE:
+			pre_visualisation = copy_image(img_buff);
+			Uint32 color = SDL_MapRGB(pre_visualisation->format, selected_color.r, selected_color.g, selected_color.b);
+			pre_visualisation = line(pre_visualisation, color, on_press_x, 
+									 on_press_y, curr_x, curr_y, brush_size);
+			break;
+	}
+
+
+	gtk_widget_queue_draw_area(draw_area, 0, 0, img_buff->w, img_buff->h);
+	return TRUE;
+}
+
+gboolean on_mouse_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 {
 	// Used to avoid compilations warning.
 	widget = self;
@@ -255,14 +389,47 @@ gboolean mouse_on_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 	data = user_data;
 
 	is_pressed = FALSE;
-	start_x = pos_x;
-	start_y = pos_y;
+	// on_press_x = curr_x;
+	// on_press_y = curr_y;
 
+	if (pre_visualisation)
+	{
+		SDL_FreeSurface(pre_visualisation);
+		pre_visualisation = NULL;
+	}
+
+	switch (selected_tool) {
+		case RECTANGLE:
+			img_buff = rectangle(img_buff, on_press_x, 
+										  on_press_y, curr_x, curr_y, 
+										  selected_color.r, selected_color.g, 
+										  selected_color.b, brush_size);
+			break;
+		case TRIANGLE:
+			img_buff = triangle(img_buff, on_press_x, 
+										  on_press_y, curr_x, curr_y, 
+										  selected_color.r, selected_color.g, 
+										  selected_color.b, brush_size);
+			break;
+		case CIRCLE:
+			img_buff = circle(img_buff, on_press_x, 
+										  on_press_y, curr_x, curr_y, 
+										  selected_color.r, selected_color.g, 
+										  selected_color.b, brush_size);
+			break;
+		case LINE:
+			Uint32 color = SDL_MapRGB(img_buff->format, selected_color.r, selected_color.g, selected_color.b);
+			img_buff = line(img_buff, color, on_press_x, 
+									 on_press_y, curr_x, curr_y, brush_size);
+			break;
+	}
+
+	gtk_widget_queue_draw_area(draw_area, 0, 0, img_buff->w, img_buff->h);
 	return FALSE;
 }
 
 
-gboolean on_Color_set(GtkColorChooser *self, gpointer user_data)
+gboolean on_color_set(GtkColorChooser *self, gpointer user_data)
 {
 	data = user_data;
 
@@ -273,54 +440,11 @@ gboolean on_Color_set(GtkColorChooser *self, gpointer user_data)
 	return FALSE;
 }
 
-
-gboolean mouse_on_move(GtkWidget *widget,GdkEvent *event, gpointer user_data) 
-{
-
-	//Unused parameters :
-	widget = widget;
-	data = user_data;
-	
-	if (!(event->type==GDK_MOTION_NOTIFY))
-		return TRUE;
-
-	GdkEventMotion* e =(GdkEventMotion*)event;
-	old_x = pos_x;
-	old_y = pos_y;
-	pos_x = (guint) e->x;
-	pos_y = (guint) e->y;
-
-
-	if (!img_buff || !is_pressed) return FALSE;
-
-	//printf("Old coordinates: (%u,%u)\n", old_x, old_y);
-	//printf("coordinates: (%u,%u)\n", pos_x, pos_y);
-	switch (selected_tool) {
-		case BRUSH:
-			drawline(img_buff, selected_color, old_x, old_y, pos_x, pos_y, brush_size);
-			gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
-			return TRUE;
-	}
-
-	return TRUE;
-}
-
-gboolean on_brush(GtkButton *self, gpointer user_data) {
+gboolean on_tool_clicked(GtkButton *self, gpointer user_data) {
 	// Unused variables
-	widget = (GtkWidget *) self;
-	data = user_data;
+	(void) self;
 
-	selected_tool = BRUSH; 
-
-	return FALSE;
-}
-
-gboolean on_bucket(GtkButton *self, gpointer user_data) {
-	// Unused variables
-	widget = (GtkWidget *) self;
-	data = user_data;
-
-	selected_tool = BUCKET; 
+	selected_tool = (intptr_t) user_data;
 
 	return FALSE;
 }
@@ -416,6 +540,17 @@ void on_grayscale_activate(GtkMenuItem *self)
 }
 
 
+void on_otsu_threshold_activate(GtkMenuItem *self)
+{
+	shared_stack_push(before, img_buff);
+	shared_stack_empty(after);
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	img_buff = otsu_threshold(img_buff);
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+}
+
 void on_red_light_activate(GtkMenuItem *self)
 {
 	if(img_buff==NULL)
@@ -438,14 +573,89 @@ void on_sepia_activate(GtkMenuItem *self)
 
 
 
-void on_gaussian_blur_activate(GtkMenuItem *self)
+gboolean gaussian_blur_apply(GtkScale *self, gpointer user_data)
 {
-	if(img_buff==NULL)
+	shared_stack_push(before, img_buff);
+	shared_stack_empty(after);
+	unsigned char value = gaussian_blur_value(gaussian_blur_slider);
+	img_buff = gaussian(img_buff,value);
+	widget = (GtkWidget *) self;
+	user_data = user_data;
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	return TRUE;
+}
+unsigned char gaussian_blur_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+}
+void on_color_filter_activate(GtkMenuItem *self)
+{	if(img_buff==NULL)
 		return;
 	widget = (GtkWidget *) self;
-	img_buff = gaussian(img_buff,10);
-	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	GtkWidget *window = color_window;
+	gtk_window_set_title(GTK_WINDOW(window), "Color Threshold");
+    gtk_widget_show_all(window);
+
 }
+
+
+unsigned char  r1_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+}
+unsigned char  color_threshold_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+
+}
+unsigned char  r2_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+}
+unsigned char  g1_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+}
+unsigned char  g2_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+}
+unsigned char  b1_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+}
+unsigned char  b2_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return gtk_range_get_value(&(self->range));
+}
+gboolean color_apply(GtkScale *self, gpointer user_data)
+{
+	printf("check");
+	shared_stack_push(before, img_buff);
+	shared_stack_empty(after);
+	unsigned char value = color_threshold_value(color_threshold_slider);
+	unsigned char value_r1 = r1_value(r1_slider);
+	unsigned char value_g1 = g1_value(g1_slider);
+	unsigned char value_b1 = b1_value(b1_slider);
+	unsigned char value_r2 = r2_value(r2_slider);
+	unsigned char value_g2 = g2_value(g2_slider);
+	unsigned char value_b2 = b2_value(b2_slider);
+
+	img_buff = color_threshold(img_buff,value,value_r1,value_g1,value_b1,value_r2,value_g2,value_b2);
+	widget = (GtkWidget *) self;
+	user_data = user_data;
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	return TRUE;
+}
+
 void on_binarize_activate(GtkMenuItem *self)
 {
 	if(img_buff==NULL)
@@ -464,21 +674,79 @@ void on_negative_activate(GtkMenuItem *self)
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 }
 
-
-void on_gamma_activate(GtkMenuItem *self)
+void on_gaussian_blur_activate(GtkMenuItem *self)
 {
+    
 	if(img_buff==NULL)
 		return;
 	widget = (GtkWidget *) self;
-	img_buff = gam(img_buff,10);
+	
+	GtkWidget *window = gaussian_blur_window;
+	gtk_window_set_title(GTK_WINDOW(window), "Gaussian Blur");
+    gtk_widget_show_all(window);
+}
+
+void on_gamma_activate(GtkMenuItem *self)
+{
+    
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	
+	GtkWidget *window = gamma_window;
+	gtk_window_set_title(GTK_WINDOW(window), "Gamma");
+    gtk_widget_show_all(window);
+   
+}
+
+
+
+unsigned char threshold_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return (gtk_range_get_value(&(self->range)));
+}
+
+gboolean threshold_apply(GtkScale *self, gpointer user_data)
+{
+	shared_stack_push(before, img_buff);
+	shared_stack_empty(after);
+	widget = (GtkWidget *) self;
+	unsigned char value = threshold_value(threshold_slider);
+	img_buff = threshold(img_buff,value);
+	user_data = user_data;
+
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	return TRUE;
+
+}
+
+
+unsigned char gamma_value(GtkScale *self)
+{
+	widget = (GtkWidget *) self;
+	return (gtk_range_get_value(&(self->range)));
+}
+
+gboolean gamma_apply(GtkScale *self, gpointer user_data)
+{
+
+	shared_stack_push(before, img_buff);
+	shared_stack_empty(after);
+	widget = (GtkWidget *) self;
+	unsigned char value = gamma_value(gamma_slider);
+	img_buff = gam(img_buff,value);
+		user_data = user_data;
+
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	return TRUE;
 }
 
 void on_new_file(GtkMenuItem *self)
 {
 
 	widget = (GtkWidget *) self;
-	char *image_path = "../assets/medium_blank.png";
+	char *image_path = "../assets/blank.png";
 	img_buff = load_image(image_path);
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 }
@@ -566,13 +834,23 @@ gboolean on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data
                 // shared_stack_push(b2, img2);                                    
                 // shared_stack_empty(a2);
 
-                // past_selection(img, copy_crop_img, pos_x, pos_y);
+                // past_selection(img, copy_crop_img, curr_x, pos_y);
                 // gtk_widget_queue_draw_area(image,0,0,img->w,img->h);
             return FALSE;
     }
 
     return FALSE;
 }
+void on_threshold_activate(GtkMenuItem *self)
+{
+	if(img_buff==NULL)
+		return;
+	widget = (GtkWidget *) self;
+	GtkWidget *window = threshold_window;
+	gtk_window_set_title(GTK_WINDOW(window), "Threshold");
+    gtk_widget_show_all(window);
+}
+
 
 gboolean update_scale_val(GtkScale *self, gpointer user_data)
 {
@@ -587,3 +865,4 @@ gboolean update_scale_val(GtkScale *self, gpointer user_data)
 
     return FALSE;
 }
+
