@@ -35,7 +35,7 @@ GtkWidget *open_file;
 GtkWidget *save_file;
 GtkWidget *quit;
 GtkColorChooser* color_button;
-GtkButton* seletion_button;
+GtkButton* selection_button;
 GtkButton* clear_selection_button;
 GtkButton* display_selection_button;
 GtkButton* copy_selection_button;
@@ -91,6 +91,10 @@ SDL_Surface* pre_visualisation = NULL;
 // Booleans
 int is_pressed = FALSE;
 
+
+//selection
+int selection_status = -1;
+int copied = 0;
 // Mouse coordinates
 int curr_x = 0;
 int curr_y = 0;
@@ -158,7 +162,7 @@ int init_interface(int argc, char**argv)
 	apply_button_threshold = GTK_WIDGET(gtk_builder_get_object(builder,"apply_button_threshold"));
 	gamma_window = GTK_WIDGET(gtk_builder_get_object(builder,"gamma_window"));
 	threshold_window = GTK_WIDGET(gtk_builder_get_object(builder,"threshold_window"));
-	seletion_button= GTK_BUTTON(gtk_builder_get_object(builder,"seletion_button"));
+	selection_button= GTK_BUTTON(gtk_builder_get_object(builder,"selection_button"));
     clear_selection_button = GTK_BUTTON(gtk_builder_get_object(builder,"clear_selection_button"));
     display_selection_button = GTK_BUTTON(gtk_builder_get_object(builder,"display_selection_button"));
 	copy_selection_button = GTK_BUTTON(gtk_builder_get_object(builder,"copy_selection_button")); 
@@ -193,6 +197,12 @@ int init_interface(int argc, char**argv)
 	g_signal_connect(brush, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *) BRUSH);
 	g_signal_connect(bucket, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *)BUCKET);
 	g_signal_connect(rectangle_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *)RECTANGLE);
+	g_signal_connect(selection_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *)SELECTION);
+	g_signal_connect(copy_selection_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *)COPY);
+	g_signal_connect(paste_selection_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *)PASTE);
+	g_signal_connect(cut_selection_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *)CUT);
+
+
 	g_signal_connect(triangle_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *)TRIANGLE);
 	g_signal_connect(circle_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *) CIRCLE);
 	g_signal_connect(line_button, "clicked", G_CALLBACK(on_tool_clicked), (gpointer *) LINE);
@@ -349,6 +359,13 @@ gboolean on_mouse_press(GtkWidget* self, GdkEvent* event, gpointer user_data)
 					(Uint8) selected_color.g, (Uint8) selected_color.b,70);
 			gtk_widget_queue_draw_area(draw_area, 0, 0, img_buff->w, img_buff->h);
 			break;
+		case PASTE:
+			if(copied ==1)
+				{
+					paste_selection(img_buff,on_press_x,on_press_y);
+					gtk_widget_queue_draw_area(draw_area, 0, 0, img_buff->w, img_buff->h);
+				}
+			break;
 	}
 
 	return FALSE;
@@ -403,6 +420,24 @@ gboolean on_mouse_move(GtkWidget *widget,GdkEvent *event, gpointer user_data)
 			pre_visualisation = line(pre_visualisation, color, on_press_x, 
 									 on_press_y, curr_x, curr_y, brush_size);
 			break;
+		case SELECTION:
+			pre_visualisation = copy_image(img_buff);
+			pre_visualisation = rectangle(pre_visualisation, on_press_x, 
+										  on_press_y, curr_x, curr_y, 
+										  0,0,124, brush_size);
+			break;
+		case COPY:
+			pre_visualisation = copy_image(img_buff);
+			pre_visualisation = rectangle(pre_visualisation, on_press_x, 
+										  on_press_y, curr_x, curr_y, 
+										  0,0,124, brush_size);
+			break;
+		case CUT:
+			pre_visualisation = copy_image(img_buff);
+			pre_visualisation = rectangle(pre_visualisation, on_press_x, 
+										  on_press_y, curr_x, curr_y, 
+										  0,0,124, brush_size);
+			break;			
 	}
 
 
@@ -451,6 +486,19 @@ gboolean on_mouse_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 			img_buff = line(img_buff, color, on_press_x, 
 									 on_press_y, curr_x, curr_y, brush_size);
 			break;
+		case SELECTION:
+			create_selection_base(img_buff);
+			make_selection(on_press_x,on_press_y,curr_x,curr_y);
+			break;
+
+		case COPY:
+			copied = copy_selection(img_buff,on_press_x,on_press_y,curr_x,curr_y);
+			break;
+		case CUT:
+			copied = copy_selection(img_buff,on_press_x,on_press_y,curr_x,curr_y);
+			img_buff = cut_selection(img_buff,on_press_x,on_press_y,curr_x,curr_y);
+			
+			break;
 	}
 
 	gtk_widget_queue_draw_area(draw_area, 0, 0, img_buff->w, img_buff->h);
@@ -481,14 +529,20 @@ gboolean on_tool_clicked(GtkButton *self, gpointer user_data) {
 void on_clear_selection_button_clicked (GtkMenuItem *self)
 {
 	widget = (GtkWidget *) self;
+	clear_selection_base(img_buff);
+	selection_status = -1;
 }
 void on_display_selection_button_clicked (GtkMenuItem *self)
 {
 	widget = (GtkWidget *) self;
+	img_buff = display_selection_on_image(img_buff,selection_status);
+	selection_status *= -1;
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 }
 void on_copy_selection_button_clicked (GtkMenuItem *self)
 {
 	widget = (GtkWidget *) self;
+
 }
 void on_selection_button_clicked (GtkMenuItem *self)
 {

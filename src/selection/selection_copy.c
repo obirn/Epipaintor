@@ -6,6 +6,7 @@
 #include "../auxiliary/auxiliary.h"
 #include "selection.h"
 
+/**
 // Generates copy of selected area as cropped image.
 int copy_selection(SDL_Surface* surface, int x, int y, int x2, int y2)
 {
@@ -115,4 +116,48 @@ int copy_selection(SDL_Surface* surface, int x, int y, int x2, int y2)
     save_image(crop, "../../cache/selection_copy.png");
 
     return 1;
+}
+**/
+
+int c_image(SDL_Surface* src_surface, int x, int y, int width, int height)
+{
+    SDL_Surface* surface = SDL_CreateRGBSurface(src_surface->flags, width,
+        height, src_surface->format->BitsPerPixel, src_surface->format->Rmask,
+        src_surface->format->Gmask, src_surface->format->Bmask,
+        src_surface->format->Amask);
+    SDL_Rect rect = {x, y, width, height};
+    
+    SDL_BlitSurface(src_surface, &rect, surface, 0);
+    
+    save_image(surface, "../cache/selection_copy.png");
+
+    return 1;
+}
+
+int copy_selection(SDL_Surface* s_surface, int x, int y, int x2, int y2)
+{
+    int width;
+    int height;
+
+    if (x2 - x < 0)
+    {
+        width = x - x2;
+    }
+    else
+    {
+        width = x2 - x;
+    }
+
+    if (y2 - y < 0)
+    {
+        height = y - y2;
+    }
+    else
+    {
+        height = y2 - y;
+    }
+
+    int copied = c_image(s_surface, x, y, width, height);
+
+    return copied;
 }
