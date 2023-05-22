@@ -50,10 +50,17 @@ char *send_query(const char *host, size_t *len, char* image_path)
     long fileSize = ftell(file);
     fseek(file, 0, SEEK_SET);
 
+    long requestFormatSize = snprintf(NULL, 0, requestFormat, fileSize);
+    long requestEndSize = strlen(requestEnd);
+    int requestSize = requestFormatSize + fileSize + requestEndSize;
 
-    // Allocate memory for the request
-    int requestSize = snprintf(NULL, 0, requestFormat, fileSize) + fileSize + strlen(requestEnd);
-    char* request = malloc(requestSize);
+    printf("requestFormatSize = %ld\n", requestFormatSize);
+    printf("fileSize = %ld\n", fileSize);
+    printf("requestEndSize = %ld\n", requestEndSize);
+    printf("requestSize = %d\n", requestSize);
+    // getchar();
+
+    char* request = malloc(requestSize + 1);
     if (!request) {
         fprintf(stderr, "Failed to allocate memory for the request.\n");
         fclose(file);
@@ -61,8 +68,11 @@ char *send_query(const char *host, size_t *len, char* image_path)
 
     // Format the request
     snprintf(request, requestSize, requestFormat, fileSize);
-    char* requestBody = request + strlen(request);
+    char* requestBody = request + requestFormatSize;
     fread(requestBody, 1, fileSize, file);
+    printf("(request + requestSize) - (requestBody + fileSize) = %ld\n", (request + requestSize) - (requestBody + fileSize));
+    printf("requestEnd = %ld\n", requestEndSize);
+
     strcpy(requestBody + fileSize, requestEnd);
 
     // printf("content length = %ld\n", fileSize);
@@ -245,7 +255,7 @@ void send_image(const char *host, char* image_path)
 
     rewrite(ssl, request, request_len);
 
-    // free(request);
+    free(request);
 
     printf("Now listening server response after sending... \n");
     do {

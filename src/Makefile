@@ -1,4 +1,4 @@
-CC = gcc  # -fsanitize=address
+CC = gcc  -fsanitize=address
 
 CPPFLAGS = `pkg-config gtk+-3.0 --cflags sdl2 SDL2_image` -MMD
 CFLAGS =  -Wextra -std=c99 -g -Wall -Werror
