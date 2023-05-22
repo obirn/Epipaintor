@@ -1,0 +1,34 @@
+# Makefile
+
+all: main
+
+main:
+	gcc -Wall -Wextra -Werror -O3 -C -Iinclude main.c "../auxiliary/auxiliary.c" "../shapes/shape_dot.c" "../shapes/shape_lines.c" "../shapes/shape_rectangle.c" selection_canvas.c selection_display.c selection_select.c selection_copy.c selection_cut.c selection_paste.c `pkg-config --cflags sdl2 SDL2_image` `pkg-config --libs sdl2 SDL2_image` -o main -lm -ldl -D__NO_INLINE__
+
+clean_images:
+	rm -f gray_image.jpeg
+	rm -f rot_image.jpeg
+	rm -f gau_image.jpeg
+	rm -f gam_image.jpeg
+	rm -f bin_image.jpeg
+	rm -f rot_image.jpeg	
+
+clean:
+	rm -f *.d
+	rm -f *.o
+	rm -f rotation
+	rm -f contrasting
+	rm -f auto_rotation
+	rm -f delete_color
+	rm -f gaussian
+	rm -f gamma
+	rm -f threshold
+	rm -f main
+	rm -f gray_image.jpeg
+	rm -f rot_image.jpeg
+	rm -f gau_image.jpeg
+	rm -f gam_image.jpeg
+	rm -f bin_image.jpeg
+	rm -f rot_image.jpeg
+
+# END Makefile
