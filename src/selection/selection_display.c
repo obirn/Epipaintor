@@ -8,16 +8,16 @@
 
 SDL_Surface* display_selection_on_image(SDL_Surface *s_surface, int status)
 {
-    SDL_Surface* selection = load_image("../../cache/selection.png");
+    SDL_Surface* selection = load_image("../cache/selection.png");
 
     if (status == 1)
     {
-        s_surface = load_image("../../cache/temp_copy.png");
+        s_surface = load_image("../cache/temp_copy.png");
         return s_surface;
     }
 
     // Create temporary copy of SDL_Surface.
-    save_image(s_surface, "../../cache/temp_copy.png");
+    save_image(s_surface, "../cache/temp_copy.png");
 
     int s_height = s_surface->h;
     int s_width = s_surface->w;

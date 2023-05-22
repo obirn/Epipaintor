@@ -1,7 +1,7 @@
 #ifndef GUI_H
 #define GUI_H
 
-enum tools {NONE, BRUSH, BUCKET, RECTANGLE, CIRCLE, TRIANGLE, LINE};
+enum tools {NONE, BRUSH, BUCKET, RECTANGLE, CIRCLE, TRIANGLE, LINE,SELECTION,COPY,PASTE,CUT};
 
 #include <gtk/gtk.h>
 

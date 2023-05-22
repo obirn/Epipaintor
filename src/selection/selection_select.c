@@ -39,7 +39,7 @@ void make_selection(int x1, int y1, int x2, int y2)
         }
     }
 
-    SDL_Surface* selection = load_image("../../cache/selection.png");
+    SDL_Surface* selection = load_image("../cache/selection.png");
 
     Uint32 pixel;
 
@@ -60,5 +60,5 @@ void make_selection(int x1, int y1, int x2, int y2)
 
     SDL_UnlockSurface(selection);
 
-    save_image(selection, "../../cache/selection.png");
+    save_image(selection, "../cache/selection.png");
 }

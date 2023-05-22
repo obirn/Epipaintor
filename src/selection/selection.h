@@ -36,4 +36,8 @@ SDL_Surface* paste_selection(SDL_Surface* s_surface, int x, int y);
 // Cut selection from source image.
 SDL_Surface* cut_selection(SDL_Surface* s_surface, int x, int y, int x2, int y2);
 
+
+// Crops an image into selection copy.
+int c_image(SDL_Surface* src_surface, int x, int y, int width, int height);
+
 #endif

@@ -19,7 +19,7 @@ void create_selection_base(SDL_Surface *s_surface)
     SDL_FillRect(selection, NULL,
                  SDL_MapRGB(selection->format, 0, 0, 0));
 
-    save_image(selection, "../../cache/selection.png");
+    save_image(selection, "../cache/selection.png");
 
     // printf("Selection: generated selection base.");
 }

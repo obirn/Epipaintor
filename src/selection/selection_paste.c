@@ -9,7 +9,7 @@
 // Paste selection from selection_copy.png.
 SDL_Surface* paste_selection(SDL_Surface* s_surface, int x, int y)
 {
-    SDL_Surface* paste = load_image("../../cache/selection_copy.png");
+    SDL_Surface* paste = load_image("../cache/selection_copy.png");
 
     if (paste == NULL)
     {
