@@ -18,7 +18,7 @@ export function ApiStack({ stack }: StackContext) {
     },
     routes: {
       "POST /send": "packages/functions/src/send.handler",
-      "POST /update": "packages/functions/src/update.handler",
+      "GET /url": "packages/functions/src/url.handler",
     },
   });
 

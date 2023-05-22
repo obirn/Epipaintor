@@ -21,7 +21,7 @@ void rewrite(SSL* ssl, const void *buf, size_t count)
     while (total_written < (ssize_t) count);
 }
 
-char *send_query(const char *host, size_t *len, char* image_path)
+char *get_send_request(const char *host, size_t *len, char* image_path)
 {
     // size_t encodedLen;
     (void) host;
@@ -54,10 +54,10 @@ char *send_query(const char *host, size_t *len, char* image_path)
     long requestEndSize = strlen(requestEnd);
     int requestSize = requestFormatSize + fileSize + requestEndSize;
 
-    printf("requestFormatSize = %ld\n", requestFormatSize);
-    printf("fileSize = %ld\n", fileSize);
-    printf("requestEndSize = %ld\n", requestEndSize);
-    printf("requestSize = %d\n", requestSize);
+    // printf("requestFormatSize = %ld\n", requestFormatSize);
+    // printf("fileSize = %ld\n", fileSize);
+    // printf("requestEndSize = %ld\n", requestEndSize);
+    // printf("requestSize = %d\n", requestSize);
     // getchar();
 
     char* request = malloc(requestSize + 1);
@@ -148,32 +148,39 @@ gint update_image (gpointer data)
     }
 
     
-    char* request = "POST /update HTTP/1.1\r\n"
+    char* request = "GET /update?key=epipaintor HTTP/1.1\r\n"
                     "Connection: close\r\n"
                     "Host: 4d3f2zejqh.execute-api.eu-west-1.amazonaws.com\r\n\r\n";
+
     size_t request_len = strlen(request);
 
     rewrite(ssl, request, request_len);
 
     FILE* file = fopen("../cache/img_buff.bmp", "w+");
 
+
+    char* pre_signed_size = 1000;
+    char* pre_signed_url = malloc(pre_signed_size);
+    ssize_t total_read = 0;
+
     printf("Now listening server response for update... \n");
     do {
         nread = SSL_read(ssl, buffer, BUFFER_SIZE-1);
-        printf("nread = %ld\n", nread);
-        buffer[BUFFER_SIZE-1] = 0;
         if (nread == -1)
             errx(1, "Read FAILED.");
 
-        nwritten = write(STDOUT_FILENO, buffer, nread);
-        if (nwritten == -1)
-            errx(1, "Write FAILED.");
+        if (total_read + n_read > pre_signed_size) {
+            pre_signed_size += 1000;
+            pre_signed_url = realloc(pre_signed_url, pre_signed_size);
+        }
 
-        nwritten = fputs(buffer, file);
-        printf("wrote in file = %ld\n", nwritten);
+
+        nwritten = write(pre_signed_url, buffer, nread);
+        total_read += nread;
+
         if (nwritten == -1)
             errx(1, "Write FAILED.");
-            
+        
     }
     while (nread != 0);
 
@@ -250,8 +257,8 @@ void send_image(const char *host, char* image_path)
 
     size_t request_len;
     
-    char* request = send_query(host, &request_len, image_path);
-    printf("request length is %lu\n", request_len);
+    char* request = get_send_request(host, &request_len, image_path);
+    // printf("request length is %lu\n", request_len);
 
     rewrite(ssl, request, request_len);
 

@@ -4,10 +4,8 @@ import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 const s3Client = new S3Client({});
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
-  console.log("event body = ");
+  console.log("event body for send.ts = ");
   console.log(event.body);
-
-
   try {
     const data = await s3Client.send(
       new PutObjectCommand({

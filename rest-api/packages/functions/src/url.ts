@@ -1,5 +1,6 @@
 import notes from "@rest-api/core/notes";
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
 const s3Client = new S3Client({});
@@ -13,30 +14,34 @@ const streamToString = (stream: any): Promise<string> =>
   });
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
-  console.log("event body = ");
-  console.log(event.body);
 
-  if (!event.body) return {
+  if (!event.queryStringParameters || !event.queryStringParameters.key) return {
     statusCode: 400,
-    body: "Missing key argument in body.",
+    body: "Missing key argument in queryStringParameters.",
   };
 
-  console.log(event.body)
-  const key = event.body;
+  const key = event.queryStringParameters.key;
 
   const params = {
     Bucket: process.env.BUCKET_NAME,
     Key: key,
   };
 
-  const command = new GetObjectCommand(params);
-  const response = await s3Client.send(command);
+  
+  try {
+    console.log(key);
+    
+    const command = new GetObjectCommand(params);
+    const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 60 * 5 }); // URL valid for 5 minutes
 
-  const { Body } = response;
-
-  const image = await streamToString(Body);
-  return {
-    statusCode: 200,
-    body: image,
-  };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ url: presignedUrl }),
+    };
+  } catch {
+    return {
+      statusCode: 200,
+      body: "No bucket found.",
+    };
+  }
 }
