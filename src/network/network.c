@@ -63,7 +63,7 @@ char* send_request(char* host, char* request, size_t request_len) {
 
     rewrite(ssl, request, request_len);
 
-    free(request);
+    // free(request);
 
     size_t response_buffer_size = 512;
 
@@ -275,7 +275,7 @@ gint upload_image(gpointer data)
 
 gint download_image(gpointer data)
 {
-    char* input  = data;
+    char *input = data;
     printf("Downloading image from the url...");
 
     const char* prefix = "https://";
@@ -404,6 +404,7 @@ gint download_image(gpointer data)
         if (nread == -1)
             errx(1, "Read FAILED.");
 
+        // write(STDOUT_FILENO, buffer, nread);
         nwritten = fwrite(buffer, sizeof(char), nread, file);
 
         if (nwritten == -1)

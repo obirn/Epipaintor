@@ -76,6 +76,10 @@ shared_stack* after;
 gint download_callback_id;
 gint upload_callback_id;
 
+// Callbacks urls
+char* upload_url;
+char* download_url;
+
 char* image_path;
 
 int selected_tool = NONE;
@@ -220,32 +224,41 @@ int init_interface(int argc, char**argv)
     before = shared_stack_new();
     after = shared_stack_new();
 
+	// Url initialization
+	download_url = get_download_url("4d3f2zejqh.execute-api.eu-west-1.amazonaws.com");
+	upload_url = get_upload_url("4d3f2zejqh.execute-api.eu-west-1.amazonaws.com","../cache/img_buff.bmp");
+
 	/*      Modification before this line */
 	gtk_widget_show(window); // shows the window
 	gtk_main();
 	return EXIT_SUCCESS;
 }
 
+gint download_wrapper(gpointer user_data) {
+	(void) user_data;
+	download_image(download_url);
+	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
+	return TRUE;
+}
 
 gboolean on_create_multiplayer(GtkMenuItem *menu_item, gpointer user_data)
 {
 	//Unused parameters :
 	(void) menu_item;
 	(void) user_data;
-	char* upload_url = get_upload_url("4d3f2zejqh.execute-api.eu-west-1.amazonaws.com","../cache/img_buff.bmp");
-	upload_callback_id = g_timeout_add(4000, upload_image, upload_url);
-	printf("upload_callback_id = %d\n", upload_callback_id);
+	download_callback_id = g_timeout_add(4000, download_wrapper, download_url);
+	printf("download_callback_id = %d\n", upload_callback_id);
 	return FALSE;
 }
+
 
 gboolean on_join_multiplayer(GtkMenuItem *menu_item, gpointer user_data)
 {
 	//Unused parameters :
-	char* request_url = get_download_url("4d3f2zejqh.execute-api.eu-west-1.amazonaws.com");
-	download_callback_id = g_timeout_add(4000, download_image, request_url);
-	printf("download_callback_id = %d\n", download_callback_id);
 	(void) menu_item;
 	(void) user_data;
+	download_callback_id = g_timeout_add(4000, download_wrapper, NULL);
+	printf("download_callback_id = %d\n", upload_callback_id);
 	return FALSE;
 }
 
@@ -456,6 +469,8 @@ gboolean on_mouse_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 									 on_press_y, curr_x, curr_y, brush_size);
 			break;
 	}
+
+	upload_image(upload_url);
 
 	gtk_widget_queue_draw_area(draw_area, 0, 0, img_buff->w, img_buff->h);
 	return FALSE;
