@@ -7,6 +7,7 @@
 #include <SDL2/SDL_image.h>
 #include <gtk/gtk.h>
 #include <string.h>
+#include <pthread.h>
 
 #include "./gui.h"
 #include "../auxiliary/auxiliary.h"
@@ -234,10 +235,25 @@ int init_interface(int argc, char**argv)
 	return EXIT_SUCCESS;
 }
 
+// Function to be executed in a separate thread
+void* upload_image_async(void* data)
+{
+    // Cast the data back to the required type
+    char* upload_url = (char*)data;
+
+    // Call the upload_image function
+    upload_image(upload_url);
+
+    // Exit the thread
+    pthread_exit(NULL);
+}
+
 gint download_wrapper(gpointer user_data) {
 	(void) user_data;
 	download_image(download_url);
+	printf("Now trying to load image: \n");
 	img_buff = load_image("../cache/img_buff.bmp");
+	printf("Now trying to draw image: ");
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 	return TRUE;
 }
@@ -275,7 +291,6 @@ void epipaintor_free(gpointer user_data)
 
     SDL_FreeSurface(img_buff);
     //cairo_destroy (cr);
-
     gtk_main_quit();
 }
 
@@ -472,8 +487,6 @@ gboolean on_mouse_release(GtkWidget* self, GdkEvent* event, gpointer user_data)
 									 on_press_y, curr_x, curr_y, brush_size);
 			break;
 	}
-
-	upload_image(upload_url);
 
 	gtk_widget_queue_draw_area(draw_area, 0, 0, img_buff->w, img_buff->h);
 	return FALSE;
