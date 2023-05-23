@@ -315,8 +315,8 @@ gint download_image(gpointer data)
     strncpy(path, pathStart, pathLength);
     path[pathLength] = '\0';
 
-    printf("Host: %s\n", host);
-    printf("Path: %s\n", path);
+    // printf("Host: %s\n", host);
+    // printf("Path: %s\n", path);
 
     // getchar();
     char buffer[BUFFER_SIZE];

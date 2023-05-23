@@ -246,8 +246,9 @@ gboolean on_create_multiplayer(GtkMenuItem *menu_item, gpointer user_data)
 	//Unused parameters :
 	(void) menu_item;
 	(void) user_data;
-	download_callback_id = g_timeout_add(4000, download_wrapper, download_url);
-	printf("download_callback_id = %d\n", upload_callback_id);
+	// download_callback_id = g_timeout_add(4000, download_wrapper, download_url);
+	// printf("download_callback_id = %d\n", upload_callback_id);
+	upload_image(upload_url);
 	return FALSE;
 }
 
@@ -257,8 +258,9 @@ gboolean on_join_multiplayer(GtkMenuItem *menu_item, gpointer user_data)
 	//Unused parameters :
 	(void) menu_item;
 	(void) user_data;
-	download_callback_id = g_timeout_add(4000, download_wrapper, NULL);
-	printf("download_callback_id = %d\n", upload_callback_id);
+	// download_callback_id = g_timeout_add(4000, download_wrapper, NULL);
+	// printf("download_callback_id = %d\n", upload_callback_id);
+	download_wrapper(NULL);
 	return FALSE;
 }
 
