@@ -281,7 +281,7 @@ gint download_image(gpointer data)
     const char* prefix = "https://";
     const char* suffix = "\"}";
 
-    printf("input = %s\n", input);
+    // printf("input = %s\n", input);
 
     const char* start = strstr(input, prefix);
     if (start == NULL) {
@@ -315,8 +315,8 @@ gint download_image(gpointer data)
     strncpy(path, pathStart, pathLength);
     path[pathLength] = '\0';
 
-    // printf("Host: %s\n", host);
-    // printf("Path: %s\n", path);
+    printf("Host: %s\n", host);
+    printf("Path: %s\n", path);
 
     // getchar();
     char buffer[BUFFER_SIZE];
@@ -421,121 +421,15 @@ char *get_download_url (gpointer data)
 {
     char *host = (char *) data;
     
-    struct addrinfo *addr, *result;
-    struct addrinfo hints;
-    int sfd, s;
-
-    SSL_library_init();
-    OpenSSL_add_all_algorithms();
-    SSL_load_error_strings();
-
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_STREAM;
-
-    s = getaddrinfo(host, "443", &hints, &result);
-    if (s != 0) {
-        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
-        exit(EXIT_FAILURE);
-    }
-
-    for (addr = result; addr != NULL; addr = addr->ai_next) {
-        sfd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
-        if (sfd == -1)
-            continue;
-
-        if (connect(sfd, addr->ai_addr, addr->ai_addrlen) == 0)
-            break;
-
-        close(sfd);
-    }
-
-    freeaddrinfo(result);
-
-    if (addr == NULL) {
-        errx(1, "Couldn't connect.");
-    }
-
-    SSL_CTX* ctx = SSL_CTX_new(TLS_client_method());
-    if (!ctx)
-        errx(EXIT_FAILURE, "Failed to create SSL context.\n");
-
-    // Establish the SSL/TLS connection
-    SSL* ssl = SSL_new(ctx);
-    if (!ssl) {
-        fprintf(stderr, "Failed to create SSL object.\n");
-    }
-
-    if (SSL_set_fd(ssl, sfd) == 0) {
-        fprintf(stderr, "Failed to set SSL file descriptor.\n");
-    }
-
-    if (SSL_connect(ssl) != 1) {
-        fprintf(stderr, "Failed to establish SSL connection.\n");
-        ERR_print_errors_fp(stderr);
-    }
-
-    
     char* request = "GET /download?key=epipaintor HTTP/1.1\r\n"
                     "Connection: close\r\n"
                     "Host: 4d3f2zejqh.execute-api.eu-west-1.amazonaws.com\r\n\r\n";
 
     size_t request_len = strlen(request);
 
-    rewrite(ssl, request, request_len);
+    char* response = send_request(host, request, request_len);
 
-    printf("Now listening server response for update... \n");
-    // Set the initial response buffer size
-    size_t response_buffer_size = 512;
-
-    // Allocate memory for the response buffer
-    char* response_buffer = (char*)malloc(response_buffer_size);
-    if (response_buffer == NULL) {
-        perror("Failed to allocate memory for response buffer");
-        SSL_shutdown(ssl);
-        SSL_free(ssl);
-        close(sfd);
-        return FALSE;
-    }
-
-    // Receive and process the response in a loop until no bytes are received
-    ssize_t total_bytes_received = 0;
-    ssize_t bytes_received;
-    while ((bytes_received = SSL_read(ssl, response_buffer + total_bytes_received, response_buffer_size - total_bytes_received - 1)) > 0) {
-        total_bytes_received += bytes_received;
-
-        // Check if the response buffer is full
-        if (total_bytes_received >= (ssize_t) response_buffer_size - 1) {
-            // Expand the response buffer size
-            response_buffer_size *= 2;
-            char* expanded_buffer = (char*)realloc(response_buffer, response_buffer_size);
-            if (expanded_buffer == NULL) {
-                perror("Failed to expand response buffer");
-                free(response_buffer);
-                SSL_shutdown(ssl);
-                SSL_free(ssl);
-                close(sfd);
-                return FALSE;
-            }
-            response_buffer = expanded_buffer;
-        }
-    }
-
-    // Check if there was an error in receiving
-    if (bytes_received == -1) {
-        perror("recv");
-        free(response_buffer);
-        SSL_shutdown(ssl);
-        SSL_free(ssl);
-        close(sfd);
-        return FALSE;
-    }
-
-    // Null-terminate the response buffer
-    response_buffer[total_bytes_received] = '\0';
-
-    printf("Presigned url = %s\n", response_buffer);
-    return response_buffer;
+    return response;
 }
 
 char *get_upload_url(char *host, char* image_path)
