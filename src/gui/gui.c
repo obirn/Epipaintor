@@ -237,6 +237,7 @@ int init_interface(int argc, char**argv)
 gint download_wrapper(gpointer user_data) {
 	(void) user_data;
 	download_image(download_url);
+	img_buff = load_image("../cache/img_buff.bmp");
 	gtk_widget_queue_draw_area(draw_area,0,0,img_buff->w,img_buff->h);
 	return TRUE;
 }
