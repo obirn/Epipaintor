@@ -73,7 +73,8 @@ shared_stack* before;
 shared_stack* after;
 
 // Callbacks arguments
-gint update_callback_id;
+gint download_callback_id;
+gint upload_callback_id;
 
 char* image_path;
 
@@ -231,7 +232,9 @@ gboolean on_create_multiplayer(GtkMenuItem *menu_item, gpointer user_data)
 	//Unused parameters :
 	(void) menu_item;
 	(void) user_data;
-	send_image("4d3f2zejqh.execute-api.eu-west-1.amazonaws.com","../cache/img_buff.bmp");
+	char* upload_url = get_upload_url("4d3f2zejqh.execute-api.eu-west-1.amazonaws.com","../cache/img_buff.bmp");
+	upload_callback_id = g_timeout_add(4000, upload_image, upload_url);
+	printf("upload_callback_id = %d\n", upload_callback_id);
 	return FALSE;
 }
 
@@ -239,9 +242,8 @@ gboolean on_join_multiplayer(GtkMenuItem *menu_item, gpointer user_data)
 {
 	//Unused parameters :
 	char* request_url = get_download_url("4d3f2zejqh.execute-api.eu-west-1.amazonaws.com");
-	printf("Ok Let's go \n");
-	update_callback_id = g_timeout_add(4000, get_image_from_url, request_url);
-	printf("update_callback_id = %d\n", update_callback_id);
+	download_callback_id = g_timeout_add(4000, download_image, request_url);
+	printf("download_callback_id = %d\n", download_callback_id);
 	(void) menu_item;
 	(void) user_data;
 	return FALSE;
